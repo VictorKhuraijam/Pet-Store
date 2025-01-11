@@ -1,7 +1,7 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { toast } from 'react-toastify';
 import axios from 'axios';
-import { clearCart, fetchCart } from './cartSllice';
+import { clearCart, fetchCart } from './cartSlice';
 
 const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
@@ -107,7 +107,7 @@ const userSlice = createSlice({
 });
 
 // Actions
-export const { clearError } = userSlice.actions;
+export const { clearError, resetUser } = userSlice.actions;
 
 // Reducer
 export default userSlice.reducer;

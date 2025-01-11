@@ -98,7 +98,7 @@ const cartSlice = createSlice({
 });
 
 // Selectors
-export const selectCartCount = (state) => {
+export const getCartCount = (state) => {
   let totalCount = 0;
   const cartItems = state.cart.items;
 
