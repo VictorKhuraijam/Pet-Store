@@ -6,7 +6,8 @@ import LatestCollection from './LatestCollection'
 import Hero from './Hero'
 import OurPolicy from './OurPolicy'
 import NewsletterBox from './NewsLetterBox'
-
+import Title from './Title'
+import ProductItem from "./ProductItem";
 
 export {
   NavBar,
@@ -16,5 +17,7 @@ export {
   LatestCollection,
   Hero,
   OurPolicy,
-  NewsletterBox
+  NewsletterBox,
+  Title,
+  ProductItem
 }
