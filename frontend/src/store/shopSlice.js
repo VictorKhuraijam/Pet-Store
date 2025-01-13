@@ -1,11 +1,61 @@
 import { createSlice } from '@reduxjs/toolkit';
 import axios from 'axios';
 import { toast } from 'react-toastify';
+import { assets } from '../assets/assets';
 
 const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
 const initialState = {
-  products: [],
+  products: [
+    {
+      _id: "1",
+      name: "Dog Food",
+      image: [assets.dog_food],
+      price: 15,
+      category: "Food",
+      bestseller: true
+    },
+    {
+      _id: "2",
+      name: "Dog Toy",
+      image: [assets.dog_toy],
+      price: 10,
+      category: "Toys",
+      bestseller: true
+    },
+    {
+      _id: "3",
+      name: "Dog Accessory",
+      image: [assets.dog_accessory],
+      price: 50,
+      category: "Accessories",
+      bestseller: true
+    },
+    {
+      _id: "4",
+      name: "Cat Food",
+      image: [assets.cat_food],
+      price: 15,
+      category: "Food",
+      bestseller: true
+    },
+    {
+      _id: "5",
+      name: "Cat Toy",
+      image: [assets.cat_toy],
+      price: 10,
+      category: "Toys",
+      bestseller: true
+    },
+    {
+      _id: "6",
+      name: "Cat Accessory",
+      image: [assets.cat_accessory],
+      price: 50,
+      category: "Accessories",
+      bestseller: false
+    },
+  ],
   loading: false,
   error: null,
   currency: '₹',
