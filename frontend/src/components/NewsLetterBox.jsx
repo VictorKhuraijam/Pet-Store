@@ -1,9 +1,10 @@
-
+import {toast} from 'react-toastify'
 
 const NewsletterBox = () => {
 
     const onSubmitHandler = (event) => {
         event.preventDefault();
+        toast.success("You have Subscribe to our News Letter")
     }
 
   return (

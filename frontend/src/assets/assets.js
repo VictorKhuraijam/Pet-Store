@@ -14,6 +14,7 @@ import dog_toy from './Dog_Toy.png'
 import exchange_icon from './exchange_icon.png'
 import quality_icon from './quality_icon.png'
 import support_img from './support_img.png'
+import dropdown_icon from './dropdown_icon.png'
 
 
 export const assets = {
@@ -32,5 +33,6 @@ export const assets = {
   dog_toy,
   exchange_icon,
   quality_icon,
-  support_img
+  support_img,
+  dropdown_icon
 }
