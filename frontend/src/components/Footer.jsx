@@ -16,10 +16,10 @@ const Footer = () => {
         <div>
             <p className='text-xl font-medium mb-5'>COMPANY</p>
             <ul className='flex flex-col gap-1 text-gray-600'>
-                <NavLink to='/' className='cursor-pointer hover:text-black hover:underline transition duration-300 ' >Home</NavLink>
-                <NavLink to='/about' className='cursor-pointer hover:text-black hover:underline transition duration-300 '>About us</NavLink>
-                <NavLink to='' className='cursor-pointer hover:text-black hover:underline transition duration-300 '>Delivery</NavLink>
-                <NavLink to='/contact' className='cursor-pointer hover:text-black hover:underline transition duration-300 '>Contact Us</NavLink>
+                <NavLink to='/' className='cursor-pointer  hover:underline transition duration-300' >Home</NavLink>
+                <NavLink to='/about' className='cursor-pointer  hover:underline transition duration-300 '>About us</NavLink>
+                <NavLink to='/delivery' className='cursor-pointer  hover:underline transition duration-300 '>Delivery</NavLink>
+                <NavLink to='/contact' className='cursor-pointer hover:underline focus:outline-none active:bg-transparent transition duration-300 '>Contact Us</NavLink>
             </ul>
         </div>
 

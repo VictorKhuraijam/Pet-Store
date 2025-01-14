@@ -9,50 +9,56 @@ const initialState = {
   products: [
     {
       _id: "1",
-      name: "Dog Food",
+      name: "Pedigree",
+      category: "Dog",
       image: [assets.dog_food],
       price: 15,
-      category: "Food",
+      type: "Food",
       bestseller: true
     },
     {
       _id: "2",
-      name: "Dog Toy",
+      name: "Thinganng",
+      category: "Dog",
       image: [assets.dog_toy],
       price: 10,
-      category: "Toys",
+      type: "Toys",
       bestseller: true
     },
     {
       _id: "3",
-      name: "Dog Accessory",
+      name: "Bowtie",
+      category: "Dog",
       image: [assets.dog_accessory],
       price: 50,
-      category: "Accessories",
+      type: "Accessories",
       bestseller: true
     },
     {
       _id: "4",
-      name: "Cat Food",
+      name: "Whiskas",
+      category: "Cat",
       image: [assets.cat_food],
       price: 15,
-      category: "Food",
+      type: "Food",
       bestseller: true
     },
     {
       _id: "5",
-      name: "Cat Toy",
+      name: "Houdong phanaba",
+      category: "Cat",
       image: [assets.cat_toy],
       price: 10,
-      category: "Toys",
+      type: "Toys",
       bestseller: true
     },
     {
       _id: "6",
-      name: "Cat Accessory",
+      name: "Collar",
+      category: "Cat",
       image: [assets.cat_accessory],
       price: 50,
-      category: "Accessories",
+      type: "Accessories",
       bestseller: false
     },
   ],

@@ -22,15 +22,20 @@ export const fetchCart = () => async (dispatch) => {
   }
 };
 
-export const addToCartAsync = (itemId, size) => async (dispatch) => {
+// Dummy AddToCart for Testing UI
+export const dummyAddToCart = (itemId) => (dispatch) => {
+  dispatch(addToCartFulfilled({ itemId }));
+};
+
+export const addToCart = (itemId) => async (dispatch) => {
   try {
     const response = await axios.post(
       `${backendUrl}/api/cart/add`,
-      { itemId, size },
+      { itemId },
       { withCredentials: true }
     );
     if (response.data.success) {
-      dispatch(addToCartFulfilled({ itemId, size }));
+      dispatch(addToCartFulfilled({ itemId}));
     } else {
       toast.error(response.data.message);
     }
@@ -39,15 +44,15 @@ export const addToCartAsync = (itemId, size) => async (dispatch) => {
   }
 };
 
-export const updateQuantityAsync = (itemId, size, quantity) => async (dispatch) => {
+export const updateQuantity = (itemId, size, quantity) => async (dispatch) => {
   try {
     const response = await axios.post(
       `${backendUrl}/api/cart/update`,
-      { itemId, size, quantity },
+      { itemId, quantity },
       { withCredentials: true }
     );
     if (response.data.success) {
-      dispatch(updateQuantityFulfilled({ itemId, size, quantity }));
+      dispatch(updateQuantityFulfilled({ itemId, quantity }));
     } else {
       toast.error(response.data.message);
     }
@@ -81,15 +86,16 @@ const cartSlice = createSlice({
       state.error = action.payload;
     },
     addToCartFulfilled: (state, action) => {
-      const { itemId, size } = action.payload;
-      if (!state.items[itemId]) {
-        state.items[itemId] = {};
-      }
-      state.items[itemId][size] = (state.items[itemId][size] || 0) + 1;
+      const { itemId} = action.payload;
+      state.items[itemId] = (state.items[itemId] || 0) + 1;
     },
     updateQuantityFulfilled: (state, action) => {
-      const { itemId, size, quantity } = action.payload;
-      state.items[itemId][size] = quantity;
+      const { itemId, quantity } = action.payload;
+      if (quantity > 0) {
+        state.items[itemId] = quantity;
+      } else {
+        delete state.items[itemId];
+      }
     },
     clearCart: (state) => {
       state.items = {};
@@ -103,11 +109,9 @@ export const getCartCount = (state) => {
   const cartItems = state.cart.items;
 
   for (const itemId in cartItems) {
-    for (const size in cartItems[itemId]) {
-      if (cartItems[itemId][size] > 0) {
-        totalCount += cartItems[itemId][size];
+      if (cartItems[itemId] > 0) {
+        totalCount += cartItems[itemId];
       }
-    }
   }
   return totalCount;
 };
@@ -118,13 +122,11 @@ export const selectCartAmount = (state) => {
   const products = state.shop.products;
 
   for (const itemId in cartItems) {
-    const itemInfo = products.find((product) => product._id === itemId);
-    if (itemInfo) {
-      for (const size in cartItems[itemId]) {
-        if (cartItems[itemId][size] > 0) {
-          totalAmount += itemInfo.price * cartItems[itemId][size];
-        }
-      }
+    const product = products.find((product) => product._id === itemId);
+    if (product && cartItems[itemId] > 0 ) {
+
+          totalAmount += product.price * cartItems[itemId];
+
     }
   }
   return totalAmount;

@@ -1,7 +1,6 @@
 import { Link, NavLink } from "react-router-dom";
 import { assets } from "../assets/assets";
 import { useState } from "react";
-import {setShowSearch} from '../store/shopSlice'
 import {logoutUser, resetUser} from '../store/userSlice'
 import {getCartCount} from '../store/cartSlice'
 import { useNavigate } from "react-router-dom";
@@ -50,7 +49,7 @@ function Navbar() {
       </ul>
 
       <div className='flex items-center gap-4 lg:gap-6'>
-            <img onClick={()=> { setShowSearch(true); navigate('/collection') }} src={assets.search_icon} className='w-5 cursor-pointer' alt="" />
+            {/* <img onClick={()=>  navigate('/collection') } src={assets.search_icon} className='w-5 cursor-pointer' alt="" /> */}
 
             <div className='group relative'>
                 <img onClick={()=> isAuthenticated ? null : navigate('/login') } className='w-5 cursor-pointer' src={assets.profile_icon} alt="" />

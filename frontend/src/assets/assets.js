@@ -15,7 +15,10 @@ import exchange_icon from './exchange_icon.png'
 import quality_icon from './quality_icon.png'
 import support_img from './support_img.png'
 import dropdown_icon from './dropdown_icon.png'
-
+import about_img from './about.jpg'
+import contact_us from './contact_us.jpg'
+import star_icon from './star_icon.png'
+import star_dull_icon from './star_dull_icon.png'
 
 export const assets = {
   logo,
@@ -34,5 +37,9 @@ export const assets = {
   exchange_icon,
   quality_icon,
   support_img,
-  dropdown_icon
+  dropdown_icon,
+  about_img,
+  contact_us,
+  star_icon,
+  star_dull_icon
 }

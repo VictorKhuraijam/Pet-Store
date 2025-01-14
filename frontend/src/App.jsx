@@ -1,5 +1,5 @@
 import { ToastContainer } from "react-toastify"
-import {Footer, NavBar, SearchBar} from './components/index.js'
+import {Footer, NavBar} from './components/index.js'
 import { Routes, Route } from "react-router-dom"
 import {About, Cart, Collection, Contact, Home, Login, Orders, PlaceOrder, Product} from './pages/index.js'
 
@@ -9,7 +9,7 @@ export const App = () => {
     <div className="px-4 sm:px-[5vw] md:px-[7vw] lg:px-[9vw]">
       <ToastContainer />
       <NavBar />
-      <SearchBar />
+
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/collection" element={<Collection />} />
