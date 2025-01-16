@@ -34,10 +34,11 @@ const Cart = () => {
     }
   }, [cartItems, products, dispatch])
 
-  const handleQuantityChange = (itemId, newQuantity) => {
-    if (newQuantity > 0) {
-      dispatch(updateDummyQuantity({ itemId, quantity: parseInt(newQuantity) }))
-    }
+  const handleQuantityChange = (itemId, value) => {
+
+    const newQuantity = Math.max(1, parseInt(value) || 1);
+      dispatch(updateDummyQuantity({ itemId, newQuantity }))
+
   }
 
   const handleRemoveItem = (itemId) => {
@@ -47,14 +48,18 @@ const Cart = () => {
   }
 
 
-  return (
+  return  (
     <div className='border-t pt-14'>
 
       <div className=' text-2xl mb-3'>
         <Title text1={'YOUR'} text2={'CART'} />
       </div>
 
-      <div>
+
+      {
+        cartData.length > 0 ? (
+          <>
+              <div>
         {
           cartData.map((item, index) => {
 
@@ -74,17 +79,38 @@ const Cart = () => {
                     </div>
                   </div>
                 </div>
-                <input
-                   onChange={(e) => {
-                    const value = e.target.value
-                    if (value && value !== '0') {
-                      handleQuantityChange(item._id, value)
-                    }
-                  }}
+                {/* <input
+                  //  onChange={(e) => {
+                  //   const value = e.target.value
+                  //   if (value && parseInt(value) > 0) {
+                  //     handleQuantityChange(item._id, parseInt(value))
+                  //   }
+                  //   //  e.target.value === '' || e.target.value === '0' ? null : handleQuantityChange(item._id, Number(e.target.value))
+                  // }}
+                  onClick={() => handleQuantityChange(item._id, item.quantity - 1)}
                   className='border max-w-10 sm:max-w-20 px-1 sm:px-2 py-1'
                   type="number"
                   min={1}
-                  value={item.quantity} />
+                  value={item.quantity}
+                /> */}
+                  <input
+                type="number"
+                min="1"
+                value={item.quantity}
+                onChange={(e) => handleQuantityChange(item._id, e.target.value)}
+                className='border max-w-10 sm:max-w-20 px-1 sm:px-2 py-1'
+                readOnly
+                onKeyDown={(e) => {
+                  // Only allow up and down arrow keys
+                  if (e.key === 'ArrowUp') {
+                    e.preventDefault();
+                    handleQuantityChange(item._id, item.quantity + 1);
+                  } else if (e.key === 'ArrowDown') {
+                    e.preventDefault();
+                    handleQuantityChange(item._id, item.quantity - 1);
+                  }
+                }}
+              />
                 <img
                   onClick={() => handleRemoveItem(item._id)}
                   // onClick={() => updateQuantity(item._id, item.size, 0)}
@@ -99,13 +125,30 @@ const Cart = () => {
       </div>
 
       <div className='flex justify-end my-20'>
-        <div className='w-full sm:w-[450px]'>
-          <CartTotal />
-          <div className=' w-full text-end'>
-            <button onClick={() => navigate('/place-order')} className='bg-black text-white text-sm my-8 px-8 py-3'>PROCEED TO CHECKOUT</button>
+          <div className='w-full sm:w-[450px]'>
+            <CartTotal />
+            <div className=' w-full text-end'>
+              <button onClick={() => navigate('/place-order')} className='bg-black text-white text-sm my-8 px-8 py-3'>PROCEED TO CHECKOUT</button>
+            </div>
           </div>
-        </div>
       </div>
+          </>
+        ) :  (
+          <div className="flex flex-col items-center justify-center py-20">
+          <p className="text-xl text-gray-600 mb-6">Your cart is empty</p>
+          <button
+            onClick={() => navigate('/collection')}
+            className="bg-black text-white px-6 py-2 hover:bg-gray-800 transition-colors"
+          >
+            SHOP NOW
+          </button>
+        </div>
+        )
+      }
+
+
+
+
 
     </div>
   )

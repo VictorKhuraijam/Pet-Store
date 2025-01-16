@@ -5,6 +5,7 @@ import axios from 'axios'
 import { toast } from 'react-toastify'
 import { useNavigate } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
+import {selectCartAmount} from '../store/cartSlice'
 
 const PlaceOrder = () => {
 
@@ -13,6 +14,7 @@ const PlaceOrder = () => {
 
     const products = useSelector((state) => state.shop.products)
     const cartItems = useSelector((state) => state.cart.items)
+    const CartAmount = useSelector(selectCartAmount)
 
     const [method, setMethod] = useState('cod');
 
@@ -86,45 +88,45 @@ const PlaceOrder = () => {
             let orderData = {
                 address: formData,
                 items: orderItems,
-                amount: getCartAmount() + delivery_fee
+                amount: CartAmount() + delivery_fee
             }
 
 
-            switch (method) {
+            // switch (method) {
 
-                // API Calls for COD
-                case 'cod':
-                    const response = await axios.post(backendUrl + '/api/order/place',orderData,{headers:{token}})
-                    if (response.data.success) {
-                        setCartItems({})
-                        navigate('/orders')
-                    } else {
-                        toast.error(response.data.message)
-                    }
-                    break;
+            //     // API Calls for COD
+            //     case 'cod':
+            //         const response = await axios.post(backendUrl + '/api/order/place',orderData,{headers:{token}})
+            //         if (response.data.success) {
+            //             setCartItems({})
+            //             navigate('/orders')
+            //         } else {
+            //             toast.error(response.data.message)
+            //         }
+            //         break;
 
-                case 'stripe':
-                    const responseStripe = await axios.post(backendUrl + '/api/order/stripe',orderData,{headers:{token}})
-                    if (responseStripe.data.success) {
-                        const {session_url} = responseStripe.data
-                        window.location.replace(session_url)
-                    } else {
-                        toast.error(responseStripe.data.message)
-                    }
-                    break;
+            //     case 'stripe':
+            //         const responseStripe = await axios.post(backendUrl + '/api/order/stripe',orderData,{headers:{token}})
+            //         if (responseStripe.data.success) {
+            //             const {session_url} = responseStripe.data
+            //             window.location.replace(session_url)
+            //         } else {
+            //             toast.error(responseStripe.data.message)
+            //         }
+            //         break;
 
-                case 'razorpay':
+            //     case 'razorpay':
 
-                    const responseRazorpay = await axios.post(backendUrl + '/api/order/razorpay', orderData, {headers:{token}})
-                    if (responseRazorpay.data.success) {
-                        initPay(responseRazorpay.data.order)
-                    }
+            //         const responseRazorpay = await axios.post(backendUrl + '/api/order/razorpay', orderData, {headers:{token}})
+            //         if (responseRazorpay.data.success) {
+            //             initPay(responseRazorpay.data.order)
+            //         }
 
-                    break;
+            //         break;
 
-                default:
-                    break;
-            }
+            //     default:
+            //         break;
+            // }
 
 
         } catch (error) {
