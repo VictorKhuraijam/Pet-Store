@@ -9,6 +9,7 @@ import NewsletterBox from './NewsLetterBox'
 import Title from './Title'
 import ProductItem from "./ProductItem";
 import RelatedProducts from './RelatedProducts'
+import CartTotal from "./CartTotal";
 
 export {
   NavBar,
@@ -21,5 +22,6 @@ export {
   NewsletterBox,
   Title,
   ProductItem,
-  RelatedProducts
+  RelatedProducts,
+  CartTotal
 }

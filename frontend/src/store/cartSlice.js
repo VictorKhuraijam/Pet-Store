@@ -44,7 +44,11 @@ export const addToCart = (itemId) => async (dispatch) => {
   }
 };
 
-export const updateQuantity = (itemId, size, quantity) => async (dispatch) => {
+export const updateDummyQuantity = (itemId, quantity) => async (dispatch) => {
+  dispatch(updateQuantityFulfilled({ itemId, quantity }));
+};
+
+export const updateQuantity = (itemId,  quantity) => async (dispatch) => {
   try {
     const response = await axios.post(
       `${backendUrl}/api/cart/update`,
@@ -105,6 +109,8 @@ const cartSlice = createSlice({
 
 // Selectors
 export const getCartCount = (state) => {
+  if (!state?.cart?.items) return 0;
+
   let totalCount = 0;
   const cartItems = state.cart.items;
 

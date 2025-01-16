@@ -19,6 +19,7 @@ import about_img from './about.jpg'
 import contact_us from './contact_us.jpg'
 import star_icon from './star_icon.png'
 import star_dull_icon from './star_dull_icon.png'
+import bin_icon from './bin_icon.png'
 
 export const assets = {
   logo,
@@ -41,5 +42,6 @@ export const assets = {
   about_img,
   contact_us,
   star_icon,
-  star_dull_icon
+  star_dull_icon,
+  bin_icon
 }

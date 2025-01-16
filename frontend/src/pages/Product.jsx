@@ -14,13 +14,12 @@ const Product = () => {
 
   const dispatch = useDispatch()
   const products = useSelector((state) => state.shop.products)
-  const currency = useSelector((state) => state.shop.currency) || '₹'
+  const currency =  '₹'
 
 
 
   useEffect(() => {
     dispatch(fetchProducts());
-
 
     products.map((item) => {
       if (item._id === productId) {
@@ -30,6 +29,16 @@ const Product = () => {
       }
     })
   }, [dispatch,productId,products])
+
+  const handleAddToCart = () => {
+    console.log('Adding product to cart:', {
+      productId: productData._id,
+      productName: productData.name,
+      price: productData.price
+    })
+    dispatch(dummyAddToCart(productData._id))
+    console.log('Cart action dispatched successfully')
+  }
 
   return productData ? (
     <div className='border-t-2 pt-10 transition-opacity ease-in duration-500 opacity-100'>
@@ -61,10 +70,10 @@ const Product = () => {
               <img src={assets.star_dull_icon} alt="" className="w-3 5" />
               {/* <p className='pl-2'>(122)</p> */}
           </div>
-          <p className='mt-5 text-3xl font-medium'>{currency}{productData.price}</p>
+          <p className='mt-5 text-3xl font-medium'>{currency} {}  {productData.price}</p>
           <p className='mt-5 text-gray-500 md:w-4/5'>{productData.description}</p>
 
-          <button onClick={()=>dummyAddToCart(productData._id)} className='bg-black text-white px-8 py-3 text-sm active:bg-gray-700'>ADD TO CART</button>
+          <button onClick={ handleAddToCart} className='bg-black text-white px-8 py-3 text-sm active:bg-gray-700'>ADD TO CART</button>
           <hr className='mt-8 sm:w-4/5' />
           <div className='text-sm text-gray-500 mt-5 flex flex-col gap-1'>
               <p>100% Original product.</p>

@@ -1,15 +1,15 @@
 import { Link, NavLink } from "react-router-dom";
 import { assets } from "../assets/assets";
-import { useState } from "react";
+import {  useState } from "react";
 import {logoutUser, resetUser} from '../store/userSlice'
-import {getCartCount} from '../store/cartSlice'
+import { getCartCount} from '../store/cartSlice'
 import { useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 
 function Navbar() {
     const navigate = useNavigate()
     const dispatch = useDispatch()
-    const cartCount = useSelector(getCartCount);
+    const cartCount = useSelector(getCartCount) || 0;
     // const isAuthenticated = useSelector((state) => state.setAuth);
 
     const isAuthenticated = true;
@@ -19,8 +19,9 @@ function Navbar() {
         logoutUser()
         dispatch(resetUser())
         navigate('/login')
-
     }
+
+
 
   return (
     <div className='flex items-center justify-between py-5 font-medium'>
@@ -64,9 +65,13 @@ function Navbar() {
                 </div>}
             </div>
             <Link to='/cart' className='relative'>
-                <img src={assets.cart_icon} className='w-5 min-w-5' alt="" />
-                <p className='absolute right-[-5px] bottom-[-5px] w-4 text-center leading-4 bg-black text-white aspect-square rounded-full text-[8px]'>{cartCount}</p>
-            </Link>
+                    <img src={assets.cart_icon} className='w-5 min-w-5' alt="" />
+                    {cartCount > 0 && (
+                        <p className='absolute right-[-5px] bottom-[-5px] w-4 text-center leading-4 bg-black text-white aspect-square rounded-full text-[8px]'>
+                            {cartCount}
+                        </p>
+                    )}
+             </Link>
             <img onClick={()=>setVisible(true)} src={assets.menu_icon} className='w-5 cursor-pointer sm:hidden' alt="" />
       </div>
 
