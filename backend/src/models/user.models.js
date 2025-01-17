@@ -1,12 +1,12 @@
 import mongoose from 'mongoose'
 import jwt from 'jsonwebtoken'
 import bcrypt from 'bcrypt'
+import validator from 'validator'
 
 const userSchema = new mongoose.Schema(
   {
     username: {
       type: String,
-      required: true,
       unique: true,
       lowercase: true,
     },
@@ -14,16 +14,38 @@ const userSchema = new mongoose.Schema(
       type: String,
       sparse: true,
       unique: true,
+      validate: [validator.isEmail, 'Invalid Email'],
       lowercase: true
+    },
+    isEmailVerified: {
+      type: Boolean,
+      default: false, // email verification status
     },
     phone: {
       type: String,
       sparse: true,
       unique: true,
     },
+    isPhoneVerified: {
+      type: Boolean,
+      default: false, // phone verification status
+    },
     password: {
       type: String,
-      required: true
+      required: function () {
+        // Password is required if the user is not using Google login.
+        return !this.isGoogleVerified;
+      },
+    },
+    image: {
+      url: {
+        type: String, // cloudinary url
+        required: true,
+      },
+      public_id: {
+        type: String, // cloudinary url
+        required: true,
+      }
     },
     cartData: {
       type: Object,
@@ -31,13 +53,21 @@ const userSchema = new mongoose.Schema(
     },
     refreshToken: {
       type: String
-    }
+    },
+    isGoogleVerified: {
+      type: Boolean,
+      default: false, // Google login status
+    },
+    googleId: {
+      type: String,
+      sparse: true,  // allows empty googleId for users using email/phone only
+    },
   },
   {timestamps: true}
 );
 
 userSchema.pre("save", async function(next){
-  if(!this.isModified("password")) return next();
+  if(!this.isModified("password") || !this.password) return next();
   try {
     this.password = await bcrypt.hash(this.password,10)
     next()
@@ -56,7 +86,6 @@ userSchema.methods.generateAccessToken = function(){
        _id: this._id,
        email: this.email,
        username: this.username,
-       fullName: this.fullName
      }, //payload
      process.env.ACCESS_TOKEN_SECRET,
      {
@@ -86,5 +115,24 @@ userSchema.methods.generateRefreshToken = function(){
  }
 }
 
+// Method to verify email (can be called when clicking the email verification link)
+userSchema.methods.verifyEmail = function () {
+  this.isEmailVerified = true;
+  return this.save();
+};
+
+// Method to verify phone (can be called when OTP is verified)
+userSchema.methods.verifyPhone = function () {
+  this.isPhoneVerified = true;
+  return this.save();
+};
+
+// Method to handle Google login (sets googleId and email verification if applicable)
+userSchema.methods.googleLogin = function (googleId, email) {
+  this.googleId = googleId;
+  this.isGoogleVerified = true;
+  this.email = email;  // If the user logs in via Google, email is updated.
+  return this.save();
+};
 
 export const User = mongoose.model("User", userSchema)
