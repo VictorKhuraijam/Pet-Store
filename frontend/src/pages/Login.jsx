@@ -5,10 +5,49 @@ import { toast } from 'react-toastify';
 const Login = () => {
 
   const [currentState, setCurrentState] = useState('Login');
- 
+
   const [name,setName] = useState('')
   const [password,setPasword] = useState('')
   const [email,setEmail] = useState('')
+  const [loginType, setLoginType] = useState('email');
+
+  /*
+
+const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    const formData = {
+        name: nameInput,
+        password: passwordInput,
+        loginType: loginType, // This is automatically included based on user's choice
+        ...(loginType === 'email' ? { email: emailInput } : { phone: phoneInput })
+    };
+
+    await axios.post('/api/register', formData);
+};
+
+return (
+    <div>
+        <div className="tabs">
+            <button onClick={() => setLoginType('email')}>Register with Email</button>
+            <button onClick={() => setLoginType('phone')}>Register with Phone</button>
+        </div>
+
+        <form onSubmit={handleSubmit}>
+            <input type="text" placeholder="Name" />
+
+            {loginType === 'email' ? (
+                <input type="email" placeholder="Email" />
+            ) : (
+                <input type="tel" placeholder="Phone" />
+            )}
+
+            <input type="password" placeholder="Password" />
+            <button type="submit">Register</button>
+        </form>
+    </div>
+);
+  */
 
   const onSubmitHandler = async (event) => {
       event.preventDefault();
