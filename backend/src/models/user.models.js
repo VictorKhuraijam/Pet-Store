@@ -36,23 +36,7 @@ const userSchema = new mongoose.Schema(
         // Password is required if the user is not using Google login.
         return !this.isGoogleVerified;
       },
-    },
-    image: {
-      url: {
-        type: String, // cloudinary url
-        required: true,
-      },
-      public_id: {
-        type: String, // cloudinary url
-        required: true,
-      }
-    },
-    cartData: {
-      type: Object,
-      default: {}
-    },
-    refreshToken: {
-      type: String
+      minlength: [8, 'Password must be at least 8 characters long']
     },
     isGoogleVerified: {
       type: Boolean,
@@ -61,6 +45,26 @@ const userSchema = new mongoose.Schema(
     googleId: {
       type: String,
       sparse: true,  // allows empty googleId for users using email/phone only
+    },
+    loginType: {
+      type: String,
+      enum: ["email", "phone", "google"],
+      required: true
+    },
+    image:  {
+      url: {
+        type: String, // Cloudinary URL
+      },
+      public_id: {
+        type: String, // Cloudinary public ID
+      },
+    },
+    cartData: {
+      type: Object,
+      default: {}
+    },
+    refreshToken: {
+      type: String
     },
   },
   {timestamps: true}
