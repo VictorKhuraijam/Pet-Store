@@ -13,8 +13,10 @@ const googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
 
 const options = {
-    httpOnly: true,
-    secure: true
+    httpOnly: true,// Prevents JavaScript access to the cookie, reducing XSS risks
+    secure: true,//Ensures the cookie is sent only over HTTPS connections.
+    sameSite: "Strict" // Prevents the cookie from being sent with cross-site requests (mitigates CSRF(Cross Site Request Forgery ) attacks)
+
   }
 
 const generateAccessTokenAndRefreshToken = async (userId) => {
@@ -38,36 +40,6 @@ try {
 } catch (error) {
     throw new ApiError(500, "Something went wrong while generating access and refresh token")
 }
-}
-
-// Route for user login
-const loginUser = async (req, res) => {
-    try {
-
-        const { email, password } = req.body;
-
-        const user = await userModel.findOne({ email });
-
-        if (!user) {
-            return res.json({ success: false, message: "User doesn't exists" })
-        }
-
-        const isMatch = await bcrypt.compare(password, user.password);
-
-        if (isMatch) {
-
-            const token = createToken(user._id)
-            res.json({ success: true, token })
-
-        }
-        else {
-            res.json({ success: false, message: 'Invalid credentials' })
-        }
-
-    } catch (error) {
-        console.log(error);
-        res.json({ success: false, message: error.message })
-    }
 }
 
 // Route for user register
@@ -108,29 +80,45 @@ const registerUserWithEmailOrPhone = asyncHandler(async (req, res) => {
     if (password.length < 8) {
         throw new ApiError(400, "Password must be at least 8 characters");
     }
-    const salt = await bcrypt.genSalt(10);
-    const hashedPassword = await bcrypt.hash(password, salt);
+
+    let imageLocalPath;
+    if(req.files && Array.isArray(req.files.image) && req.files. image.length > 0){
+        imageLocalPath = req.files.image[0].path
+    }
+
+    const image = await uploadOnCloudinary(imageLocalPath)
 
     // Create the user
-    const newUser = await User.create({
-        name,
+    const user = await User.create({
+        username,
         email: email?.toLowerCase(),
         phone,
-        password: hashedPassword,
+        password,
+        ...(image && {
+            image:{
+                url: image.url,
+                public_id: image.public_id
+            }
+        }),
         loginType,
     });
 
-    if (!newUser) {
+     //remove password and refresh Token from response
+     const createdUser = await User.findById(user._id).select(
+    '-password -refreshToken -image.public_id'
+     )
+
+    if (!createdUser) {
         throw new ApiError(500, "Error while registering user");
     }
 
-    // Respond with the user details (excluding sensitive fields)
-    const createdUser = await User.findById(newUser._id).select(
-        "-password -refreshToken"
-    );
-
-    return res.status(201).json(
-        new ApiResponse(201, createdUser, "User registered successfully")
+    return res
+    .status(201)
+    .json(
+        new ApiResponse(
+            201,
+            createdUser,
+            "User registered successfully")
     );
 });
 
@@ -162,33 +150,19 @@ const registerUserWithGoogle = asyncHandler(async (req, res) => {
     }
 
     // Handle avatar upload if provided in Google data
-    let avatarUrl = picture;
-    let avatarPublicId;
-
-    if (req.files?.avatar) {
-        const avatarLocalPath = req.files.avatar[0].path;
-        const avatar = await uploadOnCloudinary(avatarLocalPath);
-
-        if (!avatar) {
-            throw new ApiError(500, "Error while uploading avatar");
-        }
-
-        avatarUrl = avatar.url;
-        avatarPublicId = avatar.public_id;
-    }
+    let imageUrl = picture;
 
     // Create the user
     const newUser = await User.create({
         name,
         email: email.toLowerCase(),
         loginType: "google",
-        avatar: avatarUrl
+        image: imageUrl
             ? {
-                  url: avatarUrl,
-                  public_id: avatarPublicId,
+                  url: imageUrl,
               }
             : undefined,
-        isEmailVerified: true, // Google login implies verified email
+        isGoogleVerified: true, // Google login implies verified email
     });
 
     if (!newUser) {
@@ -197,33 +171,138 @@ const registerUserWithGoogle = asyncHandler(async (req, res) => {
 
     // Respond with the user details (excluding sensitive fields)
     const createdUser = await User.findById(newUser._id).select(
-        "-password -refreshToken -avatar.public_id"
+        "-password -refreshToken "
     );
 
-    return res.status(201).json(
-        new ApiResponse(201, createdUser, "User registered successfully")
+    return res
+        .status(201)
+        .json(
+        new ApiResponse(
+                201,
+                createdUser,
+                "User registered successfully"
+            )
     );
 });
 
+// Route for user login
+const loginUser = asyncHandler(async (req, res) => {
+
+
+    const { email, phone,  password } = req.body;
+
+    if(!(phone || email)){
+        throw new ApiError(400,"Username or phone number is required")
+        }
+
+    const user = await User.findOne({
+        $or: [
+            { email: email?.toLowerCase() },
+            { phone },
+        ],
+    });
+
+    if (!user) {
+        throw new ApiError(404, "User does not exits")
+    }
+
+    const isPasswordCorrect = await user.isPasswordCorrect(password)
+
+    if(!isPasswordCorrect){
+        throw new ApiError(401, "Password is incorrect")
+    }
+
+    const {accessToken, refreshToken} = await generateAccessTokenAndRefreshToken(user._id)
+
+    const loggedInUser = await User.findById(user._id).select("-password -refreshToken -image.public_id")
+
+    return res
+    .status(200)
+    .cookie("accessToken", accessToken, options) //can be read but only accessable from server
+    .cookie("refreshToken", refreshToken, options)
+    .json(
+      new ApiResponse(
+        200,
+        {
+          user: loggedInUser,
+          accessToken,
+          refreshToken
+        },//for cases when user want to save access and refresh token on local storage etc
+        "User logged in successfully"
+      )
+    )
+
+})
+
+const logoutUser = asyncHandler(async (req, res) => {
+    await User.findByIdAndUpdate(
+      req.user._id,
+      {
+        $unset: { refreshToken: "" }
+      },
+        {
+          new: true // Ensures the updated user document is returned
+        }
+    )
+
+    return res
+    .status(200)
+    .clearCookie("accessToken", options)
+    .clearCookie("refreshToken", options)
+    .json(new ApiResponse(200, {}, "User logged Out"))
+})
+
 
 // Route for admin login
-const adminLogin = async (req, res) => {
-    try {
+const adminLogin = asyncHandler(async (req, res) => {
 
         const {email,password} = req.body
 
-        if (email === process.env.ADMIN_EMAIL && password === process.env.ADMIN_PASSWORD) {
-            const token = jwt.sign(email+password,process.env.JWT_SECRET);
-            res.json({success:true,token})
-        } else {
-            res.json({success:false,message:"Invalid credentials"})
+        if (!email || !password) {
+            throw new ApiError(400, "Email and password are required");
         }
 
-    } catch (error) {
-        console.log(error);
-        res.json({ success: false, message: error.message })
-    }
-}
+        if (email !== process.env.ADMIN_EMAIL || password !== process.env.ADMIN_PASSWORD) {
+            throw new ApiError(400, "Invalid email or password")
+        }
+
+        const token = jwt.sign(
+            email+password,
+            process.env.JWT_SECRET,
+            { expiresIn: '24h'}
+        );
+
+        return res
+        .status(200)
+        .cookie("token",token, options)
+        .json(new ApiResponse(
+            200,
+            {token},
+            "Admin logged in sccessfully"
+        ))
+
+})
+
+const adminLogout = asyncHandler(async (req, res) => {
+    res
+    .status(200)
+    .clearCookie("token", options)
+    .json(
+        new ApiResponse(
+            200,
+            null,
+            "Admin logged out successfully"
+        )
+    )
+})
 
 
-export { loginUser, registerUser, adminLogin }
+
+export {
+    loginUser,
+    logoutUser,
+    registerUserWithEmailOrPhone,
+    registerUserWithGoogle,
+    adminLogin,
+    adminLogout
+ }
