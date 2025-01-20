@@ -1,8 +1,14 @@
 import {Router} from 'express'
-import {upload} from '../middlewares/multer.middleware.js'
+import {upload} from '../middleware/multer.middleware.js'
 import { verifyJWT } from "../middlewares/auth.middleware.js";
 import {
   registerUserWithEmailOrPhone,
+  registerUserWithGoogle,
+  resendEmailVerification,
+  verifyEmail,
+  verifyOTP,
+  resendOTP
+
 
 } from '../controllers/user.controller.js'
 

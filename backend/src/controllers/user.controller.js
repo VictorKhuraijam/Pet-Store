@@ -409,13 +409,7 @@ const verifyEmail = asyncHandler(async (req, res) => {
     user.emailVerificationExpires = undefined;
     await user.save({ validateBeforeSave: false });
 
-    // Generate tokens for automatic login after verification
-    const accessToken = user.generateAccessToken();
-    const refreshToken = user.generateRefreshToken();
-
-    // Update refresh token in database
-    user.refreshToken = refreshToken;
-    await user.save({ validateBeforeSave: false });
+    const {accessToken, refreshToken} = await generateAccessTokenAndRefreshToken(user._id)
 
      // Get user data without sensitive fields
     const verifiedUser = await User.findById(user._id).select(
@@ -424,7 +418,7 @@ const verifyEmail = asyncHandler(async (req, res) => {
 
     return res
     .status(200)
-    .cookie("accessToken", accessToken, options) 
+    .cookie("accessToken", accessToken, options)
     .cookie("refreshToken", refreshToken, options)
     .json(
         new ApiResponse(
@@ -534,7 +528,7 @@ const verifyPhone = asyncHandler(async (req, res) => {
 
 // Resend phone OTP
 const resendPhoneOTP = asyncHandler(async (req, res) => {
-    const userId = req.user._id; // Assuming you have authentication middleware
+    const userId = req.user._id;
     const user = await User.findById(userId);
 
     if (!user) {
@@ -545,10 +539,22 @@ const resendPhoneOTP = asyncHandler(async (req, res) => {
         throw new ApiError(400, "Phone already verified");
     }
 
+    // Check if we've sent an OTP recently
+    if (user.phoneVerificationExpires && user.phoneVerificationExpires > Date.now()) {
+        const waitTime = Math.ceil((user.phoneVerificationExpires - Date.now()) / 1000);
+        throw new ApiError(429, `Please wait ${waitTime} seconds before requesting another OTP`);
+    }
+
     await sendOTP(user);
 
-    return res.status(200).json(
-        new ApiResponse(200, {}, "OTP sent successfully")
+    return res
+    .status(200)
+    .json(
+        new ApiResponse(
+            200,
+            {},
+            "OTP sent successfully"
+        )
     );
 });
 
@@ -607,6 +613,8 @@ export {
     getCurrentUser,
     verifyEmail,
     resendEmailVerification,
+    verifyPhone,
+    resendPhoneOTP,
     adminLogin,
     adminLogout
  }
