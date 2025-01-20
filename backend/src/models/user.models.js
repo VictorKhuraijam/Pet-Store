@@ -21,6 +21,14 @@ const userSchema = new mongoose.Schema(
       type: Boolean,
       default: false, // email verification status
     },
+    emailVerificationToken: {
+      type: String,
+      sparse: true
+    },
+    emailVerificationExpires: {
+      type: Date,
+      sparse: true
+    },
     phone: {
       type: String,
       sparse: true,
@@ -30,6 +38,18 @@ const userSchema = new mongoose.Schema(
       type: Boolean,
       default: false, // phone verification status
     },
+    phoneVerificationOTP: {
+      type: String,
+      sparse: true
+    },
+    phoneVerificationExpires: {
+        type: Date,
+        sparse: true
+    },
+    otpAttempts: {
+        type: Number,
+        default: 0
+    },
     password: {
       type: String,
       required: function () {
@@ -38,26 +58,18 @@ const userSchema = new mongoose.Schema(
       },
       minlength: [8, 'Password must be at least 8 characters long']
     },
-    isGoogleVerified: {
-      type: Boolean,
-      default: false, // Google login status
-    },
-    googleId: {
-      type: String,
-      sparse: true,  // allows empty googleId for users using email/phone only
-    },
+    // isGoogleVerified: {
+    //   type: Boolean,
+    //   default: false, // Google login status
+    // },
+    // googleId: {
+    //   type: String,
+    //   sparse: true,  // allows empty googleId for users using email/phone only
+    // },
     loginType: {
       type: String,
       enum: ["email", "phone", "google"],
       required: true
-    },
-    image:  {
-      url: {
-        type: String, // Cloudinary URL
-      },
-      public_id: {
-        type: String, // Cloudinary public ID
-      },
     },
     cartData: {
       type: Object,

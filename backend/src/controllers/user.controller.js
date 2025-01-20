@@ -2,14 +2,39 @@ import validator from "validator";
 import {asyncHandler} from '../utils/asyncHandler.js'
 import {ApiError} from '../utils/ApiError.js'
 import {User} from '../models/user.model.js'
-import {deleteFromCloudinary, uploadOnCloudinary} from '../utils/cloudinary.js'
 import {ApiResponse} from '../utils/ApiResponse.js'
 import jwt from 'jsonwebtoken'
-import mongoose from 'mongoose'
-import bcrypt from "bcrypt";
 import { OAuth2Client } from "google-auth-library";
+import crypto from 'crypto';
+import nodemailer from 'nodemailer';
+import twilio from 'twilio';
 
-const googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
+// const googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
+
+// Configure email transporter
+const emailTransporter = nodemailer.createTransport({
+    service: process.env.EMAIL_SERVICE, // e.g., 'gmail'
+    auth: {
+        user: process.env.EMAIL_USERNAME,
+        pass: process.env.EMAIL_PASSWORD
+    }
+});
+
+// Configure Twilio client
+const twilioClient = twilio(
+    process.env.TWILIO_ACCOUNT_SID,
+    process.env.TWILIO_AUTH_TOKEN
+);
+
+// Generate verification token
+const generateVerificationToken = () => {
+    return crypto.randomBytes(32).toString("hex");
+};
+
+// Generate OTP
+const generateOTP = () => {
+    return Math.floor(100000 + Math.random() * 900000).toString();
+};
 
 
 const options = {
@@ -44,7 +69,7 @@ try {
 
 // Route for user register
 const registerUserWithEmailOrPhone = asyncHandler(async (req, res) => {
-    const { name, email, phone, password, loginType } = req.body;
+    const { username, email, phone, password, loginType } = req.body;
 
     // Validate input for email or phone registration
     if (loginType === "email") {
@@ -81,35 +106,29 @@ const registerUserWithEmailOrPhone = asyncHandler(async (req, res) => {
         throw new ApiError(400, "Password must be at least 8 characters");
     }
 
-    let imageLocalPath;
-    if(req.files && Array.isArray(req.files.image) && req.files. image.length > 0){
-        imageLocalPath = req.files.image[0].path
-    }
-
-    const image = await uploadOnCloudinary(imageLocalPath)
-
     // Create the user
     const user = await User.create({
         username,
         email: email?.toLowerCase(),
         phone,
         password,
-        ...(image && {
-            image:{
-                url: image.url,
-                public_id: image.public_id
-            }
-        }),
         loginType,
     });
 
      //remove password and refresh Token from response
      const createdUser = await User.findById(user._id).select(
-    '-password -refreshToken -image.public_id'
+    '-password -refreshToken '
      )
 
     if (!createdUser) {
         throw new ApiError(500, "Error while registering user");
+    }
+
+     // Send verification based on login type
+     if (loginType === "email") {
+        await sendVerificationEmail(user);
+    } else if (loginType === "phone") {
+        await sendOTP(user);
     }
 
     return res
@@ -252,6 +271,286 @@ const logoutUser = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, {}, "User logged Out"))
 })
 
+const refreshAccessToken = asyncHandler(async(req, res) => {
+    const incomingRefreshToken = req.cookies.refreshToken || req.body.refreshToken
+
+    if(!incomingRefreshToken){
+      throw new ApiError(401, "Unauthorized request")
+    }
+
+    try {
+      const decodedToken = jwt.verify(
+        incomingRefreshToken,
+        process.env.REFRESH_TOKEN_SECRET
+      )
+
+      const user = await User.findById(decodedToken?._id)
+
+      if(!user){
+        throw new ApiError(401, "Invalid refresh token")
+      }
+
+      if(incomingRefreshToken !== user?.refreshToken){
+        throw new ApiError(401, "Refresh Token is expired or used")
+      }
+
+      const {accessToken, refreshToken} = await generateAccessTokenAndRefreshToken(user._id)
+
+
+
+      return res
+      .status(200)
+      .cookie("accessToken", accessToken, options)
+      .cookie("refreshToken", refreshToken, options)
+      .json(
+        new ApiResponse(
+          200,
+          {
+            accessToken,
+            refreshToken
+          },
+          "Access token refreshed"
+        )
+      )
+    } catch (error) {
+      throw new ApiError(401, error?.message || "Invalid refresh token")
+    }
+
+})
+
+const changeCurrentPassword = asyncHandler(async(req, res) => {
+    const {oldPassword, newPassword, confirmPassword} = req.body
+
+    const user = await User.findById(req.user?._id)
+    const isPasswordCorrect = await user.isPasswordCorrect(oldPassword)
+
+    if (!isPasswordCorrect) {
+      throw new ApiError(400, "Invalid password")
+    }
+
+    if(newPassword !== confirmPassword){
+      throw new ApiError(400, "New password does not match with confirm password")
+    }
+
+    user.password = confirmPassword
+    await user.save({validateBeforeSave: false})
+
+    return res
+    .status(200)
+    .json(
+      new ApiResponse(200, {}, "Password changed successfully")
+    )
+})
+
+const getCurrentUser = asyncHandler(async(req, res) => {
+return res
+.status(200)
+.json(new ApiResponse(200, req.user, "Current user fetched successfully"))
+})
+
+//Email and Phone Verification
+// Send verification email
+const sendVerificationEmail = asyncHandler(async (user) => {
+    const verificationToken = generateVerificationToken();
+
+    // Save token to user
+    user.emailVerificationToken = verificationToken;
+    user.emailVerificationExpires = new Date(Date.now() + 2 * 60 * 60 * 1000);
+    await user.save({ validateBeforeSave: false });
+
+    const verificationUrl = `${process.env.FRONTEND_URL}/verify-email/${verificationToken}`;
+
+    const mailOptions = {
+        from: process.env.EMAIL_FROM,
+        to: user.email,
+        subject: 'Verify Your Email - Account Registration',
+        html: `
+                <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+                    <h1 style="color: #333;">Verify Your Email</h1>
+                    <p>Hello ${user.username},</p>
+                    <p>Thank you for registering. Please click the button below to verify your email address:</p>
+                    <div style="margin: 30px 0;">
+                        <a href="${verificationUrl}"
+                           style="background-color: #007bff; color: white; padding: 12px 24px;
+                                  text-decoration: none; border-radius: 4px; display: inline-block;">
+                            Verify Email
+                        </a>
+                    </div>
+                    <p>This link will expire in 2 hours for security reasons.</p>
+                    <p style="color: #666; margin-top: 20px;">
+                        If you didn't create an account, you can safely ignore this email.
+                    </p>
+                    <p style="color: #666; font-size: 12px;">
+                        If the button doesn't work, copy and paste this link into your browser:<br>
+                        ${verificationUrl}
+                    </p>
+                </div>
+        `
+    };
+
+    await emailTransporter.sendMail(mailOptions);
+});
+
+// Verify email
+const verifyEmail = asyncHandler(async (req, res) => {
+    const { token } = req.params;
+
+    const user = await User.findOne({
+        emailVerificationToken: token,
+        emailVerificationExpires: { $gt: Date.now() } //greater than
+    });
+
+    if (!user) {
+        throw new ApiError(400, "Invalid or expired verification token");
+    }
+
+    user.isEmailVerified = true;
+    user.emailVerificationToken = undefined;
+    user.emailVerificationExpires = undefined;
+    await user.save({ validateBeforeSave: false });
+
+    // Generate tokens for automatic login after verification
+    const accessToken = user.generateAccessToken();
+    const refreshToken = user.generateRefreshToken();
+
+    // Update refresh token in database
+    user.refreshToken = refreshToken;
+    await user.save({ validateBeforeSave: false });
+
+     // Get user data without sensitive fields
+    const verifiedUser = await User.findById(user._id).select(
+        "-password -refreshToken -emailVerificationToken -emailVerificationExpires"
+    );
+
+    return res
+    .status(200)
+    .cookie("accessToken", accessToken, options) 
+    .cookie("refreshToken", refreshToken, options)
+    .json(
+        new ApiResponse(
+            200,
+            {
+                user: verifiedUser,
+                accessToken,
+                refreshToken
+            },
+            "Email verified successfully")
+    );
+});
+
+// Resend email verification
+const resendEmailVerification = asyncHandler(async (req, res) => {
+    const userId = req.user._id;
+    const user = await User.findById(userId);
+
+    if (!user) {
+        throw new ApiError(404, "User not found");
+    }
+
+    if (user.isEmailVerified) {
+        throw new ApiError(400, "Email already verified");
+    }
+
+    // Check if we've sent a verification email recently
+    if (user.emailVerificationExpires && user.emailVerificationExpires > Date.now()) {
+        const waitTime = Math.ceil((user.emailVerificationExpires - Date.now()) / 1000 / 60);
+        throw new ApiError(429, `Please wait ${waitTime} minutes before requesting another verification email`);
+    }
+
+    await sendVerificationEmail(user);
+
+    return res
+    .status(200)
+    .json(
+        new ApiResponse(
+            200,
+            {},
+            "Verification email sent successfully"
+        )
+    );
+});
+
+// Send OTP via SMS
+const sendOTP = asyncHandler(async (user) => {
+    const otp = generateOTP();
+
+    // Save OTP to user
+    user.phoneVerificationOTP = otp;
+    user.phoneVerificationExpires = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
+    await user.save({ validateBeforeSave: false });
+
+    await twilioClient.messages.create({
+        body: `Your verification code is: ${otp}. Valid for 10 minutes.`,
+        to: user.phone,
+        from: process.env.TWILIO_PHONE_NUMBER
+    });
+});
+
+// Verify phone OTP
+const verifyPhone = asyncHandler(async (req, res) => {
+    const { otp } = req.body;
+    const userId = req.user._id;
+
+    const user = await User.findOne({
+        _id: userId,
+        phoneVerificationOTP: otp,
+        phoneVerificationExpires: { $gt: Date.now() }
+    });
+
+    if (!user) {
+        throw new ApiError(400, "Invalid or expired OTP");
+    }
+
+    user.isPhoneVerified = true;
+    user.phoneVerificationOTP = undefined;
+    user.phoneVerificationExpires = undefined;
+    await user.save({ validateBeforeSave: false });
+
+    // Generate new tokens
+
+    const {accessToken, refreshToken} = await generateAccessTokenAndRefreshToken(user._id)
+
+    // Get user data without sensitive fields
+    const verifiedUser = await User.findById(user._id).select(
+        "-password -refreshToken -phoneVerificationOTP -phoneVerificationExpires -otpAttempts"
+    );
+
+    return res
+    .status(200)
+    .cookie("accessToken", accessToken, options)
+    .cookie("refreshToken", refreshToken, options)
+    .json(
+        new ApiResponse(
+            200,
+            {
+                user: verifiedUser,
+                accessToken,
+                refreshToken
+            },
+            "Phone number verified successfully"
+        )
+    );
+});
+
+// Resend phone OTP
+const resendPhoneOTP = asyncHandler(async (req, res) => {
+    const userId = req.user._id; // Assuming you have authentication middleware
+    const user = await User.findById(userId);
+
+    if (!user) {
+        throw new ApiError(404, "User not found");
+    }
+
+    if (user.isPhoneVerified) {
+        throw new ApiError(400, "Phone already verified");
+    }
+
+    await sendOTP(user);
+
+    return res.status(200).json(
+        new ApiResponse(200, {}, "OTP sent successfully")
+    );
+});
 
 // Route for admin login
 const adminLogin = asyncHandler(async (req, res) => {
@@ -303,6 +602,11 @@ export {
     logoutUser,
     registerUserWithEmailOrPhone,
     registerUserWithGoogle,
+    refreshAccessToken,
+    changeCurrentPassword,
+    getCurrentUser,
+    verifyEmail,
+    resendEmailVerification,
     adminLogin,
     adminLogout
  }

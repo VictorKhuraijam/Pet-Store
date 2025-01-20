@@ -1,7 +1,10 @@
 import {Router} from 'express'
 import {upload} from '../middlewares/multer.middleware.js'
 import { verifyJWT } from "../middlewares/auth.middleware.js";
-import {registerUserWithEmailOrPhone, registerUserWithGoogle} from '../controllers/user.controller.js'
+import {
+  registerUserWithEmailOrPhone,
+
+} from '../controllers/user.controller.js'
 
 
 const router = Router()
@@ -15,6 +18,15 @@ router.route('/register')
   upload.single("image"),
   registerUserWithGoogle
 )
+
+router.route('/verify-email/:token ').get(verifyEmail);
+router.route("/resend-verification").post(
+  verifyJWT,
+  resendEmailVerification
+);
+
+router.route("/verify-phone").post( verifyJWT, verifyOTP);
+router.route("/resend-otp").post( verifyJWT, resendOTP);
 
 
 export default router
