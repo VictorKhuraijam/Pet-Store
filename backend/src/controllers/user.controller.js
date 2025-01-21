@@ -71,6 +71,7 @@ try {
 const registerUserWithEmailOrPhone = asyncHandler(async (req, res) => {
     const { username, email, phone, password, loginType } = req.body;
 
+
     // Validate input for email or phone registration
     if (loginType === "email") {
         if (!email || !password) {
@@ -91,19 +92,21 @@ const registerUserWithEmailOrPhone = asyncHandler(async (req, res) => {
     }
 
     // Check if the user already exists
-    const existingUser = await User.findOne({
-        $or: [
-            { email: email?.toLowerCase() },
-            { phone },
-        ],
-    });
-    if (existingUser) {
-        throw new ApiError(409, "User already exists");
+    let existingUser;
+    if (loginType === "email") {
+        existingUser = await User.findOne({ email: email.toLowerCase() });
+        console.log("Checking email existence:", { email: email.toLowerCase() });
     }
 
-    // Hash the password
-    if (password.length < 8) {
-        throw new ApiError(400, "Password must be at least 8 characters");
+    if (loginType === "phone")  {
+        existingUser = await User.findOne({ phone });
+        console.log("Checking phone existence:", { phone });
+    }
+
+    console.log("Existing user:", existingUser);
+
+    if (existingUser) {
+        throw new ApiError(409, "User already exists");
     }
 
     // Create the user
@@ -113,7 +116,12 @@ const registerUserWithEmailOrPhone = asyncHandler(async (req, res) => {
         phone,
         password,
         loginType,
+        emailVerificationTimestamp: Date.now(),
     });
+
+    if (!user) {
+        throw new ApiError(500, "Error while registering user");
+    }
 
      //remove password and refresh Token from response
      const createdUser = await User.findById(user._id).select(
@@ -126,9 +134,9 @@ const registerUserWithEmailOrPhone = asyncHandler(async (req, res) => {
 
      // Send verification based on login type
      if (loginType === "email") {
-        await sendVerificationEmail(user);
+        await  sendVerificationEmail(user);
     } else if (loginType === "phone") {
-        await sendOTP(user);
+         sendOTP(user);
     }
 
     return res
@@ -141,68 +149,6 @@ const registerUserWithEmailOrPhone = asyncHandler(async (req, res) => {
     );
 });
 
-const registerUserWithGoogle = asyncHandler(async (req, res) => {
-    const { googleAccessToken } = req.body;
-
-    if (!googleAccessToken) {
-        throw new ApiError(400, "Google access token is required");
-    }
-
-    // Verify Google token
-    let googleData;
-    try {
-        const ticket = await googleClient.verifyIdToken({
-            idToken: googleAccessToken,
-            audience: process.env.GOOGLE_CLIENT_ID,
-        });
-        googleData = ticket.getPayload();
-    } catch (error) {
-        throw new ApiError(400, "Invalid Google token");
-    }
-
-    const { email, name, picture } = googleData;
-
-    // Check if the user already exists
-    const existingUser = await User.findOne({ email: email.toLowerCase() });
-    if (existingUser) {
-        throw new ApiError(409, "User already exists");
-    }
-
-    // Handle avatar upload if provided in Google data
-    let imageUrl = picture;
-
-    // Create the user
-    const newUser = await User.create({
-        name,
-        email: email.toLowerCase(),
-        loginType: "google",
-        image: imageUrl
-            ? {
-                  url: imageUrl,
-              }
-            : undefined,
-        isGoogleVerified: true, // Google login implies verified email
-    });
-
-    if (!newUser) {
-        throw new ApiError(500, "Error while registering user");
-    }
-
-    // Respond with the user details (excluding sensitive fields)
-    const createdUser = await User.findById(newUser._id).select(
-        "-password -refreshToken "
-    );
-
-    return res
-        .status(201)
-        .json(
-        new ApiResponse(
-                201,
-                createdUser,
-                "User registered successfully"
-            )
-    );
-});
 
 // Route for user login
 const loginUser = asyncHandler(async (req, res) => {
@@ -211,7 +157,7 @@ const loginUser = asyncHandler(async (req, res) => {
     const { email, phone,  password } = req.body;
 
     if(!(phone || email)){
-        throw new ApiError(400,"Username or phone number is required")
+        throw new ApiError(400,"Email or phone number is required")
         }
 
     const user = await User.findOne({
@@ -225,6 +171,15 @@ const loginUser = asyncHandler(async (req, res) => {
         throw new ApiError(404, "User does not exits")
     }
 
+    if (!user.isEmailVerified) {
+        await sendVerificationEmail(user);
+
+        throw new ApiError(
+            401,
+            "Please verify your email before logging in. A new verification email has been sent to your email address."
+        );
+    }
+
     const isPasswordCorrect = await user.isPasswordCorrect(password)
 
     if(!isPasswordCorrect){
@@ -233,7 +188,7 @@ const loginUser = asyncHandler(async (req, res) => {
 
     const {accessToken, refreshToken} = await generateAccessTokenAndRefreshToken(user._id)
 
-    const loggedInUser = await User.findById(user._id).select("-password -refreshToken -image.public_id")
+    const loggedInUser = await User.findById(user._id).select("-password -refreshToken -emailVerificationExpires -emailVerificationToken")
 
     return res
     .status(200)
@@ -350,21 +305,22 @@ return res
 
 //Email and Phone Verification
 // Send verification email
-const sendVerificationEmail = asyncHandler(async (user) => {
-    const verificationToken = generateVerificationToken();
+const sendVerificationEmail = async (user) => {
+    try {
+        const verificationToken = generateVerificationToken();
 
-    // Save token to user
-    user.emailVerificationToken = verificationToken;
-    user.emailVerificationExpires = new Date(Date.now() + 2 * 60 * 60 * 1000);
-    await user.save({ validateBeforeSave: false });
+        // Save token to user
+        user.emailVerificationToken = verificationToken;
+        user.emailVerificationExpires = new Date(Date.now() + 2 * 60 * 60 * 1000); // 2 hours
+        await user.save({ validateBeforeSave: false });
 
-    const verificationUrl = `${process.env.FRONTEND_URL}/verify-email/${verificationToken}`;
+        const verificationUrl = `${process.env.FRONTEND_URL}/verify-email/${verificationToken}`;
 
-    const mailOptions = {
-        from: process.env.EMAIL_FROM,
-        to: user.email,
-        subject: 'Verify Your Email - Account Registration',
-        html: `
+        const mailOptions = {
+            from: process.env.EMAIL_FROM,
+            to: user.email,
+            subject: 'Verify Your Email - Account Registration',
+            html: `
                 <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
                     <h1 style="color: #333;">Verify Your Email</h1>
                     <p>Hello ${user.username},</p>
@@ -376,7 +332,7 @@ const sendVerificationEmail = asyncHandler(async (user) => {
                             Verify Email
                         </a>
                     </div>
-                    <p>This link will expire in 2 hours for security reasons.</p>
+                    <p>This link will expire in 24 hours for security reasons.</p>
                     <p style="color: #666; margin-top: 20px;">
                         If you didn't create an account, you can safely ignore this email.
                     </p>
@@ -385,11 +341,22 @@ const sendVerificationEmail = asyncHandler(async (user) => {
                         ${verificationUrl}
                     </p>
                 </div>
-        `
-    };
+            `
+        };
+        console.log("Sending email to:", user.email);
 
-    await emailTransporter.sendMail(mailOptions);
-});
+        await emailTransporter.sendMail(mailOptions);
+    } catch (error) {
+        console.error("Error in sendVerificationEmail:", error.message, error.stack);
+
+        // Clean up token if email sending fails
+        user.emailVerificationToken = undefined;
+        user.emailVerificationExpires = undefined;
+        await user.save({ validateBeforeSave: false });
+
+        throw new ApiError(500, "Failed to send verification email. Please try again.");
+    }
+};
 
 // Verify email
 const verifyEmail = asyncHandler(async (req, res) => {
@@ -407,6 +374,7 @@ const verifyEmail = asyncHandler(async (req, res) => {
     user.isEmailVerified = true;
     user.emailVerificationToken = undefined;
     user.emailVerificationExpires = undefined;
+    user.emailVerificationTimestamp = undefined;
     await user.save({ validateBeforeSave: false });
 
     const {accessToken, refreshToken} = await generateAccessTokenAndRefreshToken(user._id)
@@ -428,14 +396,19 @@ const verifyEmail = asyncHandler(async (req, res) => {
                 accessToken,
                 refreshToken
             },
-            "Email verified successfully")
+            "Email verified successfully and user logged in")
     );
 });
 
 // Resend email verification
 const resendEmailVerification = asyncHandler(async (req, res) => {
-    const userId = req.user._id;
-    const user = await User.findById(userId);
+    const { email } = req.body;
+
+    if (!email) {
+        throw new ApiError(400, "Email is required");
+    }
+
+    const user = await User.findOne({ email });
 
     if (!user) {
         throw new ApiError(404, "User not found");
@@ -465,20 +438,24 @@ const resendEmailVerification = asyncHandler(async (req, res) => {
 });
 
 // Send OTP via SMS
-const sendOTP = asyncHandler(async (user) => {
-    const otp = generateOTP();
+const sendOTP = async (user) => {
+   try {
+     const otp = generateOTP();
 
-    // Save OTP to user
-    user.phoneVerificationOTP = otp;
-    user.phoneVerificationExpires = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
-    await user.save({ validateBeforeSave: false });
+     // Save OTP to user
+     user.phoneVerificationOTP = otp;
+     user.phoneVerificationExpires = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
+     await user.save({ validateBeforeSave: false });
 
-    await twilioClient.messages.create({
-        body: `Your verification code is: ${otp}. Valid for 10 minutes.`,
-        to: user.phone,
-        from: process.env.TWILIO_PHONE_NUMBER
-    });
-});
+     await twilioClient.messages.create({
+         body: `Your verification code is: ${otp}. Valid for 10 minutes.`,
+         to: user.phone,
+         from: process.env.TWILIO_PHONE_NUMBER
+     });
+   } catch (error) {
+        console.log("The twilio error message is",error.message)
+   }
+}
 
 // Verify phone OTP
 const verifyPhone = asyncHandler(async (req, res) => {
@@ -528,8 +505,13 @@ const verifyPhone = asyncHandler(async (req, res) => {
 
 // Resend phone OTP
 const resendPhoneOTP = asyncHandler(async (req, res) => {
-    const userId = req.user._id;
-    const user = await User.findById(userId);
+    const { phone } = req.body;
+
+    if (!phone) {
+        throw new ApiError(400, "Phone number is required");
+    }
+
+    const user = await User.findOne({ phone });
 
     if (!user) {
         throw new ApiError(404, "User not found");
@@ -572,7 +554,7 @@ const adminLogin = asyncHandler(async (req, res) => {
         }
 
         const token = jwt.sign(
-            email+password,
+            {email },
             process.env.JWT_SECRET,
             { expiresIn: '24h'}
         );
@@ -607,7 +589,6 @@ export {
     loginUser,
     logoutUser,
     registerUserWithEmailOrPhone,
-    registerUserWithGoogle,
     refreshAccessToken,
     changeCurrentPassword,
     getCurrentUser,

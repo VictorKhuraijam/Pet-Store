@@ -3,7 +3,7 @@ import { ApiError } from "../utils/ApiError.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 
 const adminAuth = asyncHandler(async (req, _, next) => {
-    const token = req.cookies?.adminToken || req.header("Authorization")?.replace("Bearer ", "");
+    const token = req.cookies?.token || req.header("Authorization")?.replace("Bearer ", "");
 
     if (!token) {
         throw new ApiError(401, "Unauthorized request - Admin access required");
@@ -13,15 +13,15 @@ const adminAuth = asyncHandler(async (req, _, next) => {
         const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
 
         // Verify if the decoded token matches admin credentials
-        const adminSignature = process.env.ADMIN_EMAIL + process.env.ADMIN_PASSWORD;
+        const adminSignature = process.env.ADMIN_EMAIL
 
-        if (decodedToken !== adminSignature) {
+        if (decodedToken.email !== process.env.ADMIN_EMAIL) {
             throw new ApiError(403, "Forbidden - Invalid admin credentials");
         }
 
         // Optionally store admin info in request for later use
         req.admin = {
-            email: process.env.ADMIN_EMAIL,
+            email: decodedToken.email,
             isAdmin: true
         };
 

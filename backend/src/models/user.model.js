@@ -21,6 +21,10 @@ const userSchema = new mongoose.Schema(
       type: Boolean,
       default: false, // email verification status
     },
+    emailVerificationTimestamp: {
+      type: Date,
+      default: Date.now
+    },
     emailVerificationToken: {
       type: String,
       sparse: true
@@ -122,7 +126,7 @@ userSchema.methods.generateRefreshToken = function(){
      },
      process.env.REFRESH_TOKEN_SECRET,
      {
-       expiresIn: process.env.REFRESH_TOKEN_EXPIRY || "20d"
+       expiresIn: process.env.REFRESH_TOKEN_EXPIRY || "5d"
      }
    )
  } catch (error) {
