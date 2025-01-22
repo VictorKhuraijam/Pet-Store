@@ -13,30 +13,16 @@ const orderItemSchema = new mongoose.Schema({
 
 const orderSchema = new mongoose.Schema(
   {
-    orderPrice: {
-      type: Number,
-      required: true
-    },
     customer: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User"
     },
+    orderPrice: {
+      type: Number,
+      required: true
+    },
     orderItems: {
-      types: [orderItemSchema]
-      /*
-      or type:[
-        {
-           productId: {
-             type: mongoose.Schema.Types.ObjectId,
-             ref: "Product"
-        },
-            quantity: {
-              type: Number,
-              required: true
-            }
-        }
-      ]
-      */
+      type: [orderItemSchema]
     },
     deliveryType: {
       type: String,
@@ -52,14 +38,13 @@ const orderSchema = new mongoose.Schema(
     },
     status: {
       type: String,
-      enum: ["PENDING", "CANCELLED", "DELIVERED"],
-      //enum:user can only choose from the three strings
+      enum: ["PENDING", "CANCELLED", "DELIVERED", "RETRIEVED"],
+      //enum:user can only choose from the four strings
       default: "PENDING"
     },
     paymentMethod: {
       type: String,
-      type: String,
-      enum: ['CASH_ON_DELIVERY', 'CASH_AT_STORE', 'GPAY'],
+      enum: ['CASH_ON_DELIVERY', 'CASH_AT_STORE'],
       required: true,
     },
     payment: {

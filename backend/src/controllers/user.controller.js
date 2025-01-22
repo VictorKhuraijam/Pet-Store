@@ -4,7 +4,6 @@ import {ApiError} from '../utils/ApiError.js'
 import {User} from '../models/user.model.js'
 import {ApiResponse} from '../utils/ApiResponse.js'
 import jwt from 'jsonwebtoken'
-import { OAuth2Client } from "google-auth-library";
 import crypto from 'crypto';
 import nodemailer from 'nodemailer';
 import twilio from 'twilio';
