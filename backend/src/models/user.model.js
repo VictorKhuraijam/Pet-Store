@@ -33,27 +33,27 @@ const userSchema = new mongoose.Schema(
       type: Date,
       sparse: true
     },
-    phone: {
-      type: String,
-      sparse: true,
-      unique: true,
-    },
-    isPhoneVerified: {
-      type: Boolean,
-      default: false, // phone verification status
-    },
-    phoneVerificationOTP: {
-      type: String,
-      sparse: true
-    },
-    phoneVerificationExpires: {
-        type: Date,
-        sparse: true
-    },
-    otpAttempts: {
-        type: Number,
-        default: 0
-    },
+    // phone: {
+    //   type: String,
+    //   sparse: true,
+    //   unique: true,
+    // },
+    // isPhoneVerified: {
+    //   type: Boolean,
+    //   default: false, // phone verification status
+    // },
+    // phoneVerificationOTP: {
+    //   type: String,
+    //   sparse: true
+    // },
+    // phoneVerificationExpires: {
+    //     type: Date,
+    //     sparse: true
+    // },
+    // otpAttempts: {
+    //     type: Number,
+    //     default: 0
+    // },
     password: {
       type: String,
       required: function () {
@@ -70,11 +70,11 @@ const userSchema = new mongoose.Schema(
     //   type: String,
     //   sparse: true,  // allows empty googleId for users using email/phone only
     // },
-    loginType: {
-      type: String,
-      enum: ["email", "phone", "google"],
-      required: true
-    },
+    // loginType: {
+    //   type: String,
+    //   enum: ["email", "phone", "google"],
+    //   required: true
+    // },
     cartData: {
       type: Object,
       default: {}

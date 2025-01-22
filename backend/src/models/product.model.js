@@ -12,14 +12,11 @@ const productSchema = new mongoose.Schema(
     },
     productImages:[
       {
+          _id: false,
           url: {
           type: String, // cloudinary url
           required: true,
         },
-        public_id: {
-          type: String, // cloudinary url
-          required: true,
-        }
       }
     ],
     price: {

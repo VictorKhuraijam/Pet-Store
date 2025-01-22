@@ -104,11 +104,11 @@ const removeProduct = asyncHandler(async (req, res) => {
     }
 
       // Extract all public_ids from product images
-      const publicIds = product.productImages.map(image => image.public_id)
+      const urls = product.productImages.map(image => image.url)
 
       // Delete all images from Cloudinary
       try {
-          const deletionPromises = publicIds.map(publicId => deleteFromCloudinary(publicId))
+          const deletionPromises = urls.map(url => deleteFromCloudinary(url))
           const cloudinaryResults = await Promise.all(deletionPromises)
 
           // Check if any deletion failed

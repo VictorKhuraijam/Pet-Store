@@ -69,39 +69,51 @@ try {
 
 // Route for user register
 const registerUserWithEmailOrPhone = asyncHandler(async (req, res) => {
-    const { username, email, phone, password, loginType } = req.body;
+    const { username, email, password, } = req.body;
+    // const { username, email, phone, password, loginType } = req.body;
 
 
     // Validate input for email or phone registration
-    if (loginType === "email") {
-        if (!email || !password) {
-            throw new ApiError(400, "Email and password are required");
-        }
-        if (!validator.isEmail(email)) {
-            throw new ApiError(400, "Please enter a valid email");
-        }
-    } else if (loginType === "phone") {
-        if (!phone || !password) {
-            throw new ApiError(400, "Phone and password are required");
-        }
-        if (!validator.isMobilePhone(phone)) {
-            throw new ApiError(400, "Please enter a valid phone number");
-        }
-    } else {
-        throw new ApiError(400, "Invalid login type for email/phone registration");
+    // if (loginType === "email") {
+    //     if (!email || !password) {
+    //         throw new ApiError(400, "Email and password are required");
+    //     }
+    //     if (!validator.isEmail(email)) {
+    //         throw new ApiError(400, "Please enter a valid email");
+    //     }
+    // } else if (loginType === "phone") {
+    //     if (!phone || !password) {
+    //         throw new ApiError(400, "Phone and password are required");
+    //     }
+    //     if (!validator.isMobilePhone(phone)) {
+    //         throw new ApiError(400, "Please enter a valid phone number");
+    //     }
+    // } else {
+    //     throw new ApiError(400, "Invalid login type for email/phone registration");
+    // }
+
+    if (!email || !password) {
+        throw new ApiError(400, "Email and password are required");
+    }
+
+    if (!validator.isEmail(email)) {
+        throw new ApiError(400, "Please enter a valid email");
     }
 
     // Check if the user already exists
-    let existingUser;
-    if (loginType === "email") {
-        existingUser = await User.findOne({ email: email.toLowerCase() });
-        console.log("Checking email existence:", { email: email.toLowerCase() });
-    }
+    // let existingUser;
+    // if (loginType === "email") {
+    //     existingUser = await User.findOne({ email: email.toLowerCase() });
+    //     console.log("Checking email existence:", { email: email.toLowerCase() });
+    // }
 
-    if (loginType === "phone")  {
-        existingUser = await User.findOne({ phone });
-        console.log("Checking phone existence:", { phone });
-    }
+    // if (loginType === "phone")  {
+    //     existingUser = await User.findOne({ phone });
+    //     console.log("Checking phone existence:", { phone });
+    // }
+
+    const existingUser = await User.findOne({ email: email.toLowerCase() });
+
 
     console.log("Existing user:", existingUser);
 
@@ -110,12 +122,19 @@ const registerUserWithEmailOrPhone = asyncHandler(async (req, res) => {
     }
 
     // Create the user
+    // const user = await User.create({
+    //     username,
+    //     email: email?.toLowerCase(),
+    //     phone,
+    //     password,
+    //     loginType,
+    //     emailVerificationTimestamp: Date.now(),
+    // });
+
     const user = await User.create({
         username,
         email: email?.toLowerCase(),
-        phone,
         password,
-        loginType,
         emailVerificationTimestamp: Date.now(),
     });
 
@@ -133,11 +152,13 @@ const registerUserWithEmailOrPhone = asyncHandler(async (req, res) => {
     }
 
      // Send verification based on login type
-     if (loginType === "email") {
-        await  sendVerificationEmail(user);
-    } else if (loginType === "phone") {
-         sendOTP(user);
-    }
+    //  if (loginType === "email") {
+    //     await  sendVerificationEmail(user);
+    // } else if (loginType === "phone") {
+    //      sendOTP(user);
+    // }
+
+    await  sendVerificationEmail(user);
 
     return res
     .status(201)
