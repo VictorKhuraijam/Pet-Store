@@ -13,7 +13,7 @@ const uploadOnCloudinary = async (localFilePath) => {
     if(!localFilePath) return null
     //upload file on cloudinary
     const response = await cloudinary.uploader.upload(localFilePath, {
-      resource_type: "auto"
+      resource_type: "image"
     })
     // file has been uploaded successfully
     //console.log("File is uploaded on cloudinary", response);
@@ -46,29 +46,11 @@ const deleteFromCloudinary = async (publicId) => {
 };
 
 
-const deleteFromCloudinaryVideo = async (publicId) => {
-  try {
-    if (!publicId) throw new ApiError(500,"Public ID is required for deletion from cloudinary");
 
-    const response = await cloudinary.uploader.destroy(publicId, {
-      resource_type: "video", // Specify the type if required (e.g., "image", "video", etc.)
-    });
-
-    // Check if deletion was successful
-    if (response.result === "ok" || response.result === "not found") {
-      return response;
-    } else {
-      return null;
-    }
-  } catch (error) {
-    throw new ApiError(500,"Error deleting file from Cloudinary")
-  }
-};
 
 
 
 export {
   uploadOnCloudinary,
   deleteFromCloudinary,
-  deleteFromCloudinaryVideo
 }
