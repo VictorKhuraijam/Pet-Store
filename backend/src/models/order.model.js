@@ -1,4 +1,5 @@
 import mongoose from 'mongoose'
+import { Product } from './product.model.js';
 
 const orderItemSchema = new mongoose.Schema({
   productId: {
@@ -21,7 +22,7 @@ const orderSchema = new mongoose.Schema(
       type: Number,
       required: true
     },
-    orderItems: {
+    orderItems:{
       type: [orderItemSchema]
     },
     deliveryType: {
@@ -53,5 +54,6 @@ const orderSchema = new mongoose.Schema(
   },
   {timestamps: true}
 );
+
 
 export const Order = mongoose.model("Order", orderSchema)

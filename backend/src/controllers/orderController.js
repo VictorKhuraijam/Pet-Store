@@ -7,12 +7,61 @@ import {ApiResponse} from '../utils/ApiResponse.js'
 
 
 
+// All Orders data for Admin Panel
+const allOrders = asyncHandler(async (req, res) => {
+    const orders = await Order.find({})
 
-// Placing orders using COD Method
+    return res
+    .status(200)
+    .json(
+        new ApiResponse (
+            200,
+            {orders},
+            "Orders fetched"
+        )
+    )
+})
+
+// update order status from Admin Panel
+const updateStatus = asyncHandler(async(req, res) => {
+    const {orderId, status} = req.body
+
+    await Order.findByIdAndUpdate(orderId, {status})
+
+    return res
+    .status(200)
+    .json(
+        new ApiResponse(
+            200,
+            {},
+            "Status updated"
+        )
+    )
+})
+
+// User Order Data For Forntend
+const userOrders = asyncHandler(async (req, res) => {
+    const userId = req.user?._id
+
+    const orders = await Order.find({userId})
+
+    return res
+    .status(200)
+    .json(
+        new ApiResponse(
+            200,
+            {orders},
+            "User Orders fetched successfully"
+        )
+    )
+})
+
+// Placing orders
 const placeOrder = asyncHandler(async(req, res) => {
 
-    const {userId} = req.user._id
+    const userId = req.user._id
     const { items, amount, address, deliveryType, paymentMethod  } = req.body
+
 
     if(!userId){
         throw new ApiError(401, "Unauthorized access")
@@ -70,58 +119,6 @@ const placeOrder = asyncHandler(async(req, res) => {
         )
     )
 })
-
-
-// All Orders data for Admin Panel
-const allOrders = asyncHandler(async (req, res) => {
-    const orders = await Order.find({})
-
-    return res
-    .status(200)
-    .json(
-        new ApiResponse (
-            200,
-            {orders},
-            "Orders fetched"
-        )
-    )
-})
-
-// update order status from Admin Panel
-const updateStatus = asyncHandler(async(req, res) => {
-    const {orderId, status} = req.body
-
-    await Order.findByIdAndUpdate(orderId, {status})
-
-    return res
-    .status(200)
-    .json(
-        new ApiResponse(
-            200,
-            {},
-            "Status updated"
-        )
-    )
-})
-
-// User Order Data For Forntend
-const userOrders = asyncHandler(async (req, res) => {
-    const {userId} = req.user?._id
-
-    const orders = await Order.find({userId})
-
-    return res
-    .status(200)
-    .json(
-        new ApiResponse(
-            200,
-            {orders},
-            "User Orders fetched successfully"
-        )
-    )
-})
-
-
 
 export {
     placeOrder,

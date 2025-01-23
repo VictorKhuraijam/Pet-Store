@@ -22,11 +22,6 @@ export const fetchCart = () => async (dispatch) => {
   }
 };
 
-// Dummy AddToCart for Testing UI
-export const dummyAddToCart = (itemId) => (dispatch) => {
-  dispatch(addToCartFulfilled({ itemId }));
-};
-
 export const addToCart = (itemId) => async (dispatch) => {
   try {
     const response = await axios.post(
@@ -34,18 +29,12 @@ export const addToCart = (itemId) => async (dispatch) => {
       { itemId },
       { withCredentials: true }
     );
-    if (response.data.success) {
+    if (response.data) {
       dispatch(addToCartFulfilled({ itemId}));
-    } else {
-      toast.error(response.data.message);
     }
   } catch (error) {
     toast.error(error.message);
   }
-};
-
-export const updateDummyQuantity = (itemId, quantity) => async (dispatch) => {
-  dispatch(updateQuantityFulfilled({ itemId, quantity }));
 };
 
 export const updateQuantity = (itemId,  quantity) => async (dispatch) => {

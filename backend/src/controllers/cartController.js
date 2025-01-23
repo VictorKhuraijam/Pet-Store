@@ -7,15 +7,19 @@ import {ApiError} from '../utils/ApiError.js'
 // add products to user cart
 const addToCart = asyncHandler(async (req, res) => {
     const {itemId} = req.body
-    const {userId} = req.user?._id
+    const userId = req.user?._id
 
-    const userData = await User.findById(userId)
+    const user = await User.findById(userId)
 
-    let cartData = userData.cartData || {};
+    let cartData = user.cartData || {};
 
     cartData[itemId] = (cartData[itemId] || 0) + 1;
 
-    const itemInCart = await User.findByIdAndUpdate(userId, {cartData});
+    const itemInCart = await User.findByIdAndUpdate(userId, {cartData},
+        {new: true}
+    );
+
+    const newCartData = itemInCart.cartData
 
     return res
     .status(200)
@@ -23,7 +27,7 @@ const addToCart = asyncHandler(async (req, res) => {
         new ApiResponse(
             200,
             {
-                itemInCart
+                newCartData
             },
             "Item added to cart"
         )
@@ -31,43 +35,64 @@ const addToCart = asyncHandler(async (req, res) => {
 })
 
 // update user cart
-const updateCart = async (req,res) => {
-    try {
+const updateCart = asyncHandler(async (req, res) => {
 
-        const { userId ,itemId, size, quantity } = req.body
+    const userId = req.user?._id
+    const {itemId, quantity} = req.body
 
-        const userData = await userModel.findById(userId)
-        let cartData = await userData.cartData;
-
-        cartData[itemId][size] = quantity
-
-        await userModel.findByIdAndUpdate(userId, {cartData})
-        res.json({ success: true, message: "Cart Updated" })
-
-    } catch (error) {
-        console.log(error)
-        res.json({ success: false, message: error.message })
+    if(isNaN(quantity) || typeof quantity !== 'number'){
+        throw new ApiError(400, "Enter a valid nuber")
     }
-}
 
+    const user = await User.findById(userId)
+
+    let cartData = await user.cartData;
+
+    cartData[itemId] = quantity
+
+    const updatedCartData = await User.findByIdAndUpdate(userId, {cartData},{new: true})
+
+    const newCartData = updatedCartData.cartData
+
+    return res
+    .status(200)
+    .json(
+        new ApiResponse(
+            200,
+            {newCartData},
+            "Cart Data updated"
+        )
+    )
+
+})
 
 // get user cart data
-const getUserCart = async (req,res) => {
+const getUserCart = asyncHandler(async (req, res) => {
+    const userId = req.user?._id
 
-    try {
-
-        const { userId } = req.body
-
-        const userData = await userModel.findById(userId)
-        let cartData = await userData.cartData;
-
-        res.json({ success: true, cartData })
-
-    } catch (error) {
-        console.log(error)
-        res.json({ success: false, message: error.message })
+    if(!userId){
+        throw new ApiError(401, "Unauthorized entry")
     }
 
-}
+    const user = await User.findById(userId)
 
-export { addToCart, updateCart, getUserCart }
+    let cartData = await user.cartData;
+
+    return res
+    .status(200)
+    .json(
+        new ApiResponse(
+            200,
+            {
+                cartData
+            },
+            "User Cart data"
+        )
+    )
+})
+
+export {
+    addToCart,
+    updateCart,
+    getUserCart
+}

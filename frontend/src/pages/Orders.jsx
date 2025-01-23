@@ -1,24 +1,21 @@
-import { useEffect, useState } from 'react'
-import {Title} from '../components/index';
+import React, { useContext, useEffect, useState } from 'react'
+import { ShopContext } from '../context/ShopContext'
+import Title from '../components/Title';
 import axios from 'axios';
-import { useSelector, useDispatch } from 'react-redux';
 
 const Orders = () => {
 
-  const backendUrl = import.meta.env.VITE_BACKEND_URL
-  const isAuth = useSelector((state) => state.user.isAuthenticated)
-  const currency =  '₹'
+  const { backendUrl, token , currency} = useContext(ShopContext);
+
   const [orderData,setorderData] = useState([])
 
   const loadOrderData = async () => {
     try {
-      if (!isAuth) {
+      if (!token) {
         return null
       }
 
-      const response = await axios.post(backendUrl + '/api/order/userorders',{},
-        // {headers:{token}}
-      )
+      const response = await axios.post(backendUrl + '/api/order/userorders',{},{headers:{token}})
       if (response.data.success) {
         let allOrdersItem = []
         response.data.orders.map((order)=>{
@@ -26,7 +23,6 @@ const Orders = () => {
             item['status'] = order.status
             item['payment'] = order.payment
             item['paymentMethod'] = order.paymentMethod
-            item['date'] = order.date
             allOrdersItem.push(item)
           })
         })
@@ -34,13 +30,14 @@ const Orders = () => {
       }
 
     } catch (error) {
-      console.error(error.message)
+
+    console.error(error.message);
     }
   }
 
-  // useEffect(()=>{
-  //   loadOrderData()
-  // },[token])
+  useEffect(()=>{
+    loadOrderData()
+  },[token])
 
   return (
     <div className='border-t pt-16'>
