@@ -1,41 +1,39 @@
-import userModel from "../models/userModel.js"
+import {User} from "../models/user.model.js"
+import {asyncHandler} from '../utils/asyncHandler.js'
+import {ApiResponse} from '../utils/ApiResponse.js'
+import {ApiError} from '../utils/ApiError.js'
 
 
 // add products to user cart
-const addToCart = async (req,res) => {
-    try {
-        
-        const { userId, itemId, size } = req.body
+const addToCart = asyncHandler(async (req, res) => {
+    const {itemId} = req.body
+    const {userId} = req.user?._id
 
-        const userData = await userModel.findById(userId)
-        let cartData = await userData.cartData;
+    const userData = await User.findById(userId)
 
-        if (cartData[itemId]) {
-            if (cartData[itemId][size]) {
-                cartData[itemId][size] += 1
-            }
-            else {
-                cartData[itemId][size] = 1
-            }
-        } else {
-            cartData[itemId] = {}
-            cartData[itemId][size] = 1
-        }
+    let cartData = userData.cartData || {};
 
-        await userModel.findByIdAndUpdate(userId, {cartData})
+    cartData[itemId] = (cartData[itemId] || 0) + 1;
 
-        res.json({ success: true, message: "Added To Cart" })
+    const itemInCart = await User.findByIdAndUpdate(userId, {cartData});
 
-    } catch (error) {
-        console.log(error)
-        res.json({ success: false, message: error.message })
-    }
-}
+    return res
+    .status(200)
+    .json(
+        new ApiResponse(
+            200,
+            {
+                itemInCart
+            },
+            "Item added to cart"
+        )
+    )
+})
 
 // update user cart
 const updateCart = async (req,res) => {
     try {
-        
+
         const { userId ,itemId, size, quantity } = req.body
 
         const userData = await userModel.findById(userId)
@@ -57,9 +55,9 @@ const updateCart = async (req,res) => {
 const getUserCart = async (req,res) => {
 
     try {
-        
+
         const { userId } = req.body
-        
+
         const userData = await userModel.findById(userId)
         let cartData = await userData.cartData;
 

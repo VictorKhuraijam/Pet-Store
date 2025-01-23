@@ -1,4 +1,5 @@
 import {Order} from "../models/order.model.js";
+import {Product} from '../models/product.model.js'
 import {User} from "../models/user.model.js";
 import {asyncHandler} from '../utils/asyncHandler.js'
 import {ApiError} from '../utils/ApiError.js'
@@ -9,7 +10,9 @@ import {ApiResponse} from '../utils/ApiResponse.js'
 
 // Placing orders using COD Method
 const placeOrder = asyncHandler(async(req, res) => {
-    const {userId, items, amount, address} = req.body
+
+    const {userId} = req.user._id
+    const { items, amount, address, deliveryType, paymentMethod  } = req.body
 
     if(!userId){
         throw new ApiError(401, "Unauthorized access")
@@ -30,13 +33,27 @@ const placeOrder = asyncHandler(async(req, res) => {
         throw new ApiError(400, "Address is required for delivery orders");
     }
 
+     // Validate items exist in the database
+     const validatedItems = await Promise.all(items.map(async (item) => {
+        const product = await Product.findById(item.productId);
+
+        if (!product) {
+            throw new ApiError(404, `Product ${item.productId} not found`);
+        }
+
+        return {
+            productId: product._id,
+            quantity: item.quantity
+        };
+     }));
+
     const order = await Order.create({
         customer: userId,
-        orderItems: items,
+        orderItems: validatedItems,
         orderPrice: amount,
         address,
-        deliveryType: 'DELIVERY',
-        paymentMethod: 'CASH_ON_DELIVERY',
+        deliveryType: deliveryType || 'PICKUP',
+        paymentMethod: paymentMethod || 'CASH_AT_STORE',
         payment: false,
         status: 'PENDING'
     })

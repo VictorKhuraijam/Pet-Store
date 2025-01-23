@@ -6,7 +6,7 @@ import {ApiResponse} from '../utils/ApiResponse.js'
 import jwt from 'jsonwebtoken'
 import crypto from 'crypto';
 import nodemailer from 'nodemailer';
-import twilio from 'twilio';
+// import twilio from 'twilio';
 
 // const googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
@@ -20,10 +20,10 @@ const emailTransporter = nodemailer.createTransport({
 });
 
 // Configure Twilio client
-const twilioClient = twilio(
-    process.env.TWILIO_ACCOUNT_SID,
-    process.env.TWILIO_AUTH_TOKEN
-);
+// const twilioClient = twilio(
+//     process.env.TWILIO_ACCOUNT_SID,
+//     process.env.TWILIO_AUTH_TOKEN
+// );
 
 // Generate verification token
 const generateVerificationToken = () => {
