@@ -1,3 +1,4 @@
+import mongoose from "mongoose";
 import {Order} from "../models/order.model.js";
 import {Product} from '../models/product.model.js'
 import {User} from "../models/user.model.js";
@@ -24,16 +25,16 @@ const allOrders = asyncHandler(async (req, res) => {
 
 // update order status from Admin Panel
 const updateStatus = asyncHandler(async(req, res) => {
-    const {orderId, status} = req.body
+    const {orderId, status, payment} = req.body
 
-    await Order.findByIdAndUpdate(orderId, {status})
+    const order = await Order.findByIdAndUpdate(orderId, {status,payment},{new:true})
 
     return res
     .status(200)
     .json(
         new ApiResponse(
             200,
-            {},
+            {order},
             "Status updated"
         )
     )
@@ -43,7 +44,7 @@ const updateStatus = asyncHandler(async(req, res) => {
 const userOrders = asyncHandler(async (req, res) => {
     const userId = req.user?._id
 
-    const orders = await Order.find({userId})
+    const orders = await Order.find({customer: new mongoose.Types.ObjectId(userId)})
 
     return res
     .status(200)
@@ -92,7 +93,7 @@ const placeOrder = asyncHandler(async(req, res) => {
 
         return {
             productId: product._id,
-            quantity: item.quantity
+            quantity: item.quantity,
         };
      }));
 
@@ -103,7 +104,7 @@ const placeOrder = asyncHandler(async(req, res) => {
         address,
         deliveryType: deliveryType || 'PICKUP',
         paymentMethod: paymentMethod || 'CASH_AT_STORE',
-        payment: false,
+        payment: "NOT_PAID",
         status: 'PENDING'
     })
 

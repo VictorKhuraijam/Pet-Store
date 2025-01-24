@@ -8,9 +8,10 @@ const orderItemSchema = new mongoose.Schema({
   },
   quantity: {
     type: Number,
+    default: 1,
     required: true
-  }
-});
+  },
+},{ _id: false });
 
 const orderSchema = new mongoose.Schema(
   {
@@ -43,14 +44,11 @@ const orderSchema = new mongoose.Schema(
       //enum:user can only choose from the four strings
       default: "PENDING"
     },
-    paymentMethod: {
-      type: String,
-      enum: ['CASH_ON_DELIVERY', 'CASH_AT_STORE'],
-      required: true,
-    },
     payment: {
-      type: Boolean,
-      default: false },
+      type: String,
+      enum: ['PAID', 'NOT_PAID'],
+      default: false
+    },
   },
   {timestamps: true}
 );

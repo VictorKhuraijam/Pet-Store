@@ -10,10 +10,10 @@ import {verifyJWT} from '../middleware/auth.middleware.js'
 
 const router = Router()
 
-router.route('/list').post(adminAuth, allOrders)
+router.route('/list').get(adminAuth, allOrders)
 router.route('/status').post(adminAuth, updateStatus)
 
 router.route('/placeOrder').post(verifyJWT, placeOrder)
-router.route('/userOrders').post(verifyJWT, userOrders)
+router.route('/userOrders').get(verifyJWT, userOrders)
 
 export default router
