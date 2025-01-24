@@ -3,7 +3,7 @@ import {Title, CartTotal} from '../components/index';
 import { useNavigate } from "react-router-dom";
 import { assets } from '../assets/assets';
 import { useSelector, useDispatch } from 'react-redux';
-import {updateDummyQuantity} from '../store/cartSlice'
+import {updateQuantity} from '../store/cartSlice'
 
 const Cart = () => {
 
@@ -37,14 +37,14 @@ const Cart = () => {
   const handleQuantityChange = (itemId, value) => {
 
     const newQuantity = Math.max(1, parseInt(value) || 1);
-      dispatch(updateDummyQuantity({ itemId, newQuantity }))
+      dispatch(updateQuantity({ itemId, newQuantity }))
 
   }
 
   const handleRemoveItem = (itemId) => {
 
     console.log ('Removing item:', itemId);
-    dispatch(updateDummyQuantity( itemId, 0 ))
+    dispatch(updateQuantity( itemId, 0 ))
   }
 
 

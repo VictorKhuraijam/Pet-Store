@@ -10,9 +10,9 @@ function Navbar() {
     const navigate = useNavigate()
     const dispatch = useDispatch()
     const cartCount = useSelector(getCartCount) || 0;
-    // const isAuthenticated = useSelector((state) => state.setAuth);
+    const isAuthenticated = useSelector((state) => state.setAuth);
 
-    const isAuthenticated = true;
+    
     const [visible, setVisible] = useState(false)
 
     const logout = () => {
@@ -64,7 +64,9 @@ function Navbar() {
                     </div>
                 </div>}
             </div>
-            <Link to='/cart' className='relative'>
+            {isAuthenticated && (
+                <div>
+                    <Link to='/cart' className='relative'>
                     <img src={assets.cart_icon} className='w-5 min-w-5' alt="" />
                     {cartCount > 0 && (
                         <p className='absolute right-[-5px] bottom-[-5px] w-4 text-center leading-4 bg-black text-white aspect-square rounded-full text-[8px]'>
@@ -72,6 +74,8 @@ function Navbar() {
                         </p>
                     )}
              </Link>
+                </div>
+            )}
             <img onClick={()=>setVisible(true)} src={assets.menu_icon} className='w-5 cursor-pointer sm:hidden' alt="" />
       </div>
 

@@ -10,18 +10,15 @@ export const loginUser = (email, password) => async (dispatch) => {
   dispatch(userSlice.actions.setLoading(true));
   try {
     const response = await axios.post(
-      `${backendUrl}/api/user/login`,
+      `${backendUrl}/users/login`,
       { email, password },
       { withCredentials: true } // Important for receiving cookies
     );
 
-    if (response.data.success) {
+    if (response.success) {
       dispatch(fetchCart());
       dispatch(userSlice.actions.setUser(response.data.user));
       dispatch(userSlice.actions.setAuth(true));
-    } else {
-      dispatch(userSlice.actions.setError(response.data.message));
-      toast.error(response.data.message);
     }
   } catch (error) {
     dispatch(userSlice.actions.setError(error.message));
@@ -34,7 +31,7 @@ export const loginUser = (email, password) => async (dispatch) => {
 export const logoutUser = () => async (dispatch) => {
   try {
     const response = await axios.post(
-      `${backendUrl}/api/user/logout`,
+      `${backendUrl}/users/logout`,
       {},
       { withCredentials: true }
     );
@@ -42,8 +39,6 @@ export const logoutUser = () => async (dispatch) => {
     if (response.data.success) {
       dispatch(clearCart());
       dispatch(userSlice.actions.resetUser());
-    } else {
-      toast.error(response.data.message);
     }
   } catch (error) {
     toast.error(error.message);
@@ -53,7 +48,7 @@ export const logoutUser = () => async (dispatch) => {
 export const checkAuthStatus = () => async (dispatch) => {
   try {
     const response = await axios.get(
-      `${backendUrl}/api/user/check-auth`,
+      `${backendUrl}/users/current-user`,
       { withCredentials: true }
     );
 
@@ -61,12 +56,12 @@ export const checkAuthStatus = () => async (dispatch) => {
       dispatch(fetchCart());
       dispatch(userSlice.actions.setUser(response.data.user));
       dispatch(userSlice.actions.setAuth(true));
-    } else {
-      dispatch(userSlice.actions.setAuth(false));
     }
   } catch (error) {
     dispatch(userSlice.actions.setAuth(false));
     toast.error(error.message);
+  }  finally {
+    dispatch(userSlice.actions.setLoading(false));
   }
 };
 

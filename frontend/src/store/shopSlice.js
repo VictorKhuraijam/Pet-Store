@@ -106,13 +106,11 @@ export const {
 export const fetchProducts = () => async (dispatch) => {
   dispatch(fetchProductsStart());
   try {
-    const response = await axios.get(`${backendUrl}/api/product/list`);
-    if (response.data.success) {
+    const response = await axios.get(`${backendUrl}/product/list`);
+    if (response.success) {
       const products = response.data.products.reverse();
       dispatch(fetchProductsSuccess({ products }));
-    } else {
-      dispatch(fetchProductsFailure({ error: response.data.message }));
-    }
+    } 
   } catch (error) {
     toast.error(error.message);
     dispatch(fetchProductsFailure({ error: error.message }));

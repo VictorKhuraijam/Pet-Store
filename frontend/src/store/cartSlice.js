@@ -8,14 +8,11 @@ const backendUrl = import.meta.env.VITE_BACKEND_URL;
 export const fetchCart = () => async (dispatch) => {
   dispatch(fetchCartPending());
   try {
-    const response = await axios.get(`${backendUrl}/api/cart/get`, {
+    const response = await axios.get(`${backendUrl}/cart/get`, {
       withCredentials: true // Important for sending cookies
     });
-    if (response.data.success) {
-      dispatch(fetchCartFulfilled(response.data.cartData));
-    } else {
-      dispatch(fetchCartRejected(response.data.message));
-    }
+
+      dispatch(fetchCartFulfilled(response.data));
   } catch (error) {
     toast.error(error.message);
     dispatch(fetchCartRejected(error.message));
@@ -25,30 +22,32 @@ export const fetchCart = () => async (dispatch) => {
 export const addToCart = (itemId) => async (dispatch) => {
   try {
     const response = await axios.post(
-      `${backendUrl}/api/cart/add`,
+      `${backendUrl}/cart/add`,
       { itemId },
       { withCredentials: true }
     );
-    if (response.data) {
-      dispatch(addToCartFulfilled({ itemId}));
-    }
+
+      dispatch(addToCartFulfilled({ itemId, cartData: response.data}));
+
   } catch (error) {
-    toast.error(error.message);
+    toast.error( error.message);
   }
 };
 
 export const updateQuantity = (itemId,  quantity) => async (dispatch) => {
   try {
     const response = await axios.post(
-      `${backendUrl}/api/cart/update`,
+      `${backendUrl}/cart/update`,
       { itemId, quantity },
       { withCredentials: true }
     );
-    if (response.data.success) {
-      dispatch(updateQuantityFulfilled({ itemId, quantity }));
-    } else {
-      toast.error(response.data.message);
-    }
+    if (response.data.success)
+      dispatch(updateQuantityFulfilled({
+        itemId,
+        quantity,
+        cartData: response.data
+      }));
+
   } catch (error) {
     toast.error(error.message);
   }
