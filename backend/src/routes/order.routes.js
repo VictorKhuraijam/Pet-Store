@@ -4,7 +4,7 @@ import {
   allOrders,
   userOrders,
   updateStatus
-} from '../controllers/orderController.js'
+} from '../controllers/order.controller.js'
 import adminAuth from '../middleware/adminAuth.middleware.js'
 import {verifyJWT} from '../middleware/auth.middleware.js'
 

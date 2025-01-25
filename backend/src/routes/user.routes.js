@@ -14,7 +14,7 @@ import {
     verifyPhone,
     resendPhoneOTP,
     adminLogin,
-    adminLogout
+    adminLogout,
 
 
 } from '../controllers/user.controller.js'

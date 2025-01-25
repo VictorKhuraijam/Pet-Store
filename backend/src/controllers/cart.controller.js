@@ -83,9 +83,7 @@ const getUserCart = asyncHandler(async (req, res) => {
     .json(
         new ApiResponse(
             200,
-            {
-                cartData
-            },
+            cartData,
             "User Cart data"
         )
     )

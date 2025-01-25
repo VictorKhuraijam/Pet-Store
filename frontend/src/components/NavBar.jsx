@@ -19,10 +19,17 @@ function Navbar() {
       }, [dispatch]);
 
 
-    const logout = () => {
-        logoutUser()
-        dispatch(resetUser())
-        navigate('/login')
+    const logout = async() => {
+        // logoutUser()
+        // dispatch(resetUser())
+        // navigate('/login')
+        try {
+            dispatch(logoutUser())
+            dispatch(resetUser())
+            navigate('/login')
+        } catch (error) {
+            console.error("Error during logout:", error)
+        }
     }
 
 

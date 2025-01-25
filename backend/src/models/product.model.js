@@ -10,7 +10,7 @@ const productSchema = new mongoose.Schema(
       type: String,
       required: true
     },
-    productImages:[
+    images:[
       {
           _id: false,
           url: {

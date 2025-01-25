@@ -3,7 +3,7 @@ import {
     addToCart,
     updateCart,
     getUserCart
-} from '../controllers/cartController.js'
+} from '../controllers/cart.controller.js'
 import {verifyJWT} from '../middleware/auth.middleware.js'
 
 const cartRouter = Router()

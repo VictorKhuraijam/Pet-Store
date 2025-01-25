@@ -39,7 +39,9 @@ const generateOTP = () => {
 const options = {
     httpOnly: true,// Prevents JavaScript access to the cookie, reducing XSS risks
     secure: true,//Ensures the cookie is sent only over HTTPS connections.
-    sameSite: "Strict" // Prevents the cookie from being sent with cross-site requests (mitigates CSRF(Cross Site Request Forgery ) attacks)
+    sameSite: "None", // Prevents the cookie from being sent with cross-site requests (mitigates CSRF(Cross Site Request Forgery ) attacks)
+    path: '/',
+    maxAge: 15 * 24 * 60 * 60 * 1000 // 15 days
 
   }
 
@@ -174,18 +176,15 @@ const registerUserWithEmailOrPhone = asyncHandler(async (req, res) => {
 const loginUser = asyncHandler(async (req, res) => {
 
 
-    const { email, phone,  password } = req.body;
+    const { email,  password } = req.body;
 
-    if(!(phone || email)){
+    if(!email){
         throw new ApiError(400,"Email or phone number is required")
         }
 
-    const user = await User.findOne({
-        $or: [
+    const user = await User.findOne(
             { email: email?.toLowerCase() },
-            { phone },
-        ],
-    });
+    );
 
     if (!user) {
         throw new ApiError(404, "User does not exits")
@@ -199,6 +198,10 @@ const loginUser = asyncHandler(async (req, res) => {
             "Please verify your email before logging in. A new verification email has been sent to your email address."
         );
     }
+
+    // if(user.refreshToken){
+    //     throw new ApiError(401," User is already logged in")
+    // }
 
     const isPasswordCorrect = await user.isPasswordCorrect(password)
 
@@ -217,16 +220,13 @@ const loginUser = asyncHandler(async (req, res) => {
     .json(
       new ApiResponse(
         200,
-        {
-          user: loggedInUser,
-          accessToken,
-          refreshToken
-        },//for cases when user want to save access and refresh token on local storage etc
+        loggedInUser,
         "User logged in successfully"
       )
     )
 
 })
+
 
 const logoutUser = asyncHandler(async (req, res) => {
     await User.findByIdAndUpdate(

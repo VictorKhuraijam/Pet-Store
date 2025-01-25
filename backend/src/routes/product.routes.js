@@ -6,7 +6,7 @@ import {
   listProducts,
   removeProduct,
   getSingleProduct
-} from '../controllers/productController.js'
+} from '../controllers/product.controller.js'
 
 const router = Router()
 
@@ -22,10 +22,10 @@ router.route('/add').post(
   addProduct
 )
 
-router.route('/products/:productId').delete(adminAuth, removeProduct)
+router.route('/delete/:productId').delete(adminAuth, removeProduct)
 
 router.route('/list').get(listProducts)
 
-router.route('/single-product/:productId').get(getSingleProduct)
+router.route('/:productId').get(getSingleProduct)
 
 export default router
