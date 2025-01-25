@@ -2,11 +2,13 @@ import  {  useEffect, useState } from 'react'
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
-import {checkAuthStatus} from '../store/userSlice'
+import {checkAuthStatus, loginUser} from '../store/userSlice'
+import { useDispatch } from 'react-redux';
 
 const Login = () => {
 
   const navigate = useNavigate()
+  const dispatch = useDispatch()
 
   const [currentState, setCurrentState] = useState('Login');
   // const { token, setToken, navigate, backendUrl } = useContext(ShopContext)
@@ -26,21 +28,15 @@ const Login = () => {
             {name,email,password},
             {withCredentials: true}
           )
-          if (response.success) {
+          if (response.data.success) {
             toast.success("Account created successfully!");
             setCurrentState("Login"); // Redirect to login state after signup
            }
         } else {
-           response = await axios.post(
-            import.meta.env.VITE_BACKEND_URL + '/users/login',
-            {email,password},
-            {withCredentials: true}
-          )
-          if (response.data.success) {
+          if (currentState === 'Login') {
+            dispatch(loginUser(email, password));
             toast.success("Login successful")
             navigate("/")
-          } else {
-            toast.error(response.data.message)
           }
         }
       } catch (error) {
@@ -50,8 +46,8 @@ const Login = () => {
   }
 
   useEffect(()=>{
-    checkAuthStatus()
-  },[navigate])
+    dispatch(checkAuthStatus())
+  },[dispatch])
 
   return (
     <form onSubmit={onSubmitHandler} className='flex flex-col items-center w-[90%] sm:max-w-96 m-auto mt-14 gap-4 text-gray-800'>

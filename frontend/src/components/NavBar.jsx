@@ -1,7 +1,7 @@
 import { Link, NavLink } from "react-router-dom";
 import { assets } from "../assets/assets";
-import {  useState } from "react";
-import {logoutUser, resetUser} from '../store/userSlice'
+import {  useState, useEffect } from "react";
+import {checkAuthStatus, logoutUser, resetUser} from '../store/userSlice'
 import { getCartCount} from '../store/cartSlice'
 import { useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
@@ -10,10 +10,14 @@ function Navbar() {
     const navigate = useNavigate()
     const dispatch = useDispatch()
     const cartCount = useSelector(getCartCount) || 0;
-    const isAuthenticated = useSelector((state) => state.setAuth);
+    const isAuthenticated = useSelector((state) => state.user.isAuthenticated);
 
-    
     const [visible, setVisible] = useState(false)
+
+    useEffect(() => {
+        dispatch(checkAuthStatus());
+      }, [dispatch]);
+
 
     const logout = () => {
         logoutUser()
@@ -50,7 +54,6 @@ function Navbar() {
       </ul>
 
       <div className='flex items-center gap-4 lg:gap-6'>
-            {/* <img onClick={()=>  navigate('/collection') } src={assets.search_icon} className='w-5 cursor-pointer' alt="" /> */}
 
             <div className='group relative'>
                 <img onClick={()=> isAuthenticated ? null : navigate('/login') } className='w-5 cursor-pointer' src={assets.profile_icon} alt="" />

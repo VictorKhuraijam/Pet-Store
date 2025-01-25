@@ -14,7 +14,8 @@ const LatestCollection = () => {
     },[dispatch])
 
     useEffect(()=>{
-        setLatestProducts(products.slice(0,10));
+        setLatestProducts(products);
+        console.log("The latest products",latestProducts)
     },[products])
 
   return (
@@ -33,7 +34,7 @@ const LatestCollection = () => {
             <ProductItem
               key={index}
               id={item._id}
-              image={item.image}
+              image={item.images[0].url}
               name={item.name}
               price={item.price}
             />

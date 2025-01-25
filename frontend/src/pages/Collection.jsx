@@ -41,7 +41,7 @@ const Collection = () => {
 
   const applyFilter = () => {
 
-    let productsCopy = products.slice();
+    let productsCopy = products;
 
     if (search) {
       productsCopy = productsCopy.filter(item => item.type.toLowerCase().includes(search.toLowerCase()) || item.category.toLowerCase().includes(search.toLowerCase()) )
@@ -61,7 +61,7 @@ const Collection = () => {
 
   const sortProduct = () => {
 
-    let fpCopy = filterProducts.slice();
+    let fpCopy = filterProducts;
 
     switch (sortType) {
       case 'low-high':
@@ -155,10 +155,17 @@ const Collection = () => {
         {/* Map Products */}
         <div className='grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 gap-y-6'>
           {
-            filterProducts.map((item,index)=>(
-              <ProductItem key={index} name={item.name} id={item._id} price={item.price} image={item.image} />
-            ))
+             filterProducts.map((item,index)=>(
+              <ProductItem
+                key={index}
+                name={item.name}
+                id={item._id}
+                price={item.price}
+                image={item.images[0].url} />
+              ))
+
           }
+
         </div>
       </div>
 

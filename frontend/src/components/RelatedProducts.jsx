@@ -13,12 +13,11 @@ const RelatedProducts = ({category}) => {
         dispatch(fetchProducts())
         if (products.length > 0) {
 
-            let productsCopy = products.slice();
+          if (Array.isArray(products) && category) {
+            const relatedProducts = products.filter((item) => item.category === category);
+            setRelated(relatedProducts);
+          }
 
-            productsCopy = productsCopy.filter((item) => category === item.category);
-
-
-            setRelated(productsCopy.slice(0,5));
         }
 
     },[products,category,dispatch])

@@ -11,8 +11,13 @@ export const fetchCart = () => async (dispatch) => {
     const response = await axios.get(`${backendUrl}/cart/get`, {
       withCredentials: true // Important for sending cookies
     });
+      console.log('Fetched cart response:',response.data)
 
-      dispatch(fetchCartFulfilled(response.data));
+     if(response.data.success){
+      dispatch(fetchCartFulfilled(response.data.data));
+     } else {
+      throw new Error("Failed to fetch cart")
+     }
   } catch (error) {
     toast.error(error.message);
     dispatch(fetchCartRejected(error.message));

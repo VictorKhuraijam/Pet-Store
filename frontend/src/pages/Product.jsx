@@ -3,7 +3,7 @@ import { useParams } from 'react-router-dom'
 import { assets } from '../assets/assets';
 import {RelatedProducts} from '../components/index';
 import { useSelector, useDispatch } from 'react-redux';
-import { fetchProducts } from '../store/shopSlice';
+import { fetchProductById } from '../store/shopSlice';
 import { addToCart } from '../store/cartSlice';
 import { toast } from 'react-toastify';
 
@@ -13,25 +13,29 @@ const Product = () => {
   const [productData, setProductData] = useState(false);
   const [image, setImage] = useState('')
 
-  const isAuth = true
+  const isAuth = useSelector((state) => state.user.isAuthenticated)
 
   const dispatch = useDispatch()
   const products = useSelector((state) => state.shop.products)
   const currency =  '₹'
 
 
+  useEffect(() => {
+    if (productId){
+      dispatch(fetchProductById(productId));
+    }
+  },[productId, dispatch])
+
 
   useEffect(() => {
-    dispatch(fetchProducts());
-
-    products.map((item) => {
-      if (item._id === productId) {
-        setProductData(item)
-        setImage(item.image[0])
-        return null;
+    if (products?.length > 0 && productId) {
+      const product = products.find((item) => item._id === productId);
+      if (product) {
+        setProductData(product);
+        setImage(product.images[0]);
       }
-    })
-  }, [dispatch,productId,products])
+    }
+  }, [products, productId]);
 
   const handleAddToCart = () => {
     console.log('Adding product to cart:', {
@@ -51,10 +55,16 @@ const Product = () => {
         {/*---------- Product Images------------- */}
         <div className='flex-1 flex flex-col-reverse gap-3 sm:flex-row'>
           <div className='flex sm:flex-col overflow-x-auto sm:overflow-y-scroll justify-between sm:justify-normal sm:w-[18.7%] w-full'>
-              {
-                productData.image.map((item,index)=>(
-                  <img onClick={()=>setImage(item)} src={item} key={index} className='w-[24%] sm:w-full sm:mb-3 flex-shrink-0 cursor-pointer' alt="" />
-                ))
+              {Array.isArray(productData.images) ?
+               ( productData.images.map((item,index)=>(
+                  <img
+                    onClick={()=>setImage(item)}
+                    src={item}
+                    key={index}
+                    className='w-[24%] sm:w-full sm:mb-3 flex-shrink-0 cursor-pointer'
+                    alt=""
+                  />
+                ))) : null
               }
           </div>
           <div className='w-full sm:w-[80%]'>

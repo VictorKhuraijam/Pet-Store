@@ -1,7 +1,7 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { toast } from 'react-toastify';
 import axios from 'axios';
-import { clearCart, fetchCart } from './cartSlice';
+import { clearCart, fetchCart, fetchCartFulfilled } from './cartSlice';
 
 const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
@@ -15,10 +15,16 @@ export const loginUser = (email, password) => async (dispatch) => {
       { withCredentials: true } // Important for receiving cookies
     );
 
-    if (response.success) {
-      dispatch(fetchCart());
-      dispatch(userSlice.actions.setUser(response.data.user));
+    if (response.data.success) {
+
+      dispatch(userSlice.actions.setUser(response.data.data));
       dispatch(userSlice.actions.setAuth(true));
+
+      // dispatch(checkAuthStatus())
+      dispatch(fetchCartFulfilled(response.data.data.cartData));
+
+    } else{
+      throw new Error(" Login failed")
     }
   } catch (error) {
     dispatch(userSlice.actions.setError(error.message));
@@ -52,14 +58,19 @@ export const checkAuthStatus = () => async (dispatch) => {
       { withCredentials: true }
     );
 
+    console.log("Auth check response:", response)
+
     if (response.data.success) {
-      dispatch(fetchCart());
-      dispatch(userSlice.actions.setUser(response.data.user));
+
+      dispatch(userSlice.actions.setUser(response.data.data));
       dispatch(userSlice.actions.setAuth(true));
+
+      dispatch(fetchCart());
+
     }
   } catch (error) {
     dispatch(userSlice.actions.setAuth(false));
-    toast.error(error.message);
+    console.error(error.message)
   }  finally {
     dispatch(userSlice.actions.setLoading(false));
   }
