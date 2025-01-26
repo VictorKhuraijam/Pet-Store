@@ -120,8 +120,20 @@ export const fetchProducts = () => async (dispatch) => {
   }
 };
 
-export const fetchProductById = (productId) => async (dispatch) => {
+export const fetchProductById = (productId) => async (dispatch, getState) => {
   dispatch(fetchProductsStart())
+
+
+  const state = getState();
+  const existingProduct = state.products.find(
+    (product) => product._id === productId
+  );
+
+  if (existingProduct) {
+    console.log("Product already exists in state, skipping fetch");
+    return;
+  }
+
   try {
     const response = await axios.get(
       `${backendUrl}/products/${productId}`
