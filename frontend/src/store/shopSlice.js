@@ -81,7 +81,16 @@ const shopSlice = createSlice({
     },
     fetchProductsSuccess: (state, action) => {
       state.loading = false;
-      state.products = action.payload.products;
+      const newProducts = action.payload.products;
+
+      const existingProductIds = state.products.map((product) => product._id);
+      const updatedProducts = newProducts.filter(
+        (newProduct) => !existingProductIds.includes(newProduct._id)
+      );
+
+      if (updatedProducts.length > 0) {
+        state.products.push(...updatedProducts);
+      }
     },
     fetchProductsFailure: (state, action) => {
       state.loading = false;
@@ -120,19 +129,8 @@ export const fetchProducts = () => async (dispatch) => {
   }
 };
 
-export const fetchProductById = (productId) => async (dispatch, getState) => {
+export const fetchProductById = (productId) => async (dispatch) => {
   dispatch(fetchProductsStart())
-
-
-  const state = getState();
-  const existingProduct = state.products.find(
-    (product) => product._id === productId
-  );
-
-  if (existingProduct) {
-    console.log("Product already exists in state, skipping fetch");
-    return;
-  }
 
   try {
     const response = await axios.get(

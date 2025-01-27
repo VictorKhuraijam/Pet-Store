@@ -21,20 +21,20 @@ const Product = () => {
 
 
   useEffect(() => {
-    if (productId){
+
       dispatch(fetchProductById(productId));
-    }
+
   },[productId, dispatch])
 
 
   useEffect(() => {
-    if (products?.length > 0 && productId) {
-      const product = products.find((item) => item._id === productId);
+    const product = products?.find((item) => item._id === productId);
+
       if (product && product._id !== productData?._id) {
         setProductData(product);
-        setImage(product.images?.[0]?.url || ''); // Only update if it's a new product
+        setImage(product.images?.[0]?.url || '');
       }
-    }
+
   }, [products, productId, productData?._id]);
 
   const handleAddToCart = () => {

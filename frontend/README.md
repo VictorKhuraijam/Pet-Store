@@ -115,3 +115,147 @@ export const fetchProducts = () => async (dispatch) => {
     - You want to customize error handling and retry logic.
 
 For most e-commerce applications, **custom thunks** are better suited for scalability and flexibility. However, for simpler features, `createAsyncThunk` can still be a good choice.
+
+
+---
+<br>
+<br>
+<br>
+
+
+# React and Redux re-renders
+   The "reference change" refer to the way JavaScript and React handle objects and arrays. Specifically, when the reference (or memory address) of an object or array changes, React treats it as a new value, even if the contents of the object or array remain the same.
+
+
+## What is a Reference in JavaScript?
+
+In JavaScript:
+
+- **Primitive types** (e.g., `number`, `string`, `boolean`) are compared by value. If the values are the same, they are considered equal.
+- **Objects and arrays** are compared by reference. Two objects or arrays are considered equal only if they point to the exact same location in memory.
+
+For example:
+
+```js
+const arr1 = [1, 2, 3];
+const arr2 = [1, 2, 3];
+
+console.log(arr1 === arr2); // false (different references, even though the contents are the same)
+```
+
+However:
+
+```js
+const arr1 = [1, 2, 3];
+const arr2 = arr1;
+
+console.log(arr1 === arr2); // true (same reference, pointing to the same memory location)
+```
+
+
+---
+<br>
+<br>
+
+## How Does This Apply to Redux State Updates?
+When you update a Redux state, React and Redux detect changes based on whether the reference of the state has changed. If you create a new object or array (even with the same content), the reference changes.
+
+Example:
+
+If `fetchProductsSuccess` updates `state.products` like this:
+
+```js
+state.products = [...state.products, ...newProducts];
+```
+
+- The [...] spread operator creates a **new array** in memory, even if `state.products` ends up with the same content as before.
+
+- This causes the reference of `state.products` to change, triggering re-renders in components that depend on it.
+
+Even without visible changes to the UI, React detects the new reference and triggers:
+
+    1. Re-renders of components using `useSelector`.
+    2. Re-evaluations of `useEffect` hooks dependent on `products`.
+
+---
+<br><br>
+
+## What Changed After the Reducer Update?
+
+The updated reducer avoids unnecessary reference changes:
+
+```js
+fetchProductsSuccess: (state, action) => {
+  const newProducts = action.payload.products;
+
+  const existingProductIds = state.products.map((product) => product._id);
+  const updatedProducts = newProducts.filter(
+    (newProduct) => !existingProductIds.includes(newProduct._id)
+  );
+
+  if (updatedProducts.length > 0) {
+    state.products.push(...updatedProducts);
+  }
+},
+```
+
+## How It Prevents Reference Changes:
+1. **Avoiding Redundant Updates**:
+
+    - If there are no new products (`updatedProducts.length === 0`), the reducer does **not modify** `state.products`.
+    - As a result, the reference to `state.products` remains the same.
+
+2. **Only Updating When Necessary**:
+
+    - When new products are added, the reference changes because `state.products.push(...updatedProducts)` modifies the array.
+    - But if no new products exist, the reference remains unchanged.
+
+
+By ensuring that `state.products` only updates when necessary, you avoid unnecessary reference changes and prevent re-renders.
+
+---
+<br><br>
+
+## Why Did This Stop Infinite Re-renders?
+
+In the Product page:
+
+```js
+useEffect(() => {
+  const product = products?.find((item) => item._id === productId);
+
+  if (product && product._id !== productData?._id) {
+    setProductData(product);
+    setImage(product.images?.[0]?.url || '');
+  }
+}, [products, productId, productData?._id]);
+```
+
+- Previously, `products` kept changing due to redundant updates in the reducer (even if the product list didn't change), causing this `useEffect` to run repeatedly.
+- Each time the `useEffect` ran, `setProductData` and `setImage` updated the local state, causing the component to re-render.
+- These re-renders triggered a new call to fetch products, creating an infinite loop.
+
+
+
+After the reducer change:
+
+- `products` only changes when new products are added.
+- This stabilizes the `products` reference, so the `useEffect` no longer re-runs unnecessarily, breaking the infinite loop.
+
+---
+<br><br>
+
+### Key Takeaways
+1. **Reference Change in JavaScript**:
+
+    - A new object or array reference is created whenever you modify state using operations like `[...state.products]`, even if the contents are the same.
+    - React treats these new references as changes, triggering re-renders.
+
+2. **Reducer Optimization**:
+
+    - By avoiding unnecessary updates to `state.products`, you prevent reference changes when the content remains the same.
+    - This stops unnecessary re-renders and `useEffect` executions.
+
+3. **Stability in** `useEffect`:
+
+    - By ensuring `products` only changes when there’s a genuine update, you stabilize the dependency array of the `useEffect` hook, preventing unnecessary executions.

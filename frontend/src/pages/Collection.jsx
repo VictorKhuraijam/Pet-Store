@@ -84,8 +84,10 @@ const Collection = () => {
   };
 
   useEffect(()=>{
-      dispatch(fetchProducts())
-  },[dispatch])
+    if (products.length === 0) {
+      dispatch(fetchProducts());
+    }
+  },[dispatch, products.length])
 
   useEffect(() => {
     applyFilter();
