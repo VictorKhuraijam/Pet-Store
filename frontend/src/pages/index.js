@@ -7,6 +7,7 @@ import Login from './Login'
 import Orders from "./Orders";
 import PlaceOrder from "./PlaceOrder";
 import Product from "./Product";
+import Profile from './Profile'
 
 
 export {
@@ -19,5 +20,5 @@ export {
   Orders,
   PlaceOrder,
   Product,
-
+  Profile
 }

@@ -18,7 +18,6 @@ const Cart = () => {
 
   useEffect(() => {
 
-    if (products.length > 0) {
       const tempData = [];
       for (const itemId in cartItems) {
 
@@ -28,10 +27,11 @@ const Cart = () => {
               quantity: cartItems[itemId]
             })
           }
-      }
-      console.log('Updated cart data:', tempData);
+
+      console.log('Updated cart data, tempData:', tempData);
       setCartData(tempData);
     }
+
   }, [cartItems, products, dispatch])
 
   const handleQuantityChange = (itemId, value) => {
@@ -55,7 +55,6 @@ const Cart = () => {
         <Title text1={'YOUR'} text2={'CART'} />
       </div>
 
-
       {
         cartData.length > 0 ? (
           <>
@@ -64,6 +63,7 @@ const Cart = () => {
           cartData.map((item, index) => {
 
             const productData = products.find((product) => product._id === item._id);
+            console.log("product data is :", productData)
 
             if (!productData) return null
 
@@ -79,20 +79,7 @@ const Cart = () => {
                     </div>
                   </div>
                 </div>
-                {/* <input
-                  //  onChange={(e) => {
-                  //   const value = e.target.value
-                  //   if (value && parseInt(value) > 0) {
-                  //     handleQuantityChange(item._id, parseInt(value))
-                  //   }
-                  //   //  e.target.value === '' || e.target.value === '0' ? null : handleQuantityChange(item._id, Number(e.target.value))
-                  // }}
-                  onClick={() => handleQuantityChange(item._id, item.quantity - 1)}
-                  className='border max-w-10 sm:max-w-20 px-1 sm:px-2 py-1'
-                  type="number"
-                  min={1}
-                  value={item.quantity}
-                /> */}
+                
                   <input
                 type="number"
                 min="1"

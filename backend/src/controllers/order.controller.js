@@ -44,7 +44,11 @@ const updateStatus = asyncHandler(async(req, res) => {
 const userOrders = asyncHandler(async (req, res) => {
     const userId = req.user?._id
 
-    const orders = await Order.find({customer: new mongoose.Types.ObjectId(userId)})
+    const orders = await Order.find({customer: new mongoose.Types.ObjectId(userId)}).populate({
+        path: 'orderItems.productId',
+        model: 'Product',
+        select: 'name price images.url' //Fields to include in the response
+    })
 
     return res
     .status(200)

@@ -41,7 +41,6 @@ const options = {
     secure: true,//Ensures the cookie is sent only over HTTPS connections.
     sameSite: "None", // Prevents the cookie from being sent with cross-site requests (mitigates CSRF(Cross Site Request Forgery ) attacks)
     path: '/',
-    maxAge: 15 * 24 * 60 * 60 * 1000 // 15 days
 
   }
 
