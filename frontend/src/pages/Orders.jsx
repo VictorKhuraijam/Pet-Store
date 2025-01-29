@@ -2,6 +2,7 @@ import {  useEffect, useState } from 'react'
 import Title from '../components/Title';
 import axios from 'axios';
 import {useSelector} from 'react-redux'
+import { useNavigate } from 'react-router-dom';
 
 
 const Orders = () => {
@@ -11,6 +12,7 @@ const Orders = () => {
   // const { backendUrl, token , currency} = useContext(ShopContext);
   const isAuth = useSelector((state) => state.user.isAuthenticated)
   const currency = useSelector((state) => state.shop.currency)
+  const navigate = useNavigate()
 
   const [orderData,setorderData] = useState([])
 
@@ -82,9 +84,15 @@ const Orders = () => {
                     </div>
                 </div>
               ))) :
-              <div>
-                <p className="text-gray-700">No orders yet</p>
-              </div>
+              <div className="flex flex-col items-center justify-center py-20">
+          <p className="text-xl text-gray-600 mb-6">Your cart is empty</p>
+          <button
+            onClick={() => navigate('/collection')}
+            className="bg-black text-white px-6 py-2 hover:bg-gray-800 transition-colors"
+          >
+            SHOP NOW
+          </button>
+        </div>
             }
         </div>
     </div>

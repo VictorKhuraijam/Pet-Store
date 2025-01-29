@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { assets } from '../assets/assets';
 import { useSelector, useDispatch } from 'react-redux';
 import {updateQuantity} from '../store/cartSlice'
+import { fetchProducts } from '../store/shopSlice';
 
 const Cart = () => {
 
@@ -18,6 +19,8 @@ const Cart = () => {
 
   useEffect(() => {
 
+      dispatch(fetchProducts())
+
       const tempData = [];
       for (const itemId in cartItems) {
 
@@ -28,7 +31,6 @@ const Cart = () => {
             })
           }
 
-      console.log('Updated cart data, tempData:', tempData);
       setCartData(tempData);
     }
 
@@ -37,15 +39,23 @@ const Cart = () => {
   const handleQuantityChange = (itemId, value) => {
 
     const newQuantity = Math.max(1, parseInt(value) || 1);
-      dispatch(updateQuantity({ itemId, newQuantity }))
+    console.log('Dispatching updateQuantity with:', itemId, newQuantity);
+      dispatch(updateQuantity( itemId, newQuantity ))
+
+      setCartData(prevData => prevData.map(item =>
+        item._id === itemId ? { ...item, quantity: newQuantity } : item
+      ));
 
   }
 
   const handleRemoveItem = (itemId) => {
 
     console.log ('Removing item:', itemId);
-    dispatch(updateQuantity( itemId, 0 ))
+    dispatch(updateQuantity( {itemId, newQuantity: 0} ))
   }
+
+  if (products.length === 0) return <p>Loading...</p>;
+
 
 
   return  (
@@ -59,56 +69,45 @@ const Cart = () => {
         cartData.length > 0 ? (
           <>
               <div>
-        {
-          cartData.map((item, index) => {
+                {
+                  cartData.map((item) => {
 
-            const productData = products.find((product) => product._id === item._id);
-            console.log("product data is :", productData)
+                    const productData = products.find((product) => product._id === item._id);
+                    console.log("product data is :", productData)
 
-            if (!productData) return null
+                    if (!productData) return null
 
-            return (
-              <div key={index} className='py-4 border-t border-b text-gray-700 grid grid-cols-[4fr_0.5fr_0.5fr] sm:grid-cols-[4fr_2fr_0.5fr] items-center gap-4'>
-                <div className=' flex items-start gap-6'>
-                  <img className='w-16 sm:w-20' src={productData.images[0].url} alt="" />
-                  <div>
-                    <p className='text-xs sm:text-lg font-medium'>{productData.name}</p>
-                    <div className='flex items-center gap-5 mt-2'>
-                      <p>{currency}{productData.price}</p>
+                    return (
+                      <div key={item._id} className='py-4 border-t border-b text-gray-700 grid grid-cols-[4fr_0.5fr_0.5fr] sm:grid-cols-[4fr_2fr_0.5fr] items-center gap-4'>
+                        <div className=' flex items-start gap-6'>
+                          <img className='w-16 sm:w-20' src={productData.images[0].url} alt="" />
+                          <div>
+                            <p className='text-xs sm:text-lg font-medium'>{productData.name}</p>
+                            <div className='flex items-center gap-5 mt-2'>
+                              <p>{currency}{productData.price}</p>
 
-                    </div>
-                  </div>
-                </div>
-                
-                  <input
-                type="number"
-                min="1"
-                value={item.quantity}
-                onChange={(e) => handleQuantityChange(item._id, e.target.value)}
-                className='border max-w-10 sm:max-w-20 px-1 sm:px-2 py-1'
-                readOnly
-                onKeyDown={(e) => {
-                  // Only allow up and down arrow keys
-                  if (e.key === 'ArrowUp') {
-                    e.preventDefault();
-                    handleQuantityChange(item._id, item.quantity + 1);
-                  } else if (e.key === 'ArrowDown') {
-                    e.preventDefault();
-                    handleQuantityChange(item._id, item.quantity - 1);
-                  }
-                }}
-              />
-                <img
-                  onClick={() => handleRemoveItem(item._id)}
-                  // onClick={() => updateQuantity(item._id, item.size, 0)}
-                  className='w-4 mr-4 sm:w-5 cursor-pointer'
-                  src={assets.bin_icon}
-                  alt="Remove item" />
-              </div>
-            )
+                            </div>
+                          </div>
+                        </div>
 
-          })
-        }
+                          <input
+                            type="number"
+                            min="1"
+                            value={item.quantity}
+                            onChange={(e) => handleQuantityChange(item._id, e.target.value)}
+                            className='border max-w-10 sm:max-w-20 px-1 sm:px-2 py-1 text-center'
+
+                          />
+                        <img
+                          onClick={() => handleRemoveItem(item._id)}
+                          className='w-4 mr-4 sm:w-5 cursor-pointer'
+                          src={assets.bin_icon}
+                          alt="Remove item" />
+                      </div>
+                    )
+
+                  })
+                }
       </div>
 
       <div className='flex justify-end my-20'>

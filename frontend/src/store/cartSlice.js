@@ -43,14 +43,14 @@ export const updateQuantity = (itemId,  quantity) => async (dispatch) => {
   try {
     const response = await axios.post(
       `${backendUrl}/cart/update`,
-      { itemId, quantity },
+      { itemId, quantity: Number(quantity) },
       { withCredentials: true }
     );
     if (response.data.success)
       dispatch(updateQuantityFulfilled({
         itemId,
         quantity,
-        cartData: response.data
+        cartData: response.data.data
       }));
 
   } catch (error) {
@@ -88,6 +88,7 @@ const cartSlice = createSlice({
     },
     updateQuantityFulfilled: (state, action) => {
       const { itemId, quantity } = action.payload;
+      console.log('Updating quantity in state:', itemId, quantity);
       if (quantity > 0) {
         state.items[itemId] = quantity;
       } else {
