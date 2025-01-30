@@ -67,6 +67,7 @@ const placeOrder = asyncHandler(async(req, res) => {
     const userId = req.user._id
     const { items, amount, address, deliveryType, paymentMethod  } = req.body
 
+    console.log("Received Order Data:", req.body);
 
     if(!userId){
         throw new ApiError(401, "Unauthorized access")
@@ -83,22 +84,30 @@ const placeOrder = asyncHandler(async(req, res) => {
     }
 
     // Validate if address is provided for delivery
-    if (!address && deliveryType === 'DELIVERY') {
-        throw new ApiError(400, "Address is required for delivery orders");
+    if (!address ) {
+        throw new ApiError(400, "Address is required");
     }
 
      // Validate items exist in the database
-     const validatedItems = await Promise.all(items.map(async (item) => {
-        const product = await Product.findById(item.productId);
+     const validatedItems = await Promise.all(
+        items.map(async (item) => {
+            console.log("Processing item:", item); // Debugging line
 
-        if (!product) {
-            throw new ApiError(404, `Product ${item.productId} not found`);
-        }
 
-        return {
-            productId: product._id,
-            quantity: item.quantity,
-        };
+            if (!item._id) {
+                throw new ApiError(400, "Each item must have a productId");
+            }
+
+            const product = await Product.findById(item._id);
+
+            if (!product) {
+                throw new ApiError(404, `Product ${item.productId} not found`);
+            }
+
+            return {
+                productId: product._id,
+                quantity: item.quantity,
+            };
      }));
 
     const order = await Order.create({
@@ -119,7 +128,7 @@ const placeOrder = asyncHandler(async(req, res) => {
     .json(
         new ApiResponse(
             201,
-            {order},
+            order,
             "New Order Placed"
         )
     )

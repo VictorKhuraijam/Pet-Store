@@ -51,7 +51,7 @@ const Cart = () => {
   const handleRemoveItem = (itemId) => {
 
     console.log ('Removing item:', itemId);
-    dispatch(updateQuantity( {itemId, newQuantity: 0} ))
+    dispatch(updateQuantity( itemId,  0 ))
   }
 
   if (products.length === 0) return <p>Loading...</p>;
@@ -81,7 +81,7 @@ const Cart = () => {
                       <div key={item._id} className='py-4 border-t border-b text-gray-700 grid grid-cols-[4fr_0.5fr_0.5fr] sm:grid-cols-[4fr_2fr_0.5fr] items-center gap-4'>
                         <div className=' flex items-start gap-6'>
                           <img className='w-16 sm:w-20' src={productData.images[0].url} alt="" />
-                          <div>
+                          <div className='mt-5 '>
                             <p className='text-xs sm:text-lg font-medium'>{productData.name}</p>
                             <div className='flex items-center gap-5 mt-2'>
                               <p>{currency}{productData.price}</p>
@@ -90,19 +90,35 @@ const Cart = () => {
                           </div>
                         </div>
 
+                        <div className='flex items-center  sm:max-w-10 px-1 sm:px-2 py-1 text-center'>
+                          <button
+                            onClick={() => handleQuantityChange(item._id, item.quantity - 1)}
+                            disabled={item.quantity <= 1}
+                            className="px-2 py-1 bg-gray-200 text-gray-700 disabled:opacity-50"
+                          >
+                            -
+                          </button>
                           <input
                             type="number"
                             min="1"
                             value={item.quantity}
                             onChange={(e) => handleQuantityChange(item._id, e.target.value)}
-                            className='border max-w-10 sm:max-w-20 px-1 sm:px-2 py-1 text-center'
-
+                            className='w-10 text-center border-none'
                           />
+                          <button
+                            onClick={() => handleQuantityChange(item._id, item.quantity + 1)}
+                            className="px-2 py-1 bg-gray-200 text-gray-700"
+                          >
+                            +
+                          </button>
+                        </div>
+
                         <img
                           onClick={() => handleRemoveItem(item._id)}
-                          className='w-4 mr-4 sm:w-5 cursor-pointer'
+                          className='w-4 mr-4 sm:w-5 cursor-pointer m-2 hover:bg-gray-300 hover:rounded'
                           src={assets.bin_icon}
-                          alt="Remove item" />
+                          alt="Remove item"
+                        />
                       </div>
                     )
 
@@ -114,8 +130,8 @@ const Cart = () => {
           <div className='w-full sm:w-[450px]'>
             <CartTotal />
             <div className=' w-full text-end'>
-              <button onClick={() => navigate('/place-order')} className='bg-black text-white text-sm my-8 px-8 py-3'>PROCEED TO CHECKOUT</button>
-            </div>
+            <button onClick={() => navigate('/place-order')} className='bg-black text-white text-sm my-8 px-8 py-3'>PROCEED TO CHECKOUT</button>
+          </div>
           </div>
       </div>
           </>

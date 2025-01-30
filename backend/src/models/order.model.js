@@ -33,10 +33,8 @@ const orderSchema = new mongoose.Schema(
       default: 'DELIVERY',
     },
     address: {
-      type: String,
-      required: function () {
-        return this.deliveryType === 'DELIVERY';
-      },
+      type: Object,
+      required: true
     },
     status: {
       type: String,
@@ -47,7 +45,7 @@ const orderSchema = new mongoose.Schema(
     payment: {
       type: String,
       enum: ['PAID', 'NOT_PAID'],
-      default: false
+      default: 'NOT_PAID'
     },
   },
   {timestamps: true}
