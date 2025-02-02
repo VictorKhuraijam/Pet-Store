@@ -14,6 +14,7 @@ import {
     verifyPhone,
     resendPhoneOTP,
     adminLogin,
+    getAdminAuthStatus,
     adminLogout,
 
 
@@ -48,6 +49,7 @@ router.route("/verify-phone").post( verifyJWT, verifyPhone);
 router.route("/resend-otp").post( verifyJWT, resendPhoneOTP);
 
 router.route('/admin/login').post(adminLogin)
+router.route('/admin/check-auth').get(adminAuth, getAdminAuthStatus)
 router.route('/admin/logout').post(adminAuth, adminLogout)
 
 

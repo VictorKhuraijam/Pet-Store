@@ -13,7 +13,7 @@ const adminAuth = asyncHandler(async (req, _, next) => {
         const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
 
         // Verify if the decoded token matches admin credentials
-        const adminSignature = process.env.ADMIN_EMAIL
+        // const adminSignature = process.env.ADMIN_EMAIL
 
         if (decodedToken.email !== process.env.ADMIN_EMAIL) {
             throw new ApiError(403, "Forbidden - Invalid admin credentials");

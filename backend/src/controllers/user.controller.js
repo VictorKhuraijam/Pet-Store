@@ -583,10 +583,26 @@ const adminLogin = asyncHandler(async (req, res) => {
         .cookie("token",token, options)
         .json(new ApiResponse(
             200,
-            {token},
+            token,
             "Admin logged in sccessfully"
         ))
 
+})
+
+const getAdminAuthStatus = asyncHandler(async (req, res) => {
+    if(!req.admin || !req.admin.isAdmin){
+        throw new ApiError(403, "Admin authentication required")
+    }
+
+    return res
+    .status(200)
+    .json(
+        new ApiResponse(
+            200,
+            req.admin,
+            "Admin is authecticated"
+        )
+    )
 })
 
 const adminLogout = asyncHandler(async (req, res) => {
@@ -616,5 +632,6 @@ export {
     verifyPhone,
     resendPhoneOTP,
     adminLogin,
+    getAdminAuthStatus,
     adminLogout
  }
