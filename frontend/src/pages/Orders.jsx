@@ -32,8 +32,8 @@ const Orders = () => {
         response.data.data.orders.forEach((order) => {
           order.orderItems.forEach((item) => {
             item['status'] = order.status;
+            item['deliveryType'] = order.deliveryType;
             item['payment'] = order.payment;
-            item['paymentMethod'] = order.paymentMethod;
             item['createdAt'] = order.createdAt;
             allOrdersItem.push(item);
           });
@@ -52,7 +52,7 @@ const Orders = () => {
     loadOrderData()
   },[isAuth])
 
-  return (
+  return isAuth ? (
     <div className='border-t pt-16'>
 
         <div className='text-2xl'>
@@ -72,15 +72,17 @@ const Orders = () => {
                             <p>Quantity: {item.quantity}</p>
                           </div>
                           <p className='mt-1'>Date: <span className=' text-gray-400'>{new Date(item.createdAt).toDateString()}</span></p>
-                          <p className='mt-1'>Payment: <span className=' text-gray-400'>{item.paymentMethod}</span></p>
+                          <p className='mt-1'>Payment: <span className=' text-gray-400'>{item.payment}</span></p>
+                          <p className='mt-1'>Delivery type: <span className=' text-gray-400'>{item.deliveryType }</span></p>
                         </div>
                     </div>
                     <div className='md:w-1/2 flex justify-between'>
+                        <div className='border px-4 py-2 text-sm font-medium rounded-xl'>Status</div>
                         <div className='flex items-center gap-2'>
                             <p className='min-w-2 h-2 rounded-full bg-green-500'></p>
                             <p className='text-sm md:text-base'>{item.status}</p>
                         </div>
-                        <button onClick={loadOrderData} className='border px-4 py-2 text-sm font-medium rounded-sm'>Track Order</button>
+
                     </div>
                 </div>
               ))) :
@@ -95,6 +97,17 @@ const Orders = () => {
         </div>
             }
         </div>
+    </div>
+  ):
+  (
+    <div className='text-center mt-10 '>
+      <h3 className='prata-regular'>Login to order</h3>
+      <button
+        onClick={() => (navigate('/login'))}
+        className='border rounded-2xl bg-gray-300 px-4 mt-4 py-2'
+        >
+        Login
+      </button>
     </div>
   )
 }
