@@ -1,18 +1,19 @@
-import React from 'react'
-import { useEffect } from 'react'
-import { useState } from 'react'
+import  {useState, useEffect, useContext } from 'react'
 import axios from 'axios'
-import { backendUrl, currency } from '../App'
 import { toast } from 'react-toastify'
 import { assets } from '../assets/assets'
+import AuthContext from '../context/AuthContext'
 
-const Orders = ({ token }) => {
+const Orders = () => {
+
+
+  const {backendUrl, isAuthenticated, currency} = useContext(AuthContext)
 
   const [orders, setOrders] = useState([])
 
   const fetchAllOrders = async () => {
 
-    if (!token) {
+    if (!isAuthenticated) {
       return null;
     }
 

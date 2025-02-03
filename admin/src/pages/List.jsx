@@ -1,9 +1,12 @@
 import axios from 'axios'
-import React, { useEffect, useState } from 'react'
-import { backendUrl, currency } from '../App'
+import  { useContext, useEffect, useState } from 'react'
+
 import { toast } from 'react-toastify'
+import AuthContext from '../context/AuthContext'
 
 const List = ({ token }) => {
+
+  const {backendUrl, currency} = useContext(AuthContext)
 
   const [list, setList] = useState([])
 

@@ -12,7 +12,7 @@ const Login = () => {
 
     useEffect(() => {
         if(isAuthenticated){
-            navigate('/home')
+            navigate('/add')
         }
     },[isAuthenticated, navigate])
 

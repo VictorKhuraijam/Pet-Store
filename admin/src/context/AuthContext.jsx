@@ -1,4 +1,4 @@
-import { createContext, useState, useEffect } from "react";
+import { createContext, useState, } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
 
@@ -11,10 +11,12 @@ export const AuthProvider = ({ children }) => {
 
   const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
-  // Check authentication status on page load
-  useEffect(() => {
-    checkAuthStatus();
-  }, []);
+  const currency = '₹'
+
+  //  Check authentication status on page load
+  // useEffect(() => {
+  //   checkAuthStatus();
+  // }, []);
 
   const loginAdmin = async (email, password) => {
     setLoading(true);
@@ -33,7 +35,8 @@ export const AuthProvider = ({ children }) => {
         throw new Error("Login failed");
       }
     } catch (error) {
-      toast.error(error.message);
+      console.error("Login error:", error)
+      toast.error('Invalid email or password');
     } finally {
       setLoading(false);
     }
@@ -58,7 +61,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   const checkAuthStatus = async () => {
-    if(isAuthenticated){
+
       try {
         const response = await axios.get(`${backendUrl}/users/admin/check-auth`, {
           withCredentials: true,
@@ -67,6 +70,8 @@ export const AuthProvider = ({ children }) => {
         if (response.data.success) {
           setAdmin(response.data.data);
           setIsAuthenticated(true);
+        } else {
+          setIsAuthenticated(false)
         }
       } catch (error) {
         console.error("Auth check failed:", error.message);
@@ -74,12 +79,12 @@ export const AuthProvider = ({ children }) => {
       } finally {
         setLoading(false);
       }
-    }
+
   };
 
   return (
     <AuthContext.Provider
-      value={{ admin, isAuthenticated, loading, loginAdmin, checkAuthStatus, logoutAdmin }}
+      value={{ admin, isAuthenticated, loading, backendUrl, currency, loginAdmin, checkAuthStatus, logoutAdmin }}
     >
       {children}
     </AuthContext.Provider>
