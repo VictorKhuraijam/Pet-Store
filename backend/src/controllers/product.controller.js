@@ -27,15 +27,16 @@ const addProduct = asyncHandler(async (req, res) => {
     let imagesData = await Promise.all(
         images.map(async (item) => {
            const result = await uploadOnCloudinary(item.path)
+           console.log("Cloudinary upload result:", result)
            if(!result){
             throw new ApiError(500, "Error uploading image to cloudinary")
            }
            return {
-            url: result.url,
-            public_id: result.public_id
+            url: result.url
            }
         })
     )
+    console.log("Images data Array:", imagesData)
 
     const product = await Product.create({
         name,
@@ -44,7 +45,7 @@ const addProduct = asyncHandler(async (req, res) => {
         type,
         price: Number(price),
         bestseller: bestseller === "true",
-        productImages: imagesData
+        mages: imagesData
     })
 
     if(!product){

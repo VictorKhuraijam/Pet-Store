@@ -22,14 +22,12 @@ const App = () => {
     console.log("Is Authenticated:", isAuthenticated)
     if(!isAuthenticated){
       navigate('/login' )
-    } else {
-      navigate('/add')
     }
   },[isAuthenticated, navigate, loading])
 
   useEffect(()=>{
     checkAuthStatus()
-  },[checkAuthStatus])
+  },[])
 
   return (
     <div className='bg-gray-50 min-h-screen mx-auto'>

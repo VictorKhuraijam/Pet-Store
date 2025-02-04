@@ -59,8 +59,8 @@ const Product = () => {
               {Array.isArray(productData.images) ?
                ( productData.images.map((item,index)=>(
                   <img
-                    onClick={()=>setImage(item)}
-                    src={item}
+                    onClick={()=>setImage(item.url)}
+                    src={item.url}
                     key={index}
                     className='w-[24%] sm:w-full sm:mb-3 flex-shrink-0 cursor-pointer'
                     alt=""

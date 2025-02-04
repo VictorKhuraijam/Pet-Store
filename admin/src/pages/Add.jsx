@@ -16,8 +16,8 @@ const Add = () => {
    const [name, setName] = useState("");
    const [description, setDescription] = useState("");
    const [price, setPrice] = useState("");
-   const [category, setCategory] = useState("");
-   const [type, setType] = useState("");
+   const [category, setCategory] = useState("Dog");
+   const [type, setType] = useState("Food");
    const [bestseller, setBestseller] = useState(false);
 
    const onSubmitHandler = async (e) => {
@@ -29,10 +29,10 @@ const Add = () => {
 
       formData.append("name",name)
       formData.append("description",description)
-      formData.append("price",price)
+      formData.append("price", Number(price))
       formData.append("category",category)
       formData.append("type",type)
-      formData.append("bestseller",bestseller)
+      formData.append("bestseller",bestseller.toString())
 
       image1 && formData.append("image1",image1)
       image2 && formData.append("image2",image2)
@@ -40,7 +40,7 @@ const Add = () => {
       image4 && formData.append("image4",image4)
 
       const response = await axios.post(
-        backendUrl + "/products/add",
+        `${backendUrl}/products/add`,
         formData,
         {withCredentials: true})
 
@@ -102,7 +102,10 @@ const Add = () => {
 
             <div>
               <p className='mb-2'>Product category</p>
-              <select onChange={(e) => setCategory(e.target.value)} className='w-full px-3 py-2'>
+              <select
+                onChange={(e) => setCategory(e.target.value)}
+                value={category}
+                className='w-full px-3 py-2'>
                   <option value="Dog">Dog</option>
                   <option value="Cat">Cat</option>
               </select>
@@ -110,7 +113,10 @@ const Add = () => {
 
             <div>
               <p className='mb-2'>Type</p>
-              <select onChange={(e) => setType(e.target.value)} className='w-full px-3 py-2'>
+              <select
+                onChange={(e) => setType(e.target.value)}
+                value={type}
+                className='w-full px-3 py-2'>
                   <option value="Food">Food</option>
                   <option value="Toy">Toy</option>
                   <option value="Accessories">Accessories</option>
@@ -119,7 +125,7 @@ const Add = () => {
 
             <div>
               <p className='mb-2'>Product Price</p>
-              <input onChange={(e) => setPrice(e.target.value)} value={price} className='w-full px-3 py-2 sm:w-[120px]' type="Number" placeholder='25' />
+              <input onChange={(e) => setPrice(e.target.value)} value={price} className='w-full px-3 py-2 sm:w-[120px]' type="Number" placeholder='' />
             </div>
 
         </div>

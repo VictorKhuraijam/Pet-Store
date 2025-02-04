@@ -4,7 +4,7 @@ import  { useContext, useEffect, useState } from 'react'
 import { toast } from 'react-toastify'
 import AuthContext from '../context/AuthContext'
 
-const List = ({ token }) => {
+const List = () => {
 
   const {backendUrl, currency} = useContext(AuthContext)
 
@@ -13,9 +13,13 @@ const List = ({ token }) => {
   const fetchList = async () => {
     try {
 
-      const response = await axios.get(backendUrl + '/api/product/list')
+      const response = await axios.get(
+        `${backendUrl}/products/list`,
+        {withCredentials: true}
+      )
       if (response.data.success) {
-        setList(response.data.products.reverse());
+        setList(response.data.data.products.reverse());
+        console.log("List of products :", list)
       }
       else {
         toast.error(response.data.message)
@@ -30,7 +34,9 @@ const List = ({ token }) => {
   const removeProduct = async (id) => {
     try {
 
-      const response = await axios.post(backendUrl + '/api/product/remove', { id }, { headers: { token } })
+      const response = await axios.delete(
+        `${backendUrl}/products/delete/${id}`,
+        {withCredentials: true })
 
       if (response.data.success) {
         toast.success(response.data.message)
@@ -69,7 +75,7 @@ const List = ({ token }) => {
         {
           list.map((item, index) => (
             <div className='grid grid-cols-[1fr_3fr_1fr] md:grid-cols-[1fr_3fr_1fr_1fr_1fr] items-center gap-2 py-1 px-2 border text-sm' key={index}>
-              <img className='w-12' src={item.image[0]} alt="" />
+              <img className='w-12' src={item.images[0].url} alt="" />
               <p>{item.name}</p>
               <p>{item.category}</p>
               <p>{currency}{item.price}</p>
