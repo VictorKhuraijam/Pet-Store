@@ -28,14 +28,16 @@ const allOrders = asyncHandler(async (req, res) => {
 const updateStatus = asyncHandler(async(req, res) => {
     const {orderId, status, payment} = req.body
 
-    const order = await Order.findByIdAndUpdate(orderId, {status,payment},{new:true})
+    const order = await Order.findByIdAndUpdate(orderId,
+         {status,payment},
+         {new:true})
 
     return res
     .status(200)
     .json(
         new ApiResponse(
             200,
-            {order},
+            order,
             "Status updated"
         )
     )
@@ -66,7 +68,7 @@ const userOrders = asyncHandler(async (req, res) => {
 const placeOrder = asyncHandler(async(req, res) => {
 
     const userId = req.user._id
-    const { items, amount, address, deliveryType, paymentMethod  } = req.body
+    const { items, amount, address, deliveryType } = req.body
 
     console.log("Received Order Data:", req.body);
 
@@ -84,8 +86,7 @@ const placeOrder = asyncHandler(async(req, res) => {
         throw new ApiError(400, "Items must be a non-empty array");
     }
 
-    // Validate if address is provided for delivery
-    if (!address ) {
+    if ( !address ) {
         throw new ApiError(400, "Address is required");
     }
 
@@ -101,14 +102,19 @@ const placeOrder = asyncHandler(async(req, res) => {
             const product = await Product.findById(item._id);
 
             if (!product) {
-                throw new ApiError(404, `Product ${item.productId} not found`);
+                throw new ApiError(404, `Product ${item._id} not found`);
             }
 
             return {
                 productId: product._id,
                 quantity: item.quantity,
+                name: item.name,
+                image: {
+                    url: item.images[0]?.url
+                }
             };
      }));
+     console.log("Validated Items :", validatedItems)
 
     const order = await Order.create({
         customer: userId,
@@ -116,7 +122,6 @@ const placeOrder = asyncHandler(async(req, res) => {
         orderPrice: amount,
         address,
         deliveryType: deliveryType || 'PICKUP',
-        paymentMethod: paymentMethod || 'CASH_AT_STORE',
         payment: "NOT_PAID",
         status: 'PENDING'
     })

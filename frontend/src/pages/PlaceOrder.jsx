@@ -19,8 +19,7 @@ const PlaceOrder = () => {
     const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
      // State for Delivery Method
-  const [deliveryType, setDeliveryType] = useState('DELIVERY'); // Default to Home Delivery
-
+    const [deliveryType, setDeliveryType] = useState('DELIVERY'); 
 
     const [formData, setFormData] = useState({
         firstName: '',

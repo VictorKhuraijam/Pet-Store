@@ -43,7 +43,6 @@ const Orders = () => {
       }
 
     } catch (error) {
-
     console.error(error.message);
     }
   }

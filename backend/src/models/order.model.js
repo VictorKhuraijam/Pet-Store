@@ -1,5 +1,4 @@
 import mongoose from 'mongoose'
-import { Product } from './product.model.js';
 
 const orderItemSchema = new mongoose.Schema({
   productId: {
@@ -11,6 +10,16 @@ const orderItemSchema = new mongoose.Schema({
     default: 1,
     required: true
   },
+  name: {
+    type: String,
+    required: true,
+  },
+  image:{
+    url: {
+      type: String, // cloudinary url
+      required: true,
+    },
+  }
 },{ _id: false });
 
 const orderSchema = new mongoose.Schema(
@@ -38,7 +47,7 @@ const orderSchema = new mongoose.Schema(
     },
     status: {
       type: String,
-      enum: ["PENDING", "CANCELLED", "DELIVERED", "RETRIEVED"],
+      enum: ["PENDING", "CANCELLED", "DELIVERED", "PACKED", "OUT FOR DELIVERY"],
       //enum:user can only choose from the four strings
       default: "PENDING"
     },
