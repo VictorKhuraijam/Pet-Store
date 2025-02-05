@@ -12,6 +12,7 @@ import {ApiResponse} from '../utils/ApiResponse.js'
 const allOrders = asyncHandler(async (req, res) => {
     const orders = await Order.find({})
 
+
     return res
     .status(200)
     .json(
@@ -92,7 +93,6 @@ const placeOrder = asyncHandler(async(req, res) => {
      const validatedItems = await Promise.all(
         items.map(async (item) => {
             console.log("Processing item:", item); // Debugging line
-
 
             if (!item._id) {
                 throw new ApiError(400, "Each item must have a productId");

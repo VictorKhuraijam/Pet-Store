@@ -140,7 +140,7 @@ const Cart = () => {
           <p className="text-xl text-gray-600 mb-6">Your cart is empty</p>
           <button
             onClick={() => navigate('/collection')}
-            className="bg-black text-white px-6 py-2 hover:bg-gray-800 transition-colors"
+            className="bg-black text-white px-6 py-2 rounded  hover:bg-gray-800 transition-colors"
           >
             SHOP NOW
           </button>

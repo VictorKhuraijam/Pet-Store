@@ -45,7 +45,7 @@ const addProduct = asyncHandler(async (req, res) => {
         type,
         price: Number(price),
         bestseller: bestseller === "true",
-        mages: imagesData
+        images: imagesData
     })
 
     if(!product){
@@ -105,7 +105,7 @@ const removeProduct = asyncHandler(async (req, res) => {
     }
 
       // Extract all public_ids from product images
-      const urls = product.productImages.map(image => image.url)
+      const urls = product.images.map(image => image.url)
 
       // Delete all images from Cloudinary
       try {

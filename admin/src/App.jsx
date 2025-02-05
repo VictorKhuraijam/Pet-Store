@@ -3,7 +3,7 @@ import AuthContext from './context/AuthContext'
 import Navbar from './components/Navbar'
 import Sidebar from './components/Sidebar'
 import Add from './pages/Add'
-import { Routes, Route, useNavigate, Navigate } from 'react-router-dom'
+import { Routes, Route, useNavigate} from 'react-router-dom'
 import List from './pages/List'
 import Orders from './pages/Orders'
 import Login from './components/Login'
@@ -36,7 +36,7 @@ const App = () => {
         <>
         <Routes>
           <Route path='/login' element={<Login />}/>
-          <Route path='*' element={<Navigate to='/login' replace />} />
+          {/* <Route path='*' element={<Navigate to='/login' replace />} /> */}
         </Routes>
         </>
       )
@@ -52,7 +52,7 @@ const App = () => {
               <Route path='/list' element={<List  />} />
               <Route path='/orders' element={<Orders  />} />
 
-              <Route path='*' element={<Navigate to='/add' replace />} />
+              {/* <Route path='*' element={<Navigate to='/add' replace />} /> */}
             </Routes>
           </div>
         </div>
