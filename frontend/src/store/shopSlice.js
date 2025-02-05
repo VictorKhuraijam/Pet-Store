@@ -6,62 +6,6 @@ import { toast } from 'react-toastify';
 const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
 const initialState = {
-  // products: [
-  //   {
-  //     _id: "1",
-  //     name: "Pedigree",
-  //     category: "Dog",
-  //     image: [assets.dog_food],
-  //     price: 15,
-  //     type: "Food",
-  //     bestseller: true
-  //   },
-  //   {
-  //     _id: "2",
-  //     name: "Thinganng",
-  //     category: "Dog",
-  //     image: [assets.dog_toy],
-  //     price: 10,
-  //     type: "Toys",
-  //     bestseller: true
-  //   },
-  //   {
-  //     _id: "3",
-  //     name: "Bowtie",
-  //     category: "Dog",
-  //     image: [assets.dog_accessory],
-  //     price: 50,
-  //     type: "Accessories",
-  //     bestseller: true
-  //   },
-  //   {
-  //     _id: "4",
-  //     name: "Whiskas",
-  //     category: "Cat",
-  //     image: [assets.cat_food],
-  //     price: 15,
-  //     type: "Food",
-  //     bestseller: true
-  //   },
-  //   {
-  //     _id: "5",
-  //     name: "Houdong phanaba",
-  //     category: "Cat",
-  //     image: [assets.cat_toy],
-  //     price: 10,
-  //     type: "Toys",
-  //     bestseller: true
-  //   },
-  //   {
-  //     _id: "6",
-  //     name: "Collar",
-  //     category: "Cat",
-  //     image: [assets.cat_accessory],
-  //     price: 50,
-  //     type: "Accessories",
-  //     bestseller: false
-  //   },
-  // ],
   products: [],
   loading: false,
   error: null,

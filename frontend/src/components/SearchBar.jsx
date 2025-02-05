@@ -10,11 +10,11 @@ function SearchBar({ search, onSearchChange }) {
         <input
            value={search}
            onChange={onSearchChange}
-           className='flex-1 outline-none bg-inherit text-sm'
+           className='flex-1 outline-none bg-inherit text-sm sm:px-'
            type="text"
            placeholder='Search'
         />
-        <img className='w-4' src={assets.search_icon} alt="" />
+        <img className='w-4 ' src={assets.search_icon} alt="" />
       </div>
     </div>
   )
