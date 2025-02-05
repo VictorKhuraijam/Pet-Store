@@ -48,7 +48,6 @@ const orderSchema = new mongoose.Schema(
     status: {
       type: String,
       enum: ["PENDING", "CANCELLED", "DELIVERED", "PACKED", "OUT FOR DELIVERY"],
-      //enum:user can only choose from the four strings
       default: "PENDING"
     },
     payment: {
