@@ -33,48 +33,12 @@ const userSchema = new mongoose.Schema(
       type: Date,
       sparse: true
     },
-    // phone: {
-    //   type: String,
-    //   sparse: true,
-    //   unique: true,
-    // },
-    // isPhoneVerified: {
-    //   type: Boolean,
-    //   default: false, // phone verification status
-    // },
-    // phoneVerificationOTP: {
-    //   type: String,
-    //   sparse: true
-    // },
-    // phoneVerificationExpires: {
-    //     type: Date,
-    //     sparse: true
-    // },
-    // otpAttempts: {
-    //     type: Number,
-    //     default: 0
-    // },
     password: {
       type: String,
-      required: function () {
-        // Password is required if the user is not using Google login.
-        return !this.isGoogleVerified;
-      },
+      required: true,
       minlength: [8, 'Password must be at least 8 characters long']
     },
-    // isGoogleVerified: {
-    //   type: Boolean,
-    //   default: false, // Google login status
-    // },
-    // googleId: {
-    //   type: String,
-    //   sparse: true,  // allows empty googleId for users using email/phone only
-    // },
-    // loginType: {
-    //   type: String,
-    //   enum: ["email", "phone", "google"],
-    //   required: true
-    // },
+
     cartData: {
       type: Object,
       default: {}
@@ -95,6 +59,7 @@ userSchema.pre("save", async function(next){
     next(error); //pass error to Mongoose
   }
 });
+
 userSchema.methods.isPasswordCorrect = async function(password){
   return await bcrypt.compare(password, this.password) // returns true or false. compare password with the encrypted password
 }
@@ -138,12 +103,6 @@ userSchema.methods.generateRefreshToken = function(){
 // Method to verify email (can be called when clicking the email verification link)
 userSchema.methods.verifyEmail = function () {
   this.isEmailVerified = true;
-  return this.save();
-};
-
-// Method to verify phone (can be called when OTP is verified)
-userSchema.methods.verifyPhone = function () {
-  this.isPhoneVerified = true;
   return this.save();
 };
 

@@ -19,11 +19,7 @@ const emailTransporter = nodemailer.createTransport({
     }
 });
 
-// Configure Twilio client
-// const twilioClient = twilio(
-//     process.env.TWILIO_ACCOUNT_SID,
-//     process.env.TWILIO_AUTH_TOKEN
-// );
+
 
 // Generate verification token
 const generateVerificationToken = () => {
@@ -68,29 +64,8 @@ try {
 }
 
 // Route for user register
-const registerUserWithEmailOrPhone = asyncHandler(async (req, res) => {
+const registerUserWithEmail = asyncHandler(async (req, res) => {
     const { username, email, password, } = req.body;
-    // const { username, email, phone, password, loginType } = req.body;
-
-
-    // Validate input for email or phone registration
-    // if (loginType === "email") {
-    //     if (!email || !password) {
-    //         throw new ApiError(400, "Email and password are required");
-    //     }
-    //     if (!validator.isEmail(email)) {
-    //         throw new ApiError(400, "Please enter a valid email");
-    //     }
-    // } else if (loginType === "phone") {
-    //     if (!phone || !password) {
-    //         throw new ApiError(400, "Phone and password are required");
-    //     }
-    //     if (!validator.isMobilePhone(phone)) {
-    //         throw new ApiError(400, "Please enter a valid phone number");
-    //     }
-    // } else {
-    //     throw new ApiError(400, "Invalid login type for email/phone registration");
-    // }
 
     if (!email || !password) {
         throw new ApiError(400, "Email and password are required");
@@ -100,36 +75,13 @@ const registerUserWithEmailOrPhone = asyncHandler(async (req, res) => {
         throw new ApiError(400, "Please enter a valid email");
     }
 
-    // Check if the user already exists
-    // let existingUser;
-    // if (loginType === "email") {
-    //     existingUser = await User.findOne({ email: email.toLowerCase() });
-    //     console.log("Checking email existence:", { email: email.toLowerCase() });
-    // }
-
-    // if (loginType === "phone")  {
-    //     existingUser = await User.findOne({ phone });
-    //     console.log("Checking phone existence:", { phone });
-    // }
-
     const existingUser = await User.findOne({ email: email.toLowerCase() });
-
 
     console.log("Existing user:", existingUser);
 
     if (existingUser) {
         throw new ApiError(409, "User already exists");
     }
-
-    // Create the user
-    // const user = await User.create({
-    //     username,
-    //     email: email?.toLowerCase(),
-    //     phone,
-    //     password,
-    //     loginType,
-    //     emailVerificationTimestamp: Date.now(),
-    // });
 
     const user = await User.create({
         username,
@@ -150,13 +102,6 @@ const registerUserWithEmailOrPhone = asyncHandler(async (req, res) => {
     if (!createdUser) {
         throw new ApiError(500, "Error while registering user");
     }
-
-     // Send verification based on login type
-    //  if (loginType === "email") {
-    //     await  sendVerificationEmail(user);
-    // } else if (loginType === "phone") {
-    //      sendOTP(user);
-    // }
 
     await  sendVerificationEmail(user);
 
@@ -316,6 +261,31 @@ const changeCurrentPassword = asyncHandler(async(req, res) => {
     )
 })
 
+const updateAccountDetails = asyncHandler(async(req, res) => {
+    const {username} = req.body
+    const userId = req.user._id
+
+    if(!username){
+      throw new ApiError(400, "Username is required")
+    }
+
+    const user = await User.findByIdAndUpdate(
+        userId,
+      {
+        $set: {
+            username,
+        }
+      },
+      {new: true}
+    ).select("-password -refreshToken ")
+
+    return res
+    .status(200)
+    .json(new ApiResponse(200, user, "Account details updated successfully" ))
+
+  })
+
+
 const getCurrentUser = asyncHandler(async(req, res) => {
 return res
 .status(200)
@@ -457,106 +427,150 @@ const resendEmailVerification = asyncHandler(async (req, res) => {
 });
 
 // Send OTP via SMS
-const sendOTP = async (user) => {
-   try {
-     const otp = generateOTP();
+// const sendOTP = async (user) => {
+//    try {
+//      const otp = generateOTP();
 
-     // Save OTP to user
-     user.phoneVerificationOTP = otp;
-     user.phoneVerificationExpires = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
-     await user.save({ validateBeforeSave: false });
+//      // Save OTP to user
+//      user.phoneVerificationOTP = otp;
+//      user.phoneVerificationExpires = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
+//      await user.save({ validateBeforeSave: false });
 
-     await twilioClient.messages.create({
-         body: `Your verification code is: ${otp}. Valid for 10 minutes.`,
-         to: user.phone,
-         from: process.env.TWILIO_PHONE_NUMBER
-     });
-   } catch (error) {
-        console.log("The twilio error message is",error.message)
-   }
-}
+//      await twilioClient.messages.create({
+//          body: `Your verification code is: ${otp}. Valid for 10 minutes.`,
+//          to: user.phone,
+//          from: process.env.TWILIO_PHONE_NUMBER
+//      });
+//    } catch (error) {
+//         console.log("The twilio error message is",error.message)
+//    }
+// }
 
-// Verify phone OTP
-const verifyPhone = asyncHandler(async (req, res) => {
-    const { otp } = req.body;
-    const userId = req.user._id;
+// // Verify phone OTP
+// const verifyPhone = asyncHandler(async (req, res) => {
+//     const { otp } = req.body;
+//     const userId = req.user._id;
 
-    const user = await User.findOne({
-        _id: userId,
-        phoneVerificationOTP: otp,
-        phoneVerificationExpires: { $gt: Date.now() }
-    });
+//     const user = await User.findOne({
+//         _id: userId,
+//         phoneVerificationOTP: otp,
+//         phoneVerificationExpires: { $gt: Date.now() }
+//     });
 
-    if (!user) {
-        throw new ApiError(400, "Invalid or expired OTP");
+//     if (!user) {
+//         throw new ApiError(400, "Invalid or expired OTP");
+//     }
+
+//     user.isPhoneVerified = true;
+//     user.phoneVerificationOTP = undefined;
+//     user.phoneVerificationExpires = undefined;
+//     await user.save({ validateBeforeSave: false });
+
+//     // Generate new tokens
+
+//     const {accessToken, refreshToken} = await generateAccessTokenAndRefreshToken(user._id)
+
+//     // Get user data without sensitive fields
+//     const verifiedUser = await User.findById(user._id).select(
+//         "-password -refreshToken -phoneVerificationOTP -phoneVerificationExpires -otpAttempts"
+//     );
+
+//     return res
+//     .status(200)
+//     .cookie("accessToken", accessToken, options)
+//     .cookie("refreshToken", refreshToken, options)
+//     .json(
+//         new ApiResponse(
+//             200,
+//             {
+//                 user: verifiedUser,
+//                 accessToken,
+//                 refreshToken
+//             },
+//             "Phone number verified successfully"
+//         )
+//     );
+// });
+
+// // Resend phone OTP
+// const resendPhoneOTP = asyncHandler(async (req, res) => {
+//     const { phone } = req.body;
+
+//     if (!phone) {
+//         throw new ApiError(400, "Phone number is required");
+//     }
+
+//     const user = await User.findOne({ phone });
+
+//     if (!user) {
+//         throw new ApiError(404, "User not found");
+//     }
+
+//     if (user.isPhoneVerified) {
+//         throw new ApiError(400, "Phone already verified");
+//     }
+
+//     // Check if we've sent an OTP recently
+//     if (user.phoneVerificationExpires && user.phoneVerificationExpires > Date.now()) {
+//         const waitTime = Math.ceil((user.phoneVerificationExpires - Date.now()) / 1000);
+//         throw new ApiError(429, `Please wait ${waitTime} seconds before requesting another OTP`);
+//     }
+
+//     await sendOTP(user);
+
+//     return res
+//     .status(200)
+//     .json(
+//         new ApiResponse(
+//             200,
+//             {},
+//             "OTP sent successfully"
+//         )
+//     );
+// });
+
+const deleteUser = asyncHandler(async (req, res) => {
+    const userId = req.user?._id; 
+
+    if (!userId) {
+        throw new ApiError(401, "Unauthorized request");
     }
 
-    user.isPhoneVerified = true;
-    user.phoneVerificationOTP = undefined;
-    user.phoneVerificationExpires = undefined;
-    await user.save({ validateBeforeSave: false });
-
-    // Generate new tokens
-
-    const {accessToken, refreshToken} = await generateAccessTokenAndRefreshToken(user._id)
-
-    // Get user data without sensitive fields
-    const verifiedUser = await User.findById(user._id).select(
-        "-password -refreshToken -phoneVerificationOTP -phoneVerificationExpires -otpAttempts"
-    );
-
-    return res
-    .status(200)
-    .cookie("accessToken", accessToken, options)
-    .cookie("refreshToken", refreshToken, options)
-    .json(
-        new ApiResponse(
-            200,
-            {
-                user: verifiedUser,
-                accessToken,
-                refreshToken
-            },
-            "Phone number verified successfully"
-        )
-    );
-});
-
-// Resend phone OTP
-const resendPhoneOTP = asyncHandler(async (req, res) => {
-    const { phone } = req.body;
-
-    if (!phone) {
-        throw new ApiError(400, "Phone number is required");
-    }
-
-    const user = await User.findOne({ phone });
+    // Find the user first to ensure they exist
+    const user = await User.findById(userId);
 
     if (!user) {
         throw new ApiError(404, "User not found");
     }
 
-    if (user.isPhoneVerified) {
-        throw new ApiError(400, "Phone already verified");
+    // Optional: Add additional security check if needed
+    // For example, requiring password confirmation
+    const { password } = req.body;
+    if (password) {
+        const isPasswordValid = await user.isPasswordCorrect(password);
+        if (!isPasswordValid) {
+            throw new ApiError(401, "Invalid password");
+        }
     }
 
-    // Check if we've sent an OTP recently
-    if (user.phoneVerificationExpires && user.phoneVerificationExpires > Date.now()) {
-        const waitTime = Math.ceil((user.phoneVerificationExpires - Date.now()) / 1000);
-        throw new ApiError(429, `Please wait ${waitTime} seconds before requesting another OTP`);
-    }
+    // Delete the user
+    const deletedUser = await User.findByIdAndDelete(userId);
 
-    await sendOTP(user);
+    if (!deletedUser) {
+        throw new ApiError(500, "Error while deleting user");
+    }
 
     return res
-    .status(200)
-    .json(
-        new ApiResponse(
-            200,
-            {},
-            "OTP sent successfully"
-        )
-    );
+        .status(200)
+        .clearCookie("accessToken", options)
+        .clearCookie("refreshToken", options)
+        .json(
+            new ApiResponse(
+                200,
+                {},
+                "User deleted successfully"
+            )
+        );
 });
 
 // Route for admin login
@@ -623,14 +637,14 @@ const adminLogout = asyncHandler(async (req, res) => {
 export {
     loginUser,
     logoutUser,
-    registerUserWithEmailOrPhone,
+    registerUserWithEmail,
     refreshAccessToken,
     changeCurrentPassword,
+    updateAccountDetails,
     getCurrentUser,
     verifyEmail,
     resendEmailVerification,
-    verifyPhone,
-    resendPhoneOTP,
+    deleteUser,
     adminLogin,
     getAdminAuthStatus,
     adminLogout

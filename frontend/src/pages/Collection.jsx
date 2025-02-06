@@ -16,7 +16,7 @@ const Collection = () => {
   const [filterProducts,setFilterProducts] = useState([]);
   const [category,setCategory] = useState([]);
   const [type,setType] = useState([]);
-  const [sortType,setSortType] = useState('relavent')
+  // const [sortType,setSortType] = useState('relavent')
 
   const toggleCategory = (e) => {
 
@@ -59,25 +59,25 @@ const Collection = () => {
 
   }
 
-  const sortProduct = () => {
+  // const sortProduct = () => {
 
-    let fpCopy = filterProducts;
+  //   let fpCopy = filterProducts;
 
-    switch (sortType) {
-      case 'low-high':
-        setFilterProducts(fpCopy.sort((a,b)=>(a.price - b.price)));
-        break;
+  //   switch (sortType) {
+  //     case 'low-high':
+  //       setFilterProducts(fpCopy.sort((a,b)=>(a.price - b.price)));
+  //       break;
 
-      case 'high-low':
-        setFilterProducts(fpCopy.sort((a,b)=>(b.price - a.price)));
-        break;
+  //     case 'high-low':
+  //       setFilterProducts(fpCopy.sort((a,b)=>(b.price - a.price)));
+  //       break;
 
-      default:
-        applyFilter();
-        break;
-    }
+  //     default:
+  //       applyFilter();
+  //       break;
+  //   }
 
-  }
+  // }
 
   const handleSearchChange = (e) => {
     dispatch(setSearch(e.target.value));
@@ -93,9 +93,9 @@ const Collection = () => {
     applyFilter();
   }, [category, type, products, search, showSearch]);
 
-  useEffect(()=>{
-    sortProduct();
-  },[sortType])
+  // useEffect(()=>{
+  //   sortProduct();
+  // },[sortType])
 
   return (
     <>

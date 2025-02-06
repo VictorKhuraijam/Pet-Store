@@ -1,6 +1,6 @@
 import { useSelector, useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import {  useState } from "react";
+import { useState } from "react";
 import axios from "axios";
 import Orders from "./Orders";
 
@@ -8,8 +8,21 @@ const Profile = () => {
   const { user, isAuthenticated, loading } = useSelector((state) => state.user);
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const [isDeleting, setIsDeleting] = useState(false);
   const backendUrl = import.meta.env.VITE_BACKEND_URL;
+
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [activeTab, setActiveTab] = useState("profile");
+  const [isUpdating, setIsUpdating] = useState(false);
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
+
+  // Form states
+  const [formData, setFormData] = useState({
+    username: user?.username || "",
+    currentPassword: "",
+    newPassword: "",
+    confirmPassword: "",
+  });
 
   if (loading) return <div className="text-center text-xl">Loading...</div>;
 
@@ -26,6 +39,77 @@ const Profile = () => {
       </div>
     );
 
+  const handleInputChange = (e) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value,
+    });
+    setError("");
+    setSuccess("");
+  };
+
+  const handleUpdateUsername = async (e) => {
+    e.preventDefault();
+    if (!formData.username.trim()) {
+      setError("Username cannot be empty");
+      return;
+    }
+
+    setIsUpdating(true);
+    try {
+      const response = await axios.patch(
+        `${backendUrl}/users/update-profile`,
+        { username: formData.username },
+        { withCredentials: true }
+      );
+      dispatch({ type: "UPDATE_USER", payload: response.data.data });
+      setSuccess("Username updated successfully");
+    } catch (error) {
+      setError(error.response?.data?.message || "Error updating username");
+    } finally {
+      setIsUpdating(false);
+    }
+  };
+
+  const handleUpdatePassword = async (e) => {
+    e.preventDefault();
+    if (!formData.currentPassword || !formData.newPassword || !formData.confirmPassword) {
+      setError("All password fields are required");
+      return;
+    }
+    if (formData.newPassword !== formData.confirmPassword) {
+      setError("New passwords do not match");
+      return;
+    }
+    if (formData.newPassword.length < 8) {
+      setError("New password must be at least 8 characters long");
+      return;
+    }
+
+    setIsUpdating(true);
+    try {
+      await axios.patch(
+        `${backendUrl}/users/change-password`,
+        {
+          currentPassword: formData.currentPassword,
+          newPassword: formData.newPassword,
+        },
+        { withCredentials: true }
+      );
+      setSuccess("Password updated successfully");
+      setFormData({
+        ...formData,
+        currentPassword: "",
+        newPassword: "",
+        confirmPassword: "",
+      });
+    } catch (error) {
+      setError(error.response?.data?.message || "Error updating password");
+    } finally {
+      setIsUpdating(false);
+    }
+  };
+
   const handleDeleteAccount = async () => {
     if (!window.confirm("Are you sure you want to delete your account? This action cannot be undone.")) {
       return;
@@ -33,34 +117,167 @@ const Profile = () => {
 
     setIsDeleting(true);
     try {
-      await axios.delete(`${backendUrl}/users/${user._id}`, { withCredentials: true });
-      dispatch({ type: "LOGOUT" }); // Dispatch logout action
+      await axios.delete(`${backendUrl}/users/delete-account`, { withCredentials: true });
+      dispatch({ type: "LOGOUT" });
       navigate("/login");
     } catch (error) {
-      console.error("Error deleting account:", error);
+      setError(error.response?.data?.message || "Error deleting account");
     } finally {
       setIsDeleting(false);
     }
   };
 
   return (
-    <div className="max-w-4xl mx-auto p-6">
-      <div className="bg-white shadow-md rounded-lg p-6">
-        <h1 className="text-2xl font-bold">Welcome, {user.username}!</h1>
-        <p className="text-gray-700">Email: {user.email}</p>
+    <div className="max-w-4xl mx-auto p-4 sm:p-6">
+      {/* Tab Navigation */}
+      <div className="flex flex-wrap gap-2 mb-6">
         <button
-          onClick={handleDeleteAccount}
-          className="mt-4 px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600 transition"
-          disabled={isDeleting}
+          onClick={() => setActiveTab("profile")}
+          className={`px-4 py-2 rounded-md transition ${
+            activeTab === "profile"
+              ? "bg-black text-white"
+              : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+          }`}
         >
-          {isDeleting ? "Deleting..." : "Delete Account"}
+          Profile
+        </button>
+        <button
+          onClick={() => setActiveTab("security")}
+          className={`px-4 py-2 rounded-md transition ${
+            activeTab === "security"
+              ? "bg-black text-white"
+              : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+          }`}
+        >
+          Security
+        </button>
+        <button
+          onClick={() => setActiveTab("orders")}
+          className={`px-4 py-2 rounded-md transition ${
+            activeTab === "orders"
+              ? "bg-black text-white"
+              : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+          }`}
+        >
+          Orders
         </button>
       </div>
 
-      {/* Orders Section */}
-      <div className="mt-10">
-        <Orders />
-      </div>
+      {/* Alert Messages */}
+      {error && (
+        <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-md">
+          <p className="text-red-600">{error}</p>
+        </div>
+      )}
+      {success && (
+        <div className="mb-4 p-4 bg-green-50 border border-green-200 rounded-md">
+          <p className="text-green-600">{success}</p>
+        </div>
+      )}
+
+      {/* Profile Tab */}
+      {activeTab === "profile" && (
+        <div className="bg-white shadow-md rounded-lg p-4 sm:p-6">
+          <h2 className="text-2xl font-bold mb-6">Profile Information</h2>
+          <form onSubmit={handleUpdateUsername} className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700">Email</label>
+              <input
+                type="email"
+                value={user.email}
+                disabled
+                className="mt-1 block w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-md"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700">Username</label>
+              <input
+                type="text"
+                name="username"
+                value={formData.username}
+                onChange={handleInputChange}
+                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-black focus:border-black"
+              />
+            </div>
+            <button
+              type="submit"
+              disabled={isUpdating}
+              className="w-full sm:w-auto px-4 py-2 bg-black text-white rounded-md hover:bg-gray-800 transition disabled:bg-gray-400"
+            >
+              {isUpdating ? "Updating..." : "Update Username"}
+            </button>
+          </form>
+        </div>
+      )}
+
+      {/* Security Tab */}
+      {activeTab === "security" && (
+        <div className="bg-white shadow-md rounded-lg p-4 sm:p-6">
+          <h2 className="text-2xl font-bold mb-6">Security Settings</h2>
+          <form onSubmit={handleUpdatePassword} className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700">
+                Current Password
+              </label>
+              <input
+                type="password"
+                name="currentPassword"
+                value={formData.currentPassword}
+                onChange={handleInputChange}
+                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-black focus:border-black"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700">
+                New Password
+              </label>
+              <input
+                type="password"
+                name="newPassword"
+                value={formData.newPassword}
+                onChange={handleInputChange}
+                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-black focus:border-black"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700">
+                Confirm New Password
+              </label>
+              <input
+                type="password"
+                name="confirmPassword"
+                value={formData.confirmPassword}
+                onChange={handleInputChange}
+                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-black focus:border-black"
+              />
+            </div>
+            <div className="space-y-4">
+              <button
+                type="submit"
+                disabled={isUpdating}
+                className="w-full sm:w-auto px-4 py-2 bg-black text-white rounded-md hover:bg-gray-800 transition disabled:bg-gray-400"
+              >
+                {isUpdating ? "Updating Password..." : "Update Password"}
+              </button>
+              <button
+                type="button"
+                onClick={handleDeleteAccount}
+                disabled={isDeleting}
+                className="w-full sm:w-auto px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600 transition disabled:bg-red-400"
+              >
+                {isDeleting ? "Deleting Account..." : "Delete Account"}
+              </button>
+            </div>
+          </form>
+        </div>
+      )}
+
+      {/* Orders Tab */}
+      {activeTab === "orders" && (
+        <div className="bg-white shadow-md rounded-lg p-4 sm:p-6">
+          <Orders />
+        </div>
+      )}
     </div>
   );
 };
