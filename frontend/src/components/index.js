@@ -5,7 +5,6 @@ import BestSeller from './BestSeller'
 import LatestCollection from './LatestCollection'
 import Hero from './Hero'
 import OurPolicy from './OurPolicy'
-import NewsletterBox from './NewsLetterBox'
 import Title from './Title'
 import ProductItem from "./ProductItem";
 import RelatedProducts from './RelatedProducts'
@@ -19,7 +18,7 @@ export {
   LatestCollection,
   Hero,
   OurPolicy,
-  NewsletterBox,
+
   Title,
   ProductItem,
   RelatedProducts,

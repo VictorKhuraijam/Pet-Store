@@ -16,6 +16,7 @@ function Navbar() {
     const user = useSelector((state) => state.user.user);
 
     const [visible, setVisible] = useState(false)
+    const [isLoggingOut, setIsLoggingOut] = useState(false)
 
     const getInitials = (username) => {
         if (!username) return "";
@@ -50,15 +51,41 @@ function Navbar() {
     const logout = async() => {
 
         try {
-            dispatch(logoutUser())
-            dispatch(resetUser())
+            setIsLoggingOut(true)
+            await dispatch(logoutUser())
+            await dispatch(resetUser())
+            {/*
+                The warning from VS Code is technically correct - the dispatch function itself doesn't return a Promise that meaningfully affects the operation. However, the await is inadvertently helping by creating those microtask delays that allow for better state synchronization. It's a side effect rather than the intended use of await.
+                 */}
             navigate('/login')
         } catch (error) {
             console.error("Error during logout:", error)
+        } finally{
+            setIsLoggingOut(false)
         }
     }
 
-    {`cursor-pointer hover:text-black  ${isActive('/profile')}`}
+    const renderAuthButton = () => {
+        if (isLoggingOut) {
+            return null; // Don't render anything during logout transition
+        }
+
+        if (isAuthenticated && user?.username) {
+            return (
+                <div className="w-8 h-8 rounded-full bg-black text-white flex items-center justify-center text-sm cursor-pointer">
+                    {getInitials(user.username)}
+                </div>
+            );
+        }
+        return (
+            <img
+                onClick={() => navigate('/login')}
+                className='w-5 cursor-pointer'
+                src={assets.profile_icon}
+                alt=""
+            />
+        );
+    };
 
 
   return (
@@ -98,46 +125,38 @@ function Navbar() {
       <div className='flex items-center gap-4 lg:gap-6'>
 
             <div className='group relative'>
-                {isAuthenticated ? (
-                        <div
-                            className="w-8 h-8 rounded-full bg-black text-white flex items-center justify-center text-sm cursor-pointer"
-                            // onClick={() => navigate('/profile')}
-                        >
-                            {getInitials(user?.username)}
+                    {renderAuthButton()}
+                    {/* Dropdown Menu */}
+                    {isAuthenticated && !isLoggingOut &&
+                        <div className='group-hover:block hidden absolute right-0 pt-4'>
+                            <div className='flex flex-col gap-2 w-36 py-3 px-5 bg-slate-100 text-gray-500 rounded'>
+                                <p onClick={() => navigate('/profile')}
+                                    className={`cursor-pointer hover:text-black ${isActive('/profile')}`}>
+                                    My Profile
+                                </p>
+                                <p onClick={logout} className='cursor-pointer hover:text-black'>
+                                    Logout
+                                </p>
+                            </div>
                         </div>
-                    ) : (
-                        <img
-                            onClick={() => navigate('/login')}
-                            className='w-5 cursor-pointer'
-                            src={assets.profile_icon}
-                            alt=""
-                        />
-                    )}
-                {/* Dropdown Menu */}
-                {isAuthenticated &&
-                <div className='group-hover:block hidden absolute right-0 pt-4'>
-                    <div className='flex flex-col gap-2 w-36 py-3 px-5  bg-slate-100 text-gray-500 rounded'>
-                        <p onClick={()=>navigate('/profile')}
-                        className={`cursor-pointer hover:text-black  ${isActive('/profile')}`} >My Profile</p>
-                        {/* <p onClick={()=>navigate('/orders')} className={`cursor-pointer hover:text-black  ${isActive('/orders')}`}>Orders</p> */}
-                        <p onClick={logout} className='cursor-pointer hover:text-black'>Logout</p>
-                    </div>
-                </div>}
-            </div>
-            {isAuthenticated && (
-                <div>
-                    <Link to='/cart' className='relative'>
-                    <img src={assets.cart_icon} className='w-5 min-w-5' alt="" />
-                    {cartCount > 0 && (
-                        <p className='absolute right-[-5px] bottom-[-5px] w-4 text-center leading-4 bg-black text-white aspect-square rounded-full text-[8px]'>
-                            {cartCount}
-                        </p>
-                    )}
-             </Link>
+                    }
                 </div>
-            )}
-            <img onClick={()=>setVisible(true)} src={assets.menu_icon} className='w-5 cursor-pointer sm:hidden' alt="" />
-      </div>
+
+                {isAuthenticated && !isLoggingOut && (
+                    <div>
+                        <Link to='/cart' className='relative'>
+                            <img src={assets.cart_icon} className='w-5 min-w-5' alt="" />
+                            {cartCount > 0 && (
+                                <p className='absolute right-[-5px] bottom-[-5px] w-4 text-center leading-4 bg-black text-white aspect-square rounded-full text-[8px]'>
+                                    {cartCount}
+                                </p>
+                            )}
+                        </Link>
+                    </div>
+                )}
+
+                <img onClick={() => setVisible(true)} src={assets.menu_icon} className='w-5 cursor-pointer sm:hidden' alt="" />
+            </div>
 
         {/* Sidebar menu for small screens
         <div className={`absolute top-0 right-0 bottom-0 overflow-hidden bg-white transition-all ${visible ? 'w-full' : 'w-0'}`}>

@@ -1,5 +1,4 @@
 import {BestSeller, Hero, LatestCollection, OurPolicy} from '../components/index'
-import NewsLetterBox from '../components/NewsLetterBox'
 
 function Home() {
   return (
@@ -8,7 +7,7 @@ function Home() {
       <LatestCollection />
       <BestSeller />
       <OurPolicy />
-      <NewsLetterBox />
+
     </div>
   )
 }
