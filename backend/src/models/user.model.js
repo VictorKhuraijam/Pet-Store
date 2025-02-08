@@ -21,17 +21,17 @@ const userSchema = new mongoose.Schema(
       type: Boolean,
       default: false, // email verification status
     },
-    emailVerificationTimestamp: {
-      type: Date,
-      default: Date.now
-    },
-    emailVerificationToken: {
+    otp: {
       type: String,
       sparse: true
     },
-    emailVerificationExpires: {
+    otpExpires: {
       type: Date,
       sparse: true
+    },
+    isRegistrationComplete: {
+      type: Boolean,
+      default: false
     },
     password: {
       type: String,
