@@ -3,11 +3,11 @@ import axios from 'axios'
 import { toast } from 'react-toastify'
 import { Link, useNavigate } from 'react-router-dom'
 import { backendUrl } from '../store/consts'
-console.log("backendUrl :", backendUrl)
+import {checkAuthStatus} from '../store/userSlice'
+
+
 const Signup = () => {
   const navigate = useNavigate()
-
-
 
   const [formData, setFormData] = useState({
     name: '',
@@ -69,6 +69,7 @@ const Signup = () => {
 
       if (response.data.success) {
         toast.success("Registration successful!")
+        checkAuthStatus()
         navigate("/")
       }
     } catch (error) {
