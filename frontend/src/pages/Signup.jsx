@@ -3,11 +3,12 @@ import axios from 'axios'
 import { toast } from 'react-toastify'
 import { Link, useNavigate } from 'react-router-dom'
 import { backendUrl } from '../store/consts'
-import {checkAuthStatus} from '../store/userSlice'
-
+import { useDispatch } from 'react-redux'
+import {setUser, setAuth} from '../store/userSlice'
 
 const Signup = () => {
   const navigate = useNavigate()
+  const dispatch = useDispatch()
 
   const [formData, setFormData] = useState({
     name: '',
@@ -68,8 +69,9 @@ const Signup = () => {
       )
 
       if (response.data.success) {
+        dispatch(setUser(response.data.data));
+        dispatch(setAuth(true));
         toast.success("Registration successful!")
-        checkAuthStatus()
         navigate("/")
       }
     } catch (error) {
