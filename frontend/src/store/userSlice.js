@@ -113,7 +113,7 @@ const userSlice = createSlice({
 });
 
 // Actions
-export const { clearError, resetUser } = userSlice.actions;
+export const { clearError, resetUser, setAuth, setUser } = userSlice.actions;
 
 // Reducer
 export default userSlice.reducer;

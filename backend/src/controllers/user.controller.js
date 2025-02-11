@@ -98,9 +98,6 @@ const registerUser = asyncHandler(async (req, res) => {
 
     const { username, email, password, } = req.body;
 
-    console.log("Request body:", req.body);
-
-
     if (!email || !password) {
         throw new ApiError(400, "Email and password are required");
     }
@@ -232,12 +229,6 @@ const resendOTP = asyncHandler(async (req, res) => {
 
     if (!user) {
         throw new ApiError(404, "No pending registration found for this email");
-    }
-
-    // Check if previous OTP is still valid and not too recent
-    if (user.otpExpires && user.otpExpires > Date.now()) {
-        const waitTime = Math.ceil((user.otpExpires - Date.now()) / 1000 / 60);
-        throw new ApiError(429, `Please wait ${waitTime} minutes before requesting a new OTP`);
     }
 
     // Generate new OTP

@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import axios from 'axios'
 import { toast } from 'react-toastify'
 import { Link, useNavigate } from 'react-router-dom'
@@ -19,6 +19,31 @@ const Signup = () => {
 
   const [isOtpSent, setIsOtpSent] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
+  const [timeLeft, setTimeLeft] = useState(120) 
+  const [showResend, setShowResend] = useState(false)
+
+  useEffect(() => {
+    if (!isOtpSent || timeLeft <= 0) return
+
+    const timer = setInterval(() => {
+      setTimeLeft((prevTime) => {
+        if (prevTime <= 1) {
+          clearInterval(timer)
+          setShowResend(true)
+          return 0
+        }
+        return prevTime - 1
+      })
+    }, 1000)
+
+    return () => clearInterval(timer)
+  }, [isOtpSent, timeLeft])
+
+  const formatTime = (seconds) => {
+    const minutes = Math.floor(seconds / 60)
+    const remainingSeconds = seconds % 60
+    return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`
+  }
 
   const handleChange = (e) => {
     setFormData({
@@ -45,6 +70,8 @@ const Signup = () => {
 
       if (response.data.success) {
         setIsOtpSent(true)
+        setTimeLeft(600)
+        setShowResend(false)
         toast.success("OTP sent to your email!")
       }
     } catch (error) {
@@ -75,7 +102,8 @@ const Signup = () => {
         navigate("/")
       }
     } catch (error) {
-      toast.error(error.response?.data?.message || "Failed to verify OTP")
+      console.error(error)
+      toast.error( "Failed to verify OTP")
     } finally {
       setIsLoading(false)
     }
@@ -91,10 +119,13 @@ const Signup = () => {
       )
 
       if (response.data.success) {
+        setTimeLeft(600)
+        setShowResend(false)
         toast.success("New OTP sent to your email!")
       }
     } catch (error) {
-      toast.error(error.response?.data?.message || "Failed to resend OTP")
+      console.error(error)
+      toast.error("Failed to resend OTP")
     } finally {
       setIsLoading(false)
     }
@@ -173,6 +204,10 @@ const Signup = () => {
             required
           />
 
+          <div className="text-center text-sm font-medium">
+            {timeLeft === 0 ? "" : `(Time remaining: ${formatTime(timeLeft)})`}
+          </div>
+
           <button
             type="submit"
             disabled={isLoading}
@@ -181,7 +216,8 @@ const Signup = () => {
             {isLoading ? "Verifying..." : "Verify & Register"}
           </button>
 
-          <button
+          { showResend && (
+            <button
             type="button"
             onClick={resendOTP}
             disabled={isLoading}
@@ -189,6 +225,7 @@ const Signup = () => {
           >
             Didn&apos;t receive the code? Resend
           </button>
+          )}
         </div>
       )}
     </form>
