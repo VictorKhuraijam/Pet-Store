@@ -1,6 +1,6 @@
 import { Link, NavLink } from "react-router-dom";
 import { assets } from "../assets/assets";
-import {  useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 import {checkAuthStatus, logoutUser, resetUser} from '../store/userSlice'
 import { getCartCount} from '../store/cartSlice'
 import { useNavigate, useLocation } from "react-router-dom";
@@ -25,7 +25,7 @@ function Navbar() {
             .map(word => word[0])
             .join("")
             .toUpperCase()
-            .slice(0, 2);
+            .slice(0, 3);
     };
 
     const isActive = (path) => location.pathname === path ? "text-black font-semibold" : "text-gray-500";
@@ -74,7 +74,7 @@ function Navbar() {
 
         if (isAuthenticated && user?.username) {
             return (
-                <div className="w-8 h-8 rounded-full bg-black text-white flex items-center justify-center text-sm cursor-pointer">
+                <div className="w-8 h-8 rounded-full bg-gray-200 text-gray-700 flex items-center justify-center text-sm cursor-pointer">
                     {getInitials(user.username)}
                 </div>
             );

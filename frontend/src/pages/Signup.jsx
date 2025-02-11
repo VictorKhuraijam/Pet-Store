@@ -19,7 +19,7 @@ const Signup = () => {
 
   const [isOtpSent, setIsOtpSent] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
-  const [timeLeft, setTimeLeft] = useState(120) 
+  const [timeLeft, setTimeLeft] = useState(120)
   const [showResend, setShowResend] = useState(false)
 
   useEffect(() => {
@@ -70,7 +70,7 @@ const Signup = () => {
 
       if (response.data.success) {
         setIsOtpSent(true)
-        setTimeLeft(600)
+        setTimeLeft(120)
         setShowResend(false)
         toast.success("OTP sent to your email!")
       }
@@ -103,7 +103,7 @@ const Signup = () => {
       }
     } catch (error) {
       console.error(error)
-      toast.error( "Failed to verify OTP")
+      toast.error( " OTP is incorrect. Please try again")
     } finally {
       setIsLoading(false)
     }
@@ -119,7 +119,7 @@ const Signup = () => {
       )
 
       if (response.data.success) {
-        setTimeLeft(600)
+        setTimeLeft(120)
         setShowResend(false)
         toast.success("New OTP sent to your email!")
       }
@@ -199,7 +199,7 @@ const Signup = () => {
             onChange={handleChange}
             value={formData.otp}
             type="text"
-            className="w-full px-3 py-2 border border-gray-800"
+            className="w-[250px] m-auto rounded-lg px-3 py-2 border border-gray-800"
             placeholder="Enter OTP"
             required
           />

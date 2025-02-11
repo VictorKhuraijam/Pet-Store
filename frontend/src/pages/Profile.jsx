@@ -1,8 +1,11 @@
 import { useSelector, useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
+import {toast} from 'react-toastify'
 import axios from "axios";
 import Orders from "./Orders";
+import { resetUser, setUser } from "../store/userSlice";
+import { clearCart } from "../store/cartSlice";
 
 const Profile = () => {
   const { user, isAuthenticated, loading } = useSelector((state) => state.user);
@@ -44,28 +47,30 @@ const Profile = () => {
       ...formData,
       [e.target.name]: e.target.value,
     });
-    setError("");
+    ("");
     setSuccess("");
   };
 
   const handleUpdateUsername = async (e) => {
     e.preventDefault();
     if (!formData.username.trim()) {
-      setError("Username cannot be empty");
+      toast.error("Username cannot be empty");
       return;
     }
 
     setIsUpdating(true);
     try {
-      const response = await axios.patch(
-        `${backendUrl}/users/update-profile`,
+      const response = await axios.post(
+        `${backendUrl}/users/change-username`,
         { username: formData.username },
         { withCredentials: true }
       );
-      dispatch({ type: "UPDATE_USER", payload: response.data.data });
-      setSuccess("Username updated successfully");
+      console.log("User name update response:", response)
+      dispatch(setUser(response.data.data));
+      toast.success("Username updated successfully");
     } catch (error) {
-      setError(error.response?.data?.message || "Error updating username");
+      console.error(error)
+      toast.error( "Error updating username");
     } finally {
       setIsUpdating(false);
     }
@@ -74,15 +79,15 @@ const Profile = () => {
   const handleUpdatePassword = async (e) => {
     e.preventDefault();
     if (!formData.currentPassword || !formData.newPassword || !formData.confirmPassword) {
-      setError("All password fields are required");
+      toast.error("All password fields are required");
       return;
     }
     if (formData.newPassword !== formData.confirmPassword) {
-      setError("New passwords do not match");
+      toast.error("New passwords do not match");
       return;
     }
     if (formData.newPassword.length < 8) {
-      setError("New password must be at least 8 characters long");
+      toast.error("New password must be at least 8 characters long");
       return;
     }
 
@@ -96,7 +101,7 @@ const Profile = () => {
         },
         { withCredentials: true }
       );
-      setSuccess("Password updated successfully");
+      toast.success("Password updated successfully");
       setFormData({
         ...formData,
         currentPassword: "",
@@ -104,7 +109,8 @@ const Profile = () => {
         confirmPassword: "",
       });
     } catch (error) {
-      setError(error.response?.data?.message || "Error updating password");
+      console.error(error)
+      toast.error("Error updating password");
     } finally {
       setIsUpdating(false);
     }
@@ -118,10 +124,12 @@ const Profile = () => {
     setIsDeleting(true);
     try {
       await axios.delete(`${backendUrl}/users/delete-account`, { withCredentials: true });
-      dispatch({ type: "LOGOUT" });
+      dispatch(clearCart());
+      dispatch(resetUser());
       navigate("/login");
     } catch (error) {
-      setError(error.response?.data?.message || "Error deleting account");
+      console.error(error)
+      setError("Error deleting account");
     } finally {
       setIsDeleting(false);
     }
@@ -130,7 +138,7 @@ const Profile = () => {
   return (
     <div className="max-w-4xl mx-auto p-4 sm:p-6">
       {/* Tab Navigation */}
-      <div className="flex flex-wrap gap-2 mb-6">
+      <div className="flex flex-row gap-2 mb-6">
         <button
           onClick={() => setActiveTab("profile")}
           className={`px-4 py-2 rounded-md transition ${

@@ -40,15 +40,7 @@ router.route("/change-username").post(verifyJWT, updateAccountDetails)
 router.route("/current-user").get(verifyJWT, getCurrentUser)
 router.route("/delete-user").get(verifyJWT, deleteUser)
 
-
-// router.route('/verify-email/:token').get(verifyEmail);
-// router.route("/resend-verification").post(
-//   resendEmailVerification
-// );
-
-// router.route("/verify-phone").post( verifyJWT, verifyPhone);
-// router.route("/resend-otp").post( verifyJWT, resendPhoneOTP);
-
+//admin routes
 router.route('/admin/login').post(adminLogin)
 router.route('/admin/check-auth').get(adminAuth, getAdminAuthStatus)
 router.route('/admin/logout').post(adminAuth, adminLogout)

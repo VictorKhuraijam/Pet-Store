@@ -17,8 +17,8 @@ export const loginUser = (email, password) => async (dispatch) => {
 
     if (response.data.success) {
 
-      dispatch(userSlice.actions.setUser(response.data.data));
-      dispatch(userSlice.actions.setAuth(true));
+      dispatch(setUser(response.data.data));
+      dispatch(setAuth(true));
 
       // dispatch(checkAuthStatus())
       dispatch(fetchCartFulfilled(response.data.data.cartData));
@@ -62,8 +62,10 @@ export const checkAuthStatus = () => async (dispatch) => {
 
     if (response.data.success) {
 
-      dispatch(userSlice.actions.setUser(response.data.data));
-      dispatch(userSlice.actions.setAuth(true));
+      dispatch(setUser(response.data.data));
+      dispatch(setAuth(true));
+      // dispatch(userSlice.actions.setUser(response.data.data));
+      // dispatch(userSlice.actions.setAuth(true));
 
       dispatch(fetchCart());
 

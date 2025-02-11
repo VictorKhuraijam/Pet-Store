@@ -101,17 +101,9 @@ userSchema.methods.generateRefreshToken = function(){
 }
 
 // Method to verify email (can be called when clicking the email verification link)
-userSchema.methods.verifyEmail = function () {
-  this.isEmailVerified = true;
-  return this.save();
-};
-
-// Method to handle Google login (sets googleId and email verification if applicable)
-userSchema.methods.googleLogin = function (googleId, email) {
-  this.googleId = googleId;
-  this.isGoogleVerified = true;
-  this.email = email;  // If the user logs in via Google, email is updated.
-  return this.save();
-};
+// userSchema.methods.verifyEmail = function () {
+//   this.isEmailVerified = true;
+//   return this.save();
+// };
 
 export const User = mongoose.model("User", userSchema)
