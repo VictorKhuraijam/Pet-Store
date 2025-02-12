@@ -63,17 +63,26 @@ try {
 }
 
 // Route for user register
-const sendOTPEmail = async (user, otp) => {
+const sendOTPEmail = async (user, otp, type = 'registration') => {
     try {
+        const isRegistration = type === 'registration'
+
         const mailOptions = {
             from: process.env.EMAIL_FROM,
             to: user.email,
-            subject: 'Your Registration OTP Code',
+            subject: isRegistration
+            ? "Your Registration OTP Code"
+            : "Reset Your Password - OTP Code",
             html: `
                 <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
-                    <h1 style="color: #333;">Complete Your Registration</h1>
+                    <h1 style="color: #333;">
+                        ${isRegistration ? "Complete Your Registration" : "Reset Your Password"}
+                    </h1>
                     <p>Hello ${user.username},</p>
-                    <p>Your OTP code for registration is:</p>
+                    <p>${isRegistration
+                        ? "Your OTP code for registration is:"
+                        : "Your OTP to reset password is:"}
+                    </p>
                     <div style="margin: 30px 0;">
                         <h2 style="color: #007bff; font-size: 32px; letter-spacing: 5px;">${otp}</h2>
                     </div>
@@ -92,34 +101,6 @@ const sendOTPEmail = async (user, otp) => {
     }
 };
 
-const sendForgotOTPEmail = async (user, otp) => {
-    try {
-        const mailOptions = {
-            from: process.env.EMAIL_FROM,
-            to: user.email,
-            subject: 'Your OTP Code to reset password',
-            html: `
-                <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
-                    <h1 style="color: #333;">Complete Your Registration</h1>
-                    <p>Hello ${user.username},</p>
-                    <p>Your OTP code to reset password is:</p>
-                    <div style="margin: 30px 0;">
-                        <h2 style="color: #007bff; font-size: 32px; letter-spacing: 5px;">${otp}</h2>
-                    </div>
-                    <p>This code will expire in 10 minutes.</p>
-                    <p style="color: #666; margin-top: 20px;">
-                        If you didn't request this code, please ignore this email.
-                    </p>
-                </div>
-            `
-        };
-
-        await emailTransporter.sendMail(mailOptions);
-    } catch (error) {
-        console.error("Error in sendOTPEmail:", error);
-        throw new ApiError(500, "Failed to send OTP email");
-    }
-};
 
 // Step 1: Initialize registration and send OTP
 const registerUser = asyncHandler(async (req, res) => {
@@ -180,7 +161,7 @@ const registerUser = asyncHandler(async (req, res) => {
         throw new ApiError(500, "Error while creating user");
     }
 
-    await sendOTPEmail(user, otp);
+    await sendOTPEmail(user, otp, 'registration');
 
     return res
     .status(201)
@@ -245,19 +226,36 @@ const verifyOTPAndRegister = asyncHandler(async (req, res) => {
 
 // Resend OTP if expired
 const resendOTP = asyncHandler(async (req, res) => {
-    const { email } = req.body;
+    const { email, type } = req.body;
 
     if (!email) {
         throw new ApiError(400, "Email is required");
     }
 
-    const user = await User.findOne({
-        email: email.toLowerCase(),
-        isRegistrationComplete: false
-    });
+    let user;
+
+    if (type === "registration") {
+        // Find a user with incomplete registration
+        user = await User.findOne({
+            email: email.toLowerCase(),
+            isRegistrationComplete: false
+        });
+
+        if (!user) {
+            throw new ApiError(404, "No pending registration found for this email");
+        }
+    } else if (type === "password-reset") {
+        // Find a registered user
+        user = await User.findOne({
+            email: email.toLowerCase(),
+            isRegistrationComplete: true // Ensure the user is registered
+        });
 
     if (!user) {
         throw new ApiError(404, "No pending registration found for this email");
+      }
+    } else {
+        throw new ApiError(400, "Invalid OTP")
     }
 
     // Generate new OTP
@@ -266,19 +264,19 @@ const resendOTP = asyncHandler(async (req, res) => {
     user.otpExpires = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
     await user.save();
 
-    await sendOTPEmail(user, otp);
+    await sendOTPEmail(user, otp, type);
 
     return res.status(200).json(
         new ApiResponse(
             200,
-            {},
+            {otp, type},
             "New OTP sent successfully"
         )
     );
 });
 
 const forgotPassword = asyncHandler(async (req, res) => {
-    const {email} = req.body
+    const {email, type = "password-reset"} = req.body
 
     const existingUser = await User.findOne({
         email: email.toLowerCase(),
@@ -297,7 +295,7 @@ const forgotPassword = asyncHandler(async (req, res) => {
     existingUser.otpExpires = otpExpires;
     const  user = await existingUser.save();
 
-    await sendForgotOTPEmail(user, otp)
+    await sendOTPEmail(user, otp, type)
 
     return res
     .status(200)
@@ -311,7 +309,7 @@ const forgotPassword = asyncHandler(async (req, res) => {
 })
 
 const changeForgotPassword = asyncHandler(async (req, res) => {
-    const {email, otp, newPassword} = req.body
+    const {email, otp, password} = req.body
 
     if (!email || !otp) {
         throw new ApiError(400, "Email and OTP are required");
@@ -329,7 +327,7 @@ const changeForgotPassword = asyncHandler(async (req, res) => {
 
     user.otp = undefined;
     user.otpExpires = undefined;
-    user.password = newPassword
+    user.password = password
     await user.save();
 
     return res
@@ -338,7 +336,7 @@ const changeForgotPassword = asyncHandler(async (req, res) => {
         new ApiResponse(
             200,
             user,
-            "Password changed"
+            "Password changed successfully"
         )
     )
 
