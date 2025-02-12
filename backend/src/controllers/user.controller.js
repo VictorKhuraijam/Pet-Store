@@ -92,6 +92,35 @@ const sendOTPEmail = async (user, otp) => {
     }
 };
 
+const sendForgotOTPEmail = async (user, otp) => {
+    try {
+        const mailOptions = {
+            from: process.env.EMAIL_FROM,
+            to: user.email,
+            subject: 'Your OTP Code to reset password',
+            html: `
+                <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+                    <h1 style="color: #333;">Complete Your Registration</h1>
+                    <p>Hello ${user.username},</p>
+                    <p>Your OTP code to reset password is:</p>
+                    <div style="margin: 30px 0;">
+                        <h2 style="color: #007bff; font-size: 32px; letter-spacing: 5px;">${otp}</h2>
+                    </div>
+                    <p>This code will expire in 10 minutes.</p>
+                    <p style="color: #666; margin-top: 20px;">
+                        If you didn't request this code, please ignore this email.
+                    </p>
+                </div>
+            `
+        };
+
+        await emailTransporter.sendMail(mailOptions);
+    } catch (error) {
+        console.error("Error in sendOTPEmail:", error);
+        throw new ApiError(500, "Failed to send OTP email");
+    }
+};
+
 // Step 1: Initialize registration and send OTP
 const registerUser = asyncHandler(async (req, res) => {
 
@@ -247,6 +276,74 @@ const resendOTP = asyncHandler(async (req, res) => {
         )
     );
 });
+
+const forgotPassword = asyncHandler(async (req, res) => {
+    const {email} = req.body
+
+    const existingUser = await User.findOne({
+        email: email.toLowerCase(),
+        isRegistrationComplete: true,
+        isEmailVerified: true
+       });
+
+    if(!existingUser){
+        throw new ApiError(400, "Email is not registered or is not verified")
+    }
+
+    const otp = generateOTP();
+    const otpExpires = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
+
+    existingUser.otp = otp;
+    existingUser.otpExpires = otpExpires;
+    const  user = await existingUser.save();
+
+    await sendForgotOTPEmail(user, otp)
+
+    return res
+    .status(200)
+    .json(
+        new ApiResponse(
+            200,
+            user,
+            "OTP sent to the email to change password"
+        )
+    )
+})
+
+const changeForgotPassword = asyncHandler(async (req, res) => {
+    const {email, otp, newPassword} = req.body
+
+    if (!email || !otp) {
+        throw new ApiError(400, "Email and OTP are required");
+    }
+
+    const user = await User.findOne({
+        email: email.toLowerCase(),
+        otp,
+        otpExpires: { $gt: Date.now() },
+    });
+
+    if (!user) {
+        throw new ApiError(400, "Invalid or expired OTP");
+    }
+
+    user.otp = undefined;
+    user.otpExpires = undefined;
+    user.password = newPassword
+    await user.save();
+
+    return res
+    .status(200)
+    .json(
+        new ApiResponse(
+            200,
+            user,
+            "Password changed"
+        )
+    )
+
+
+})
 
 // Route for user login
 const loginUser = asyncHandler(async (req, res) => {
@@ -770,6 +867,8 @@ export {
     registerUser,
     refreshAccessToken,
     changeCurrentPassword,
+    forgotPassword,
+    changeForgotPassword,
     updateAccountDetails,
     getCurrentUser,
     verifyOTPAndRegister,

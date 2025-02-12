@@ -1,7 +1,7 @@
 import { ToastContainer } from "react-toastify"
 import {Footer, NavBar} from './components/index.js'
 import { Routes, Route } from "react-router-dom"
-import {About, Cart, Collection, Contact, Home, Login, Orders, PlaceOrder, Product, Profile} from './pages/index.js'
+import {About, Cart, Collection, Contact, ForgotPassword, Home, Login, Orders, PlaceOrder, Product, Profile} from './pages/index.js'
 import Signup from "./pages/Signup.jsx"
 
 
@@ -21,6 +21,7 @@ export const App = () => {
         <Route path="/product/:productId" element={<Product />} />
         <Route path="/cart" element={<Cart />} />
         <Route path="/login" element={<Login />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/signup" element={<Signup />} />
         <Route path="/orders" element={<Orders />} />
         <Route path="/profile" element={<Profile />} />
