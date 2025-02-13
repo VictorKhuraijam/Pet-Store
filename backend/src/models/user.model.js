@@ -74,7 +74,7 @@ userSchema.methods.generateAccessToken = function(){
      }, //payload
      process.env.ACCESS_TOKEN_SECRET,
      {
-       expiresIn: process.env.ACCESS_TOKEN_EXPIRY || "12h"
+       expiresIn: process.env.ACCESS_TOKEN_EXPIRY || "1m"
      }
    )
  } catch (error) {
@@ -91,7 +91,7 @@ userSchema.methods.generateRefreshToken = function(){
      },
      process.env.REFRESH_TOKEN_SECRET,
      {
-       expiresIn: process.env.REFRESH_TOKEN_EXPIRY || "5d"
+       expiresIn: process.env.REFRESH_TOKEN_EXPIRY || "1h"
      }
    )
  } catch (error) {
@@ -99,11 +99,5 @@ userSchema.methods.generateRefreshToken = function(){
   throw new Error(" Could not generate refresh token");
  }
 }
-
-// Method to verify email (can be called when clicking the email verification link)
-// userSchema.methods.verifyEmail = function () {
-//   this.isEmailVerified = true;
-//   return this.save();
-// };
 
 export const User = mongoose.model("User", userSchema)

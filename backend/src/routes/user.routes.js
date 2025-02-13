@@ -11,7 +11,7 @@ import {
     changeCurrentPassword,
     forgotPassword,
     changeForgotPassword,
-    getCurrentUser,
+    checkAuthStatus,
     updateAccountDetails,
     deleteUser,
     adminLogin,
@@ -30,6 +30,7 @@ router.route("/resend-otp").post(
 );
 
 router.route("/login").post(loginUser)
+router.route("/check-auth").get(checkAuthStatus)
 
 //secured routes
 router.route("/logout").post(verifyJWT, logoutUser)
@@ -42,7 +43,6 @@ router.route("/change-forgot-password").post( changeForgotPassword)
 router.route("/change-password").post(verifyJWT, changeCurrentPassword)
 router.route("/change-username").post(verifyJWT, updateAccountDetails)
 
-router.route("/current-user").get(verifyJWT, getCurrentUser)
 router.route("/delete-user").get(verifyJWT, deleteUser)
 
 //admin routes

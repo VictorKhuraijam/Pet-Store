@@ -3,6 +3,7 @@ import { toast } from 'react-toastify';
 import { Link, useNavigate } from 'react-router-dom';
 import {checkAuthStatus, loginUser} from '../store/userSlice'
 import { useDispatch } from 'react-redux';
+import { Eye, EyeOff} from 'lucide-react'
 
 const Login = () => {
 
@@ -10,6 +11,7 @@ const Login = () => {
   const dispatch = useDispatch()
 
   const [password,setPasword] = useState('')
+  const [passwordVisible, setPasswordVisible] = useState(false)
   const [email,setEmail] = useState('')
 
   const onSubmitHandler = async (event) => {
@@ -41,17 +43,36 @@ const Login = () => {
             onChange={(e)=>setEmail(e.target.value)}
             value={email}
             type="email"
-            className='w-full px-3 py-2 border border-gray-800' placeholder='Email'
+            className='w-full px-3 py-2 rounded-lg border border-gray-800' placeholder='Email'
             required
           />
 
-          <input
+          {/* <input
             onChange={(e)=>setPasword(e.target.value)}
             value={password}
             type="password" className='w-full px-3 py-2 border border-gray-800'
             placeholder='Password'
             required
-          />
+          /> */}
+
+          <div className="relative m-auto">
+            <input
+              name="password"
+              onChange={(e)=>setPasword(e.target.value)}
+              value={password}
+              type={passwordVisible ? "text" : "password"}
+              className="w-full rounded-lg px-3 py-2 border border-gray-800 pr-10"
+              placeholder="Enter password"
+              required
+            />
+            <button
+              type="button"
+              className="absolute right-3 top-1/2 transform -translate-y-1/2"
+              onClick={() => setPasswordVisible(!passwordVisible)}
+            >
+              {passwordVisible ? <EyeOff size={20} /> : <Eye size={20} />}
+            </button>
+          </div>
 
 
         <div className='w-full flex justify-between text-sm mt-[-8px]'>
@@ -69,7 +90,7 @@ const Login = () => {
               Create Account
             </Link>
         </div>
-        <button className='bg-black text-white font-light px-8 py-2 mt-4'>Sign In</button>
+        <button className='bg-gray-400 text-black text-xl rounded-lg font-light px-8 py-2 mt-4'>Sign In</button>
     </form>
   )
 }

@@ -25,7 +25,7 @@ function Navbar() {
             .map(word => word[0])
             .join("")
             .toUpperCase()
-            .slice(0, 3);
+            .slice(0, 2);
     };
 
     const isActive = (path) => location.pathname === path ? "text-black font-semibold" : "text-gray-500";

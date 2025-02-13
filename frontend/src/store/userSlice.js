@@ -54,7 +54,7 @@ export const logoutUser = () => async (dispatch) => {
 export const checkAuthStatus = () => async (dispatch) => {
   try {
     const response = await axios.get(
-      `${backendUrl}/users/current-user`,
+      `${backendUrl}/users/check-auth`,
       { withCredentials: true }
     );
 

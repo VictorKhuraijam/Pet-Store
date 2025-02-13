@@ -22,9 +22,9 @@ const emailTransporter = nodemailer.createTransport({
 
 
 // Generate verification token
-const generateVerificationToken = () => {
-    return crypto.randomBytes(32).toString("hex");
-};
+// const generateVerificationToken = () => {
+//     return crypto.randomBytes(32).toString("hex");
+// };
 
 // Generate OTP
 const generateOTP = () => {
@@ -104,7 +104,6 @@ const sendOTPEmail = async (user, otp, type = 'registration') => {
 
 // Step 1: Initialize registration and send OTP
 const registerUser = asyncHandler(async (req, res) => {
-
 
     const { username, email, password, } = req.body;
 
@@ -508,14 +507,119 @@ const updateAccountDetails = asyncHandler(async(req, res) => {
     .status(200)
     .json(new ApiResponse(200, user, "Account details updated successfully" ))
 
-  })
-
-
-const getCurrentUser = asyncHandler(async(req, res) => {
-return res
-.status(200)
-.json(new ApiResponse(200, req.user, "Current user fetched successfully"))
 })
+
+
+// const getCurrentUser = asyncHandler(async(req, res) => {
+// return res
+// .status(200)
+// .json(new ApiResponse(200, req.user, "Current user fetched successfully"))
+// })
+
+const checkAuthStatus = asyncHandler(async (req, res) => {
+    const accessToken = req.cookies?.accessToken || req.header("Authorization")?.replace("Bearer ", "");
+    const refreshToken = req.cookies?.refreshToken || req.body?.refreshToken;
+
+    console.log("Request Headers:", req.headers);
+    console.log("Request Cookies:", req.cookies);
+    console.log("refresh token:",refreshToken)
+
+    if (!accessToken && !refreshToken) {
+        throw new ApiError(401, "Unauthorized request");
+    }
+
+    let decodedToken;
+    try {
+        decodedToken = jwt.verify(accessToken, process.env.ACCESS_TOKEN_SECRET);
+    } catch (error) {
+        decodedToken = null;
+    }
+
+    let user;
+
+    if (decodedToken) {
+        // Access token is valid, Fetch user
+        user = await User.findById(decodedToken._id).select("-password -refreshToken");
+
+        if (!user) {
+            throw new ApiError(401, "Invalid access token");
+        }
+
+        return res
+            .status(200)
+            .json(new ApiResponse(
+                200,
+                user,
+                "User authenticated",
+            )
+        );
+    }
+
+    // If access token is expired but refresh token is valid, generate new tokens
+    if (refreshToken) {
+        try {
+            // const decodedRefreshToken = jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET);
+            // if(!decodedRefreshToken){
+            //     throw new ApiError(500, "Refresh decoded token problem")
+            // }
+
+            if (!process.env.REFRESH_TOKEN_SECRET) {
+                throw new Error("Missing REFRESH_TOKEN_SECRET in environment variables.");
+            }
+
+            console.log("Before verifying refresh token:", refreshToken);
+            console.log("Using secret:", process.env.REFRESH_TOKEN_SECRET);
+            console.log("REFRESH_TOKEN_SECRET exists:", Boolean(process.env.REFRESH_TOKEN_SECRET));
+
+
+
+
+                const decodedRefreshToken = jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET);
+                console.log("Decoded Refresh Token:", decodedRefreshToken);
+
+
+
+            user = await User.findById(decodedRefreshToken._id);
+            console.log("User found:", user);
+
+
+
+            if (!user ) {
+                throw new ApiError(401, "Invalid refresh token");
+            }
+
+            if (user.refreshToken !== refreshToken) {
+                console.log("Stored Token:", user.refreshToken);
+                console.log("Received Token:", refreshToken);
+
+                throw new ApiError(401, "Refresh token mismatch. Possible session hijacking.");
+            }
+
+            //  Generate new access & refresh tokens
+            const { accessToken: newAccessToken, refreshToken: newRefreshToken } = await generateAccessTokenAndRefreshToken(user._id);
+
+            console.log("New Refresh Token:", newRefreshToken);
+
+
+
+            return res
+                .status(200)
+                .cookie("accessToken", newAccessToken, options)
+                .cookie("refreshToken", newRefreshToken, options)
+                .json(
+                    new ApiResponse(
+                        200,
+                        user,
+                        "Access and refresh token refreshed"
+                    )
+                );
+        } catch (error) {
+            throw new ApiError(401, "Session expired. Please log in again.");
+        }
+    }
+
+    throw new ApiError(401, "Unauthorized request");
+});
 
 
 // Send verification email
@@ -868,7 +972,7 @@ export {
     forgotPassword,
     changeForgotPassword,
     updateAccountDetails,
-    getCurrentUser,
+    checkAuthStatus,
     verifyOTPAndRegister,
     resendOTP,
     deleteUser,
