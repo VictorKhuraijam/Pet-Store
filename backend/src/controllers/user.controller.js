@@ -35,7 +35,7 @@ const generateOTP = () => {
 const options = {
     httpOnly: true,// Prevents JavaScript access to the cookie, reducing XSS risks
     secure: true,//Ensures the cookie is sent only over HTTPS connections.
-    sameSite: "None", // Prevents the cookie from being sent with cross-site requests (mitigates CSRF(Cross Site Request Forgery ) attacks)
+    sameSite: "Strict", // Prevents the cookie from being sent with cross-site requests (mitigates CSRF(Cross Site Request Forgery ) attacks)
     path: '/',
   }
 
@@ -380,7 +380,7 @@ const loginUser = asyncHandler(async (req, res) => {
 
     const {accessToken, refreshToken} = await generateAccessTokenAndRefreshToken(user._id)
 
-    const loggedInUser = await User.findById(user._id).select("-password -refreshToken -emailVerificationExpires -emailVerificationToken")
+    const loggedInUser = await User.findById(user._id).select("-password -refreshToken ")
 
     return res
     .status(200)
@@ -520,9 +520,9 @@ const checkAuthStatus = asyncHandler(async (req, res) => {
     const accessToken = req.cookies?.accessToken || req.header("Authorization")?.replace("Bearer ", "");
     const refreshToken = req.cookies?.refreshToken || req.body?.refreshToken;
 
-    console.log("Request Headers:", req.headers);
-    console.log("Request Cookies:", req.cookies);
-    console.log("refresh token:",refreshToken)
+    console.log("Old refresh token stored in the brower: ", refreshToken)
+    console.log("Old access token stored in the brower: ", accessToken)
+
 
     if (!accessToken && !refreshToken) {
         throw new ApiError(401, "Unauthorized request");
@@ -539,7 +539,7 @@ const checkAuthStatus = asyncHandler(async (req, res) => {
 
     if (decodedToken) {
         // Access token is valid, Fetch user
-        user = await User.findById(decodedToken._id).select("-password -refreshToken");
+        user = await User.findById(decodedToken._id).select("-password");
 
         if (!user) {
             throw new ApiError(401, "Invalid access token");
@@ -549,19 +549,22 @@ const checkAuthStatus = asyncHandler(async (req, res) => {
             .status(200)
             .json(new ApiResponse(
                 200,
-                user,
+                {user,
+                    accessToken
+                },
                 "User authenticated",
             )
         );
     }
 
     // If access token is expired but refresh token is valid, generate new tokens
+    let decodedRefreshToken;
     if (refreshToken) {
         try {
-            // const decodedRefreshToken = jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET);
-            // if(!decodedRefreshToken){
-            //     throw new ApiError(500, "Refresh decoded token problem")
-            // }
+             decodedRefreshToken = jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET);
+            if(!decodedRefreshToken){
+                throw new ApiError(500, "Refresh decoded token problem")
+            }
 
             if (!process.env.REFRESH_TOKEN_SECRET) {
                 throw new Error("Missing REFRESH_TOKEN_SECRET in environment variables.");
@@ -571,18 +574,14 @@ const checkAuthStatus = asyncHandler(async (req, res) => {
             console.log("Using secret:", process.env.REFRESH_TOKEN_SECRET);
             console.log("REFRESH_TOKEN_SECRET exists:", Boolean(process.env.REFRESH_TOKEN_SECRET));
 
-
-
-
-                const decodedRefreshToken = jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET);
-                console.log("Decoded Refresh Token:", decodedRefreshToken);
-
-
+            // const decodedRefreshToken = jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET);
+            // console.log("Decoded Refresh Token:", decodedRefreshToken);
+        }catch (error) {
+                throw new ApiError(401, "Session expired. Please log in again.");
+            }
 
             user = await User.findById(decodedRefreshToken._id);
             console.log("User found:", user);
-
-
 
             if (!user ) {
                 throw new ApiError(401, "Invalid refresh token");
@@ -599,8 +598,7 @@ const checkAuthStatus = asyncHandler(async (req, res) => {
             const { accessToken: newAccessToken, refreshToken: newRefreshToken } = await generateAccessTokenAndRefreshToken(user._id);
 
             console.log("New Refresh Token:", newRefreshToken);
-
-
+            user = await User.findById(decodedRefreshToken._id).select("-password ");
 
             return res
                 .status(200)
@@ -609,16 +607,14 @@ const checkAuthStatus = asyncHandler(async (req, res) => {
                 .json(
                     new ApiResponse(
                         200,
-                        user,
+                        {user,
+                            newAccessToken
+                        },
                         "Access and refresh token refreshed"
                     )
                 );
-        } catch (error) {
-            throw new ApiError(401, "Session expired. Please log in again.");
         }
-    }
 
-    throw new ApiError(401, "Unauthorized request");
 });
 
 

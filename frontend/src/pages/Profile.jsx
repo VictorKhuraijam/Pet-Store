@@ -210,7 +210,7 @@ const Profile = () => {
             <button
               type="submit"
               disabled={isUpdating}
-              className="w-full sm:w-auto px-4 py-2 bg-black text-white rounded-md hover:bg-gray-800 transition disabled:bg-gray-400"
+              className="w-[250px]  sm:w-auto px-4 py-2 bg-black text-white rounded-md hover:bg-gray-800 transition disabled:bg-gray-400"
             >
               {isUpdating ? "Updating..." : "Update Username"}
             </button>

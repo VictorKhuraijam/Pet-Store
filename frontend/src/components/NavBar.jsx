@@ -44,10 +44,8 @@ function Navbar() {
     }, []);
 
     useEffect(() => {
-        if(isAuthenticated){
             dispatch(checkAuthStatus());
-        }
-      }, [isAuthenticated, dispatch]);
+      }, [ dispatch]);
 
 
     const logout = async() => {

@@ -3,6 +3,7 @@ import { toast } from 'react-toastify';
 import axios from 'axios';
 import { clearCart, fetchCart, fetchCartFulfilled } from './cartSlice';
 
+
 const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
 // Custom Thunks
@@ -45,13 +46,29 @@ export const logoutUser = () => async (dispatch) => {
     if (response.data.success) {
       dispatch(clearCart());
       dispatch(userSlice.actions.resetUser());
+
+      // Clear tokens from storage
+      localStorage.removeItem("accessToken");
+      localStorage.removeItem("refreshToken");
+
+       // Clear cookies from the frontend (if stored)
+       document.cookie = "accessToken=; Max-Age=0";
+       document.cookie = "refreshToken=; Max-Age=0";
+
+      // Force a refresh to clear auth state properly
+      window.location.reload();
     }
   } catch (error) {
     toast.error(error.message);
   }
 };
 
-export const checkAuthStatus = () => async (dispatch) => {
+export const checkAuthStatus = () => async (dispatch, getState) => {
+  const user = getState().user
+  if(!user){
+    return null
+  }
+
   try {
     const response = await axios.get(
       `${backendUrl}/users/check-auth`,
@@ -71,14 +88,20 @@ export const checkAuthStatus = () => async (dispatch) => {
 
     }
   } catch (error) {
-    dispatch(userSlice.actions.setAuth(false));
-    console.error(error.message)
+    if (error.response?.status === 401) {
+      // Automatically reset authentication if unauthorized
+      dispatch(resetUser());
+      dispatch(setAuth(false));
+    } else {
+      console.error(error.message);
+    }
   }  finally {
     dispatch(userSlice.actions.setLoading(false));
   }
 };
 
 // Initial State
+
 const initialState = {
   user: null,
   loading: false,
