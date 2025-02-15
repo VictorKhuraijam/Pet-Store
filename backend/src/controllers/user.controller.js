@@ -348,7 +348,7 @@ const loginUser = asyncHandler(async (req, res) => {
     const { email,  password } = req.body;
 
     if(!email){
-        throw new ApiError(400,"Email or phone number is required")
+        throw new ApiError(400,"Email is required")
         }
 
     const user = await User.findOne(
@@ -356,7 +356,7 @@ const loginUser = asyncHandler(async (req, res) => {
     );
 
     if (!user) {
-        throw new ApiError(404, "User does not exits")
+        throw new ApiError(404, "User with the email does not exits")
     }
 
     if (!user.isEmailVerified) {
@@ -578,11 +578,15 @@ const checkAuthStatus = asyncHandler(async (req, res) => {
             // const decodedRefreshToken = jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET);
             // console.log("Decoded Refresh Token:", decodedRefreshToken);
         }catch (error) {
-                throw new ApiError(401, "Session expired. Please log in again.");
+            return res
+            .status(200)
+            .clearCookie("accessToken", options)
+            .clearCookie("refreshToken", options)
+            .json(new ApiResponse(200, {}, "Session expired. Please log in again"))
             }
 
             user = await User.findById(decodedRefreshToken._id);
-            console.log("User found:", user);
+
 
             if (!user ) {
                 throw new ApiError(401, "Invalid refresh token");
@@ -600,6 +604,8 @@ const checkAuthStatus = asyncHandler(async (req, res) => {
 
             console.log("New Refresh Token:", newRefreshToken);
             user = await User.findById(decodedRefreshToken._id).select("-password ");
+
+            console.log("User after refresh token refreshed :", user)
 
             return res
                 .status(200)

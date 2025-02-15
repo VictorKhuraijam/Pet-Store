@@ -19,7 +19,7 @@ export const fetchCart = () => async (dispatch) => {
       throw new Error("Failed to fetch cart")
      }
   } catch (error) {
-    toast.error(error.message);
+    console.error(error)
     dispatch(fetchCartRejected(error.message));
   }
 };

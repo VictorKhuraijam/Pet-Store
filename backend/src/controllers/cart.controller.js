@@ -75,7 +75,7 @@ const getUserCart = asyncHandler(async (req, res) => {
     const userId = req.user?._id
 
     if(!userId){
-        throw new ApiError(401, "Unauthorized entry")
+        throw new ApiError(401, "Log In to add to cart")
     }
 
     const user = await User.findById(userId)

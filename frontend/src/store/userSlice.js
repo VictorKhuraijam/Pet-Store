@@ -10,7 +10,7 @@ const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
 // Custom Thunks
 export const loginUser = (email, password) => async (dispatch) => {
-  dispatch(userSlice.actions.setLoading(true));
+  dispatch(setLoading(true));
   try {
     const response = await axios.post(
       `${backendUrl}/users/login`,
@@ -30,8 +30,10 @@ export const loginUser = (email, password) => async (dispatch) => {
       throw new Error(" Login failed")
     }
   } catch (error) {
+    // console.error(error.response.data.message)
+    console.error(error)
     dispatch(setError(error.message));
-    toast.error(error.message);
+    toast.error(error.response.data.message);
   } finally {
     dispatch(setLoading(false));
   }
@@ -51,16 +53,6 @@ export const logoutUser = () => async (dispatch) => {
       dispatch(resetUser());
       dispatch(setAuth(false));
 
-      // Clear tokens from storage
-      // localStorage.removeItem("accessToken");
-      // localStorage.removeItem("refreshToken");
-
-      //  // Clear cookies from the frontend (if stored)
-      //  document.cookie = "accessToken=; Max-Age=0";
-      //  document.cookie = "refreshToken=; Max-Age=0";
-
-      // Force a refresh to clear auth state properly
-      // window.location.reload();
 
     }
   } catch (error) {
@@ -87,18 +79,17 @@ export const checkAuthStatus = () => async (dispatch) => {
 
       dispatch(setUser(response.data.data.user));
       dispatch(setAuth(true));
-      
+
       dispatch(fetchCart());
 
     }
   } catch (error) {
-    if (error.response?.status === 401) {
-      // Automatically reset authentication if unauthorized
-    //   dispatch(resetUser());
-    //   dispatch(setAuth(false));
-    // } else {
-      console.error(error.message);
-    }
+
+       dispatch(resetUser());
+       dispatch(setAuth(false));
+       dispatch(clearCart())
+      console.error(error);
+
   }  finally {
     dispatch(setLoading(false));
   }

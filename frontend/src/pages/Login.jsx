@@ -18,13 +18,18 @@ const Login = () => {
       event.preventDefault();
       try {
 
-            dispatch(loginUser(email, password));
-            toast.success("Login successful")
+            const success = dispatch(loginUser(email, password));
+
+            if(success){
+              toast.success("Login successful")
             navigate("/")
+            }
 
       } catch (error) {
         console.log(error)
-        toast.error(error.message)
+        toast.error("Login failed")
+        setEmail("")
+        setPasword("")
       }
   }
 

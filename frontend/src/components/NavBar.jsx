@@ -12,9 +12,11 @@ function Navbar() {
     const dispatch = useDispatch()
     const menuRef = useRef(null)
     const profileRef = useRef(null)
+
     const cartCount = useSelector(getCartCount) || 0;
     const isAuthenticated = useSelector((state) => state.user.isAuthenticated);
     const user = useSelector((state) => state.user.user);
+    const loading = useSelector((state) => state.user.loading);
 
     const [visible, setVisible] = useState(false)
     const [dropdownVisible, setDropdownVisible] = useState(false);
@@ -49,9 +51,10 @@ function Navbar() {
     }, []);
 
     useEffect(() => {
-
-                dispatch(checkAuthStatus());
-
+        const checkAuth = async () => {
+         await dispatch(checkAuthStatus());
+        }
+        checkAuth()
       }, [  dispatch]);
 
 
@@ -173,7 +176,7 @@ function Navbar() {
                 </div>
 
 
-                {isAuthenticated && !isLoggingOut  && (
+                {isAuthenticated && !isLoggingOut && !loading  && (
                     <div>
                         <Link to='/cart' className='relative'>
                             <img src={assets.cart_icon} className='w-5 min-w-5' alt="" />
@@ -186,7 +189,7 @@ function Navbar() {
                     </div>
                 )}
 
-                <img onClick={() => setVisible(true)} src={assets.menu_icon} className='w-5 cursor-pointer sm:hidden' alt="" />
+                <img onClick={() => setVisible(!visible)}  src={assets.menu_icon} className='w-5 cursor-pointer sm:hidden' alt="" />
             </div>
 
         {/* Sidebar menu for small screens

@@ -62,7 +62,7 @@ export const fetchProducts = () => async (dispatch) => {
   try {
     const response = await axios.get(`${backendUrl}/products/list`);
     if (response.data.success) {
-      console.log("Response fronm backend for products list: ",response.data)
+      console.log("Response from backend for products list: ",response.data)
       const products = response.data.data.products;
       console.log("the Products send to redux: ", products)
       dispatch(fetchProductsSuccess({ products }));
