@@ -15,7 +15,7 @@ const LatestCollection = () => {
 
     useEffect(()=>{
         setLatestProducts(products);
-        console.log("The latest products",latestProducts)
+        // console.log("The latest products",latestProducts)
     },[products])
 
   return (

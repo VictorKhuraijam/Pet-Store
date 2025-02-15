@@ -4,7 +4,9 @@ import axios from 'axios';
 import { clearCart, fetchCart, fetchCartFulfilled } from './cartSlice';
 
 
+
 const backendUrl = import.meta.env.VITE_BACKEND_URL;
+
 
 // Custom Thunks
 export const loginUser = (email, password) => async (dispatch) => {
@@ -17,7 +19,7 @@ export const loginUser = (email, password) => async (dispatch) => {
     );
 
     if (response.data.success) {
-
+      console.log("User login response :",response)
       dispatch(setUser(response.data.data));
       dispatch(setAuth(true));
 
@@ -28,14 +30,15 @@ export const loginUser = (email, password) => async (dispatch) => {
       throw new Error(" Login failed")
     }
   } catch (error) {
-    dispatch(userSlice.actions.setError(error.message));
+    dispatch(setError(error.message));
     toast.error(error.message);
   } finally {
-    dispatch(userSlice.actions.setLoading(false));
+    dispatch(setLoading(false));
   }
 };
 
 export const logoutUser = () => async (dispatch) => {
+
   try {
     const response = await axios.post(
       `${backendUrl}/users/logout`,
@@ -45,29 +48,32 @@ export const logoutUser = () => async (dispatch) => {
 
     if (response.data.success) {
       dispatch(clearCart());
-      dispatch(userSlice.actions.resetUser());
+      dispatch(resetUser());
+      dispatch(setAuth(false));
 
       // Clear tokens from storage
-      localStorage.removeItem("accessToken");
-      localStorage.removeItem("refreshToken");
+      // localStorage.removeItem("accessToken");
+      // localStorage.removeItem("refreshToken");
 
-       // Clear cookies from the frontend (if stored)
-       document.cookie = "accessToken=; Max-Age=0";
-       document.cookie = "refreshToken=; Max-Age=0";
+      //  // Clear cookies from the frontend (if stored)
+      //  document.cookie = "accessToken=; Max-Age=0";
+      //  document.cookie = "refreshToken=; Max-Age=0";
 
       // Force a refresh to clear auth state properly
-      window.location.reload();
+      // window.location.reload();
+
     }
   } catch (error) {
     toast.error(error.message);
   }
 };
 
-export const checkAuthStatus = () => async (dispatch, getState) => {
-  const user = getState().user
-  if(!user){
-    return null
-  }
+export const checkAuthStatus = () => async (dispatch) => {
+  //doesn't run unnecessarily when there's no logged-in user.
+  // const userState = getState().user
+  // if(!userState.user){
+  //   return null
+  // }
 
   try {
     const response = await axios.get(
@@ -79,24 +85,22 @@ export const checkAuthStatus = () => async (dispatch, getState) => {
 
     if (response.data.success) {
 
-      dispatch(setUser(response.data.data));
+      dispatch(setUser(response.data.data.user));
       dispatch(setAuth(true));
-      // dispatch(userSlice.actions.setUser(response.data.data));
-      // dispatch(userSlice.actions.setAuth(true));
-
+      
       dispatch(fetchCart());
 
     }
   } catch (error) {
     if (error.response?.status === 401) {
       // Automatically reset authentication if unauthorized
-      dispatch(resetUser());
-      dispatch(setAuth(false));
-    } else {
+    //   dispatch(resetUser());
+    //   dispatch(setAuth(false));
+    // } else {
       console.error(error.message);
     }
   }  finally {
-    dispatch(userSlice.actions.setLoading(false));
+    dispatch(setLoading(false));
   }
 };
 
@@ -138,7 +142,13 @@ const userSlice = createSlice({
 });
 
 // Actions
-export const { clearError, resetUser, setAuth, setUser } = userSlice.actions;
+export const {
+  clearError,
+  resetUser,
+  setLoading,
+  setError,
+  setAuth,
+  setUser } = userSlice.actions;
 
 // Reducer
 export default userSlice.reducer;

@@ -55,7 +55,7 @@ const Login = () => {
             required
           /> */}
 
-          <div className="relative m-auto">
+          <div className="relative m-auto w-full">
             <input
               name="password"
               onChange={(e)=>setPasword(e.target.value)}

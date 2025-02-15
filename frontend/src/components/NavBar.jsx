@@ -11,11 +11,13 @@ function Navbar() {
     const navigate = useNavigate()
     const dispatch = useDispatch()
     const menuRef = useRef(null)
+    const profileRef = useRef(null)
     const cartCount = useSelector(getCartCount) || 0;
     const isAuthenticated = useSelector((state) => state.user.isAuthenticated);
     const user = useSelector((state) => state.user.user);
 
     const [visible, setVisible] = useState(false)
+    const [dropdownVisible, setDropdownVisible] = useState(false);
     const [isLoggingOut, setIsLoggingOut] = useState(false)
 
     const getInitials = (username) => {
@@ -35,6 +37,9 @@ function Navbar() {
             if (menuRef.current && !menuRef.current.contains(event.target)) {
                 setVisible(false);
             }
+            if (profileRef.current && !profileRef.current.contains(event.target)) {
+                setDropdownVisible(false);
+            }
         };
 
         document.addEventListener('mousedown', handleClickOutside);
@@ -44,8 +49,10 @@ function Navbar() {
     }, []);
 
     useEffect(() => {
-            dispatch(checkAuthStatus());
-      }, [ dispatch]);
+
+                dispatch(checkAuthStatus());
+
+      }, [  dispatch]);
 
 
     const logout = async() => {
@@ -70,21 +77,44 @@ function Navbar() {
             return null; // Don't render anything during logout transition
         }
 
-        if (isAuthenticated && user?.username) {
-            return (
-                <div className="w-8 h-8 rounded-full bg-gray-200 text-gray-700 flex items-center justify-center text-sm cursor-pointer">
+    //     if (isAuthenticated && user?.username) {
+    //         return (
+    //             <div
+    //                 onClick={() => setDropdownVisible(!dropdownVisible)}
+    //                 className="w-8 h-8 rounded-full bg-gray-200 text-gray-700 flex items-center justify-center text-sm cursor-pointer">
+    //                 {getInitials(user.username)}
+    //             </div>
+    //         );
+    //     }
+    //     return (
+    //         <img
+    //             onClick={() => navigate('/login')}
+    //             className='w-5 cursor-pointer'
+    //             src={assets.profile_icon}
+    //             alt=""
+    //         />
+    //     );
+    // };
+    return (
+        <div ref={profileRef} className="relative">
+            <div
+                onClick={() => isAuthenticated ? setDropdownVisible(!dropdownVisible) : navigate('/login') }
+                className="  ">
+                {isAuthenticated && user?.username ?
+                <div className="bg-gray-200 text-gray-700 w-8 h-8 rounded-full flex items-center justify-center text-sm cursor-pointer">
                     {getInitials(user.username)}
+                </div> :
+                    <img className='w-5' src={assets.profile_icon} alt="Profile" />}
+            </div>
+            {isAuthenticated && dropdownVisible && (
+                <div className='absolute right-0 mt-2 w-36 bg-white shadow-lg rounded-lg p-2 text-gray-500'>
+                    <p onClick={() => { navigate('/profile'); setDropdownVisible(false); }}
+                       className='cursor-pointer hover:text-black py-1 px-3'>My Profile</p>
+                    <p onClick={logout} className='cursor-pointer hover:text-black py-1 px-3'>Logout</p>
                 </div>
-            );
-        }
-        return (
-            <img
-                onClick={() => navigate('/login')}
-                className='w-5 cursor-pointer'
-                src={assets.profile_icon}
-                alt=""
-            />
-        );
+            )}
+        </div>
+      );
     };
 
 
@@ -124,11 +154,11 @@ function Navbar() {
 
       <div className='flex items-center gap-4 lg:gap-6'>
 
-            <div className='group relative'>
+               <div className='group relative'>
                     {renderAuthButton()}
-                    {/* Dropdown Menu */}
-                    {isAuthenticated && !isLoggingOut &&
-                        <div className='group-hover:block hidden absolute right-0 pt-4'>
+
+                    {/* {isAuthenticated && !isLoggingOut && dropdownVisible && (
+                        <div className=' absolute right-0 pt-4'>
                             <div className='flex flex-col gap-2 w-36 py-3 px-5 bg-slate-100 text-gray-500 rounded'>
                                 <p onClick={() => navigate('/profile')}
                                     className={`cursor-pointer hover:text-black ${isActive('/profile')}`}>
@@ -139,10 +169,11 @@ function Navbar() {
                                 </p>
                             </div>
                         </div>
-                    }
+                    )} */}
                 </div>
 
-                {isAuthenticated && !isLoggingOut && (
+
+                {isAuthenticated && !isLoggingOut  && (
                     <div>
                         <Link to='/cart' className='relative'>
                             <img src={assets.cart_icon} className='w-5 min-w-5' alt="" />

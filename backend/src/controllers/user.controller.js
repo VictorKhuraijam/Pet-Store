@@ -35,7 +35,7 @@ const generateOTP = () => {
 const options = {
     httpOnly: true,// Prevents JavaScript access to the cookie, reducing XSS risks
     secure: true,//Ensures the cookie is sent only over HTTPS connections.
-    sameSite: "Strict", // Prevents the cookie from being sent with cross-site requests (mitigates CSRF(Cross Site Request Forgery ) attacks)
+    sameSite: "none", // Prevents the cookie from being sent with cross-site requests (mitigates CSRF(Cross Site Request Forgery ) attacks)
     path: '/',
   }
 
@@ -540,6 +540,7 @@ const checkAuthStatus = asyncHandler(async (req, res) => {
     if (decodedToken) {
         // Access token is valid, Fetch user
         user = await User.findById(decodedToken._id).select("-password");
+        console.log("User through access token:", user)
 
         if (!user) {
             throw new ApiError(401, "Invalid access token");
@@ -607,8 +608,7 @@ const checkAuthStatus = asyncHandler(async (req, res) => {
                 .json(
                     new ApiResponse(
                         200,
-                        {user,
-                            newAccessToken
+                        {user
                         },
                         "Access and refresh token refreshed"
                     )
