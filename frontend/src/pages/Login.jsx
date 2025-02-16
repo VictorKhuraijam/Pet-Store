@@ -1,7 +1,7 @@
-import  {  useEffect, useState } from 'react'
+import  {   useState } from 'react'
 import { toast } from 'react-toastify';
 import { Link, useNavigate } from 'react-router-dom';
-import {checkAuthStatus, loginUser} from '../store/userSlice'
+import { loginUser} from '../store/userSlice'
 import { useDispatch } from 'react-redux';
 import { Eye, EyeOff} from 'lucide-react'
 
@@ -18,12 +18,20 @@ const Login = () => {
       event.preventDefault();
       try {
 
-            const success = dispatch(loginUser(email, password));
+            const success =await dispatch(loginUser(email, password));
 
             if(success){
               toast.success("Login successful")
-            navigate("/")
+               navigate("/")
             }
+            // const success = await dispatch(loginUser(email, password)); // Await the response
+
+        // if (success) {
+        //   toast.success("Login successful");
+        //   navigate("/");
+        // } else {
+        //   toast.error("Invalid email or password"); // Show error if login fails
+        // }
 
       } catch (error) {
         console.log(error)
@@ -33,9 +41,7 @@ const Login = () => {
       }
   }
 
-  useEffect(()=>{
-    dispatch(checkAuthStatus())
-  },[dispatch])
+
 
   return (
     <form onSubmit={onSubmitHandler} className='flex flex-col items-center w-[90%] sm:max-w-96 m-auto mt-14 gap-4 text-gray-800'>

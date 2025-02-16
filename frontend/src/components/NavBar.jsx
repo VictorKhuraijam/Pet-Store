@@ -2,7 +2,7 @@ import { Link, NavLink } from "react-router-dom";
 import { assets } from "../assets/assets";
 import { useState, useEffect, useRef } from "react";
 import {checkAuthStatus, logoutUser, resetUser} from '../store/userSlice'
-import { getCartCount} from '../store/cartSlice'
+import { clearCart, getCartCount} from '../store/cartSlice'
 import { useNavigate, useLocation } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 
@@ -52,10 +52,17 @@ function Navbar() {
 
     useEffect(() => {
         const checkAuth = async () => {
-         await dispatch(checkAuthStatus());
-        }
-        checkAuth()
-      }, [  dispatch]);
+          const success = await dispatch(checkAuthStatus());
+
+          if (!success) {
+            //as after refresh token expiry there was a need for double refresh to clear out the user data i.e. delay
+            dispatch(resetUser());
+            dispatch(clearCart())
+          }
+        };
+
+        checkAuth();
+      }, [dispatch]);
 
 
     const logout = async() => {
@@ -70,7 +77,7 @@ function Navbar() {
             navigate('/login')
         } catch (error) {
             console.error("Error during logout:", error)
-        } finally{
+        } finally {
             setIsLoggingOut(false)
         }
     }
@@ -80,24 +87,6 @@ function Navbar() {
             return null; // Don't render anything during logout transition
         }
 
-    //     if (isAuthenticated && user?.username) {
-    //         return (
-    //             <div
-    //                 onClick={() => setDropdownVisible(!dropdownVisible)}
-    //                 className="w-8 h-8 rounded-full bg-gray-200 text-gray-700 flex items-center justify-center text-sm cursor-pointer">
-    //                 {getInitials(user.username)}
-    //             </div>
-    //         );
-    //     }
-    //     return (
-    //         <img
-    //             onClick={() => navigate('/login')}
-    //             className='w-5 cursor-pointer'
-    //             src={assets.profile_icon}
-    //             alt=""
-    //         />
-    //     );
-    // };
     return (
         <div ref={profileRef} className="relative">
             <div
@@ -176,7 +165,7 @@ function Navbar() {
                 </div>
 
 
-                {isAuthenticated && !isLoggingOut && !loading  && (
+                {!loading  && isAuthenticated === true && !isLoggingOut &&  (
                     <div>
                         <Link to='/cart' className='relative'>
                             <img src={assets.cart_icon} className='w-5 min-w-5' alt="" />

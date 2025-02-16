@@ -6,6 +6,7 @@ import axios from "axios";
 import Orders from "./Orders";
 import { resetUser, setUser } from "../store/userSlice";
 import { clearCart } from "../store/cartSlice";
+import { Eye, EyeOff} from 'lucide-react'
 
 const Profile = () => {
   const { user, isAuthenticated, loading } = useSelector((state) => state.user);
@@ -16,8 +17,20 @@ const Profile = () => {
   const [isDeleting, setIsDeleting] = useState(false);
   const [activeTab, setActiveTab] = useState("profile");
   const [isUpdating, setIsUpdating] = useState(false);
+  const [passwordVisible, setPasswordVisible] = useState({
+    currentPassword: false,
+    newPassword: false,
+    confirmPassword: false
+  })
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
+
+  const togglePasswordVisible = (field) => {
+    setPasswordVisible((prev) => ({
+      ...prev,
+      [field]: !prev[field], // Toggle only the clicked field
+    }));
+  };
 
   // Form states
   const [formData, setFormData] = useState({
@@ -227,37 +240,95 @@ const Profile = () => {
               <label className="block text-sm font-medium text-gray-700">
                 Current Password
               </label>
-              <input
+              {/* <input
                 type="password"
                 name="currentPassword"
                 value={formData.currentPassword}
                 onChange={handleInputChange}
                 className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-black focus:border-black"
-              />
+              /> */}
+              <div className="relative m-auto w-full">
+                <input
+                  name="currentPassword"
+                  onChange={handleInputChange}
+                  value={formData.currentPassword}
+                  type={passwordVisible.currentPassword ? "text" : "password"}
+                  className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-black focus:border-black"
+                  placeholder="Enter password"
+                  required
+                />
+                <button
+                  type="button"
+                  className="absolute right-3 top-1/2 transform -translate-y-1/2"
+                  onClick={() => togglePasswordVisible("currentPassword")}
+                >
+                  {passwordVisible ? <EyeOff size={20} /> : <Eye size={20} />}
+                </button>
+              </div>
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700">
                 New Password
               </label>
-              <input
+              {/* <input
                 type="password"
                 name="newPassword"
                 value={formData.newPassword}
                 onChange={handleInputChange}
                 className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-black focus:border-black"
-              />
+              /> */}
+
+              <div className="relative m-auto w-full">
+                <input
+                  name="newPassword"
+                  onChange={handleInputChange}
+                  value={formData.newPassword}
+                  type={passwordVisible.newPassword ? "text" : "password"}
+                  className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-black focus:border-black"
+                  placeholder="Enter password"
+                  required
+                />
+                <button
+                  type="button"
+                  className="absolute right-3 top-1/2 transform -translate-y-1/2"
+                  onClick={() => togglePasswordVisible("passwordVisible")}
+                >
+                  {passwordVisible ? <EyeOff size={20} /> : <Eye size={20} />}
+                </button>
+              </div>
+
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700">
                 Confirm New Password
               </label>
-              <input
+              {/* <input
                 type="password"
                 name="confirmPassword"
                 value={formData.confirmPassword}
                 onChange={handleInputChange}
                 className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-black focus:border-black"
-              />
+              /> */}
+
+              <div className="relative m-auto w-full">
+                <input
+                  name="confirmPassword"
+                  onChange={handleInputChange}
+                  value={formData.confirmPassword}
+                  type={passwordVisible.confirmPassword ? "text" : "password"}
+                  className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-black focus:border-black"
+                  placeholder="Enter password"
+                  required
+                />
+                <button
+                  type="button"
+                  className="absolute right-3 top-1/2 transform -translate-y-1/2"
+                  onClick={() => togglePasswordVisible("passwordVisible")}
+                >
+                  {passwordVisible ? <EyeOff size={20} /> : <Eye size={20} />}
+                </button>
+              </div>
+
             </div>
             <div className="space-y-4">
               <button

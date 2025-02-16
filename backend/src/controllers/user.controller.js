@@ -35,7 +35,7 @@ const generateOTP = () => {
 const options = {
     httpOnly: true,// Prevents JavaScript access to the cookie, reducing XSS risks
     secure: true,//Ensures the cookie is sent only over HTTPS connections.
-    sameSite: "none", // Prevents the cookie from being sent with cross-site requests (mitigates CSRF(Cross Site Request Forgery ) attacks)
+    sameSite: "None", // Prevents the cookie from being sent with cross-site requests (mitigates CSRF(Cross Site Request Forgery ) attacks)
     path: '/',
   }
 
@@ -520,8 +520,8 @@ const checkAuthStatus = asyncHandler(async (req, res) => {
     const accessToken = req.cookies?.accessToken || req.header("Authorization")?.replace("Bearer ", "");
     const refreshToken = req.cookies?.refreshToken || req.body?.refreshToken;
 
-    console.log("Old refresh token stored in the brower: ", refreshToken)
-    console.log("Old access token stored in the brower: ", accessToken)
+    // console.log("Old refresh token stored in the brower: ", refreshToken)
+    // console.log("Old access token stored in the brower: ", accessToken)
 
 
     if (!accessToken && !refreshToken) {
@@ -551,7 +551,7 @@ const checkAuthStatus = asyncHandler(async (req, res) => {
             .json(new ApiResponse(
                 200,
                 {user,
-                    accessToken
+
                 },
                 "User authenticated",
             )
@@ -571,9 +571,9 @@ const checkAuthStatus = asyncHandler(async (req, res) => {
                 throw new Error("Missing REFRESH_TOKEN_SECRET in environment variables.");
             }
 
-            console.log("Before verifying refresh token:", refreshToken);
-            console.log("Using secret:", process.env.REFRESH_TOKEN_SECRET);
-            console.log("REFRESH_TOKEN_SECRET exists:", Boolean(process.env.REFRESH_TOKEN_SECRET));
+            // console.log("Before verifying refresh token:", refreshToken);
+            // console.log("Using secret:", process.env.REFRESH_TOKEN_SECRET);
+            // console.log("REFRESH_TOKEN_SECRET exists:", Boolean(process.env.REFRESH_TOKEN_SECRET));
 
             // const decodedRefreshToken = jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET);
             // console.log("Decoded Refresh Token:", decodedRefreshToken);

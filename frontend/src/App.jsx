@@ -3,12 +3,22 @@ import {Footer, NavBar} from './components/index.js'
 import { Routes, Route } from "react-router-dom"
 import {About, Cart, Collection, Contact, ForgotPassword, Home, Login, Orders, PlaceOrder, Product, Profile} from './pages/index.js'
 import Signup from "./pages/Signup.jsx"
+import { useEffect } from "react"
+import { useDispatch, useSelector } from "react-redux"
+import { checkAuthStatus } from './store/userSlice.js'
 
 
 export const App = () => {
+  const loading = useSelector(state => state.user.loading)
+
+  const dispatch = useDispatch()
+
+  useEffect(()=>{
+      dispatch(checkAuthStatus())
+    },[dispatch])
 
 
-  return (
+  return loading ? "" : (
     <div className="px-4 sm:px-[5vw] md:px-[7vw] lg:px-[9vw]">
       <ToastContainer />
       <NavBar />

@@ -25,7 +25,7 @@ export const loginUser = (email, password) => async (dispatch) => {
 
       // dispatch(checkAuthStatus())
       dispatch(fetchCartFulfilled(response.data.data.cartData));
-
+      return true
     } else{
       throw new Error(" Login failed")
     }
@@ -56,16 +56,12 @@ export const logoutUser = () => async (dispatch) => {
 
     }
   } catch (error) {
-    toast.error(error.message);
+    toast.error(error.response.data.message);
   }
 };
 
 export const checkAuthStatus = () => async (dispatch) => {
-  //doesn't run unnecessarily when there's no logged-in user.
-  // const userState = getState().user
-  // if(!userState.user){
-  //   return null
-  // }
+
 
   try {
     const response = await axios.get(
@@ -75,19 +71,18 @@ export const checkAuthStatus = () => async (dispatch) => {
 
     console.log("Auth check response:", response)
 
-    if (response.data.success) {
+    if (response.status === 200) {
 
       dispatch(setUser(response.data.data.user));
       dispatch(setAuth(true));
-
       dispatch(fetchCart());
 
     }
   } catch (error) {
 
+       dispatch(clearCart())
        dispatch(resetUser());
        dispatch(setAuth(false));
-       dispatch(clearCart())
       console.error(error);
 
   }  finally {
