@@ -11,9 +11,13 @@ const Hero = () => {
                     <p className='w-8 md:w-11 h-[2px] '></p>
                     <p className='italianno-regular font-medium text-sm sm:text-lg md:text-2xl lg:text-3xl xl:text-4xl '>Everything Your Pet Needs, All in One Place!</p>
                 </div>
-                <NavLink to='/collection' className='cursor-pointer'>
-                <h1 className='prata-regular text-3xl sm:py-3  lg:text-5xl leading-relaxed text-center'>Shop Now</h1>
-                </NavLink>
+
+                <h1 className=' text-3xl sm:py-3  lg:text-5xl leading-relaxed text-center'>
+                  <NavLink to='/collection' className='prata-regular cursor-pointer inline-block'>
+                    Shop Now
+                  </NavLink>
+                </h1>
+
                 <div className='flex items-center gap-2'>
                     <p className='italianno-regular font-medium text-sm sm:text-lg md:text-2xl lg:text-3xl xl:text-4xl p-2'>Explore our wide range of pet supplies, toys, and treats</p>
                 </div>

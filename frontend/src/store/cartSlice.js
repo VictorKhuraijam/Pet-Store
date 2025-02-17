@@ -20,6 +20,7 @@ export const fetchCart = () => async (dispatch) => {
      }
   } catch (error) {
     console.error(error)
+    dispatch(clearCart())
     dispatch(fetchCartRejected(error.message));
   }
 };

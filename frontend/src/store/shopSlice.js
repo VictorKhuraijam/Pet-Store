@@ -68,7 +68,8 @@ export const fetchProducts = () => async (dispatch) => {
       dispatch(fetchProductsSuccess({ products }));
     }
   } catch (error) {
-    toast.error(error.message);
+    console.error(error)
+    toast.error("Server down. Please try again later");
     dispatch(fetchProductsFailure({ error: error.message }));
   }
 };

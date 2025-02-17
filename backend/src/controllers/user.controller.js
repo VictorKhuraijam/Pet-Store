@@ -516,7 +516,7 @@ const updateAccountDetails = asyncHandler(async(req, res) => {
 // .json(new ApiResponse(200, req.user, "Current user fetched successfully"))
 // })
 
-const checkAuthStatus = asyncHandler(async (req, res) => {
+const checkAuthStatus = async (req, res) => {
     const accessToken = req.cookies?.accessToken || req.header("Authorization")?.replace("Bearer ", "");
     const refreshToken = req.cookies?.refreshToken || req.body?.refreshToken;
 
@@ -567,24 +567,6 @@ const checkAuthStatus = asyncHandler(async (req, res) => {
                 throw new ApiError(500, "Refresh decoded token problem")
             }
 
-            if (!process.env.REFRESH_TOKEN_SECRET) {
-                throw new Error("Missing REFRESH_TOKEN_SECRET in environment variables.");
-            }
-
-            // console.log("Before verifying refresh token:", refreshToken);
-            // console.log("Using secret:", process.env.REFRESH_TOKEN_SECRET);
-            // console.log("REFRESH_TOKEN_SECRET exists:", Boolean(process.env.REFRESH_TOKEN_SECRET));
-
-            // const decodedRefreshToken = jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET);
-            // console.log("Decoded Refresh Token:", decodedRefreshToken);
-        }catch (error) {
-            return res
-            .status(200)
-            .clearCookie("accessToken", options)
-            .clearCookie("refreshToken", options)
-            .json(new ApiResponse(200, {}, "Session expired. Please log in again"))
-            }
-
             user = await User.findById(decodedRefreshToken._id);
 
 
@@ -619,9 +601,15 @@ const checkAuthStatus = asyncHandler(async (req, res) => {
                         "Access and refresh token refreshed"
                     )
                 );
-        }
-
-});
+        }  catch (error) {
+            return res
+            .status(401)
+            .clearCookie("accessToken", options)
+            .clearCookie("refreshToken", options)
+            .json(new ApiResponse(200, {}, "Session expired. Please log in again"))
+            }
+    }
+};
 
 
 // Send verification email

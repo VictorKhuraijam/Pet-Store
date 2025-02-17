@@ -1,8 +1,8 @@
 import { Link, NavLink } from "react-router-dom";
 import { assets } from "../assets/assets";
 import { useState, useEffect, useRef } from "react";
-import {checkAuthStatus, logoutUser, resetUser} from '../store/userSlice'
-import { clearCart, getCartCount} from '../store/cartSlice'
+import { checkAuthStatus, logoutUser, resetUser} from '../store/userSlice'
+import {  clearCart, getCartCount} from '../store/cartSlice'
 import { useNavigate, useLocation } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 
@@ -50,19 +50,19 @@ function Navbar() {
         };
     }, []);
 
-    useEffect(() => {
-        const checkAuth = async () => {
-          const success = await dispatch(checkAuthStatus());
+    // useEffect(() => {
+    //     const checkAuth = async () => {
+    //       const success = await dispatch(checkAuthStatus());
 
-          if (!success) {
-            //as after refresh token expiry there was a need for double refresh to clear out the user data i.e. delay
-            dispatch(resetUser());
-            dispatch(clearCart())
-          }
-        };
+    //       if (!success) {
+    //         //as after refresh token expiry there was a need for double refresh to clear out the user data i.e. delay
+    //         dispatch(resetUser());
+    //         dispatch(clearCart())
+    //       }
+    //     };
 
-        checkAuth();
-      }, [dispatch]);
+    //     checkAuth();
+    //   }, [dispatch]);
 
 
     const logout = async() => {

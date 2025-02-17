@@ -5,17 +5,31 @@ import {About, Cart, Collection, Contact, ForgotPassword, Home, Login, Orders, P
 import Signup from "./pages/Signup.jsx"
 import { useEffect } from "react"
 import { useDispatch, useSelector } from "react-redux"
-import { checkAuthStatus } from './store/userSlice.js'
-
+import { checkAuthStatus, resetUser, setAuth } from './store/userSlice.js'
+import { clearCart, fetchCart } from "./store/cartSlice.js"
 
 export const App = () => {
   const loading = useSelector(state => state.user.loading)
 
   const dispatch = useDispatch()
 
-  useEffect(()=>{
-      dispatch(checkAuthStatus())
-    },[dispatch])
+  useEffect(() => {
+          const checkAuth = async () => {
+            const success = await dispatch(checkAuthStatus());
+
+            if (!success) {
+              //as after refresh token expiry there was a need for double refresh to clear out the user data i.e. delay
+              dispatch(resetUser());
+              dispatch(clearCart())
+            } else {
+
+                    dispatch(setAuth(true));
+                    dispatch(fetchCart())
+            }
+          };
+
+          checkAuth();
+        }, [dispatch]);
 
 
   return loading ? "" : (

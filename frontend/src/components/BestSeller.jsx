@@ -1,18 +1,21 @@
 import {useEffect, useState } from 'react'
 import {ProductItem, Title} from './index';
-import { useSelector, useDispatch } from 'react-redux';
-import { fetchProducts } from '../store/shopSlice';
+import { useSelector} from 'react-redux';
+// import { fetchProducts } from '../store/shopSlice';
 
 const BestSeller = () => {
 
-    const dispatch = useDispatch()
+    // const dispatch = useDispatch()
     const products = useSelector((state)=> state.shop.products)
 
     const [bestSeller,setBestSeller] = useState([]);
 
-    useEffect(() => {
-      dispatch(fetchProducts())
-    },[dispatch])
+    // useEffect(() => {
+    //   dispatch(fetchProducts())
+    // },[dispatch])
+    {/*
+      since both bestseller and latest collection is used in the home page the useEffect is loaded twice unnecessarily and when error occurs the error message is displayed twice
+       */}
 
     useEffect(()=>{
         const bestProduct = products.filter((item)=>(item.bestseller));

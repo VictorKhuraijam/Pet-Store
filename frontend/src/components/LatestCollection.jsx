@@ -1,17 +1,17 @@
 import  {useEffect, useState } from 'react'
 import {Title, ProductItem} from './index';
-import { fetchProducts } from '../store/shopSlice';
-import { useSelector, useDispatch } from 'react-redux';
+// import { fetchProducts } from '../store/shopSlice';
+import { useSelector} from 'react-redux';
 
 const LatestCollection = () => {
 
-    const dispatch = useDispatch();
+    // const dispatch = useDispatch();
     const products = useSelector((state) => state.shop.products)
     const [latestProducts,setLatestProducts] = useState([]);
 
-    useEffect(() => {
-      dispatch(fetchProducts())
-    },[dispatch])
+    // useEffect(() => {
+    //   dispatch(fetchProducts())
+    // },[dispatch])
 
     useEffect(()=>{
         setLatestProducts(products);

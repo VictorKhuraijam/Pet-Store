@@ -62,7 +62,6 @@ export const logoutUser = () => async (dispatch) => {
 
 export const checkAuthStatus = () => async (dispatch) => {
 
-
   try {
     const response = await axios.get(
       `${backendUrl}/users/check-auth`,
@@ -78,11 +77,13 @@ export const checkAuthStatus = () => async (dispatch) => {
       dispatch(fetchCart());
 
     }
+    return true
   } catch (error) {
 
        dispatch(clearCart())
        dispatch(resetUser());
        dispatch(setAuth(false));
+       toast.error(error.response.data.message)
       console.error(error);
 
   }  finally {

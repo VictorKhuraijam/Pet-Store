@@ -58,7 +58,7 @@ app.use((err, req, res, next) => {
     .status(500)
     .json({
       success: false,
-      message: "Internal Server Error"
+      message: "Server down. Please try agian later"
   });
 });
 
