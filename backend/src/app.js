@@ -52,7 +52,7 @@ app.use((err, req, res, next) => {
           message: err.message,
           errors: err || []
       });
-  }
+  } //known API errors
 
   return res
     .status(500)

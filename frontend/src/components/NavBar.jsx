@@ -1,8 +1,8 @@
 import { Link, NavLink } from "react-router-dom";
 import { assets } from "../assets/assets";
 import { useState, useEffect, useRef } from "react";
-import { checkAuthStatus, logoutUser, resetUser} from '../store/userSlice'
-import {  clearCart, getCartCount} from '../store/cartSlice'
+import {  logoutUser, resetUser} from '../store/userSlice'
+import {   getCartCount} from '../store/cartSlice'
 import { useNavigate, useLocation } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 
@@ -74,7 +74,7 @@ function Navbar() {
             {/*
                 The warning from VS Code is technically correct - the dispatch function itself doesn't return a Promise that meaningfully affects the operation. However, the await is inadvertently helping by creating those microtask delays that allow for better state synchronization. It's a side effect rather than the intended use of await.
                  */}
-            navigate('/login')
+            navigate('/')
         } catch (error) {
             console.error("Error during logout:", error)
         } finally {
@@ -178,7 +178,13 @@ function Navbar() {
                     </div>
                 )}
 
-                <img onClick={() => setVisible(!visible)}  src={assets.menu_icon} className='w-5 cursor-pointer sm:hidden' alt="" />
+                <img
+                    ref={menuRef}
+                    onClick={() => setVisible(!visible)}
+                    src={assets.menu_icon}
+                    className='w-5 cursor-pointer sm:hidden'
+                    alt="menu_icon"
+                />
             </div>
 
         {/* Sidebar menu for small screens
@@ -198,7 +204,7 @@ function Navbar() {
         {/* Sidebar menu for small screens */}
             {visible && (
             <div
-                ref={menuRef}
+
                 className="absolute right-2 top-12 bg-slate-100 shadow-lg rounded-lg w-48">
                 <div className="flex flex-col items-center text-gray-600 p-3">
                 {/* <p
@@ -210,28 +216,28 @@ function Navbar() {
                 </p> */}
                 <NavLink
                     onClick={() => setVisible(false)}
-                    className={`py-2 px-4  hover:bg-gray-100 rounded ${isActive('/')}`}
+                    className={`py-2 px-4 w-full text-center hover:bg-gray-300 rounded ${isActive('/')}`}
                     to="/"
                 >
                     HOME
                 </NavLink>
                 <NavLink
                     onClick={() => setVisible(false)}
-                    className={`py-2 px-4 hover:bg-gray-100 rounded ${isActive('/collection')}`}
+                    className={`py-2 px-4 w-full text-center hover:bg-gray-300 rounded ${isActive('/collection')}`}
                     to="/collection"
                 >
                     REX COLLECTION
                 </NavLink>
                 <NavLink
                     onClick={() => setVisible(false)}
-                    className={`py-2 px-4 hover:bg-gray-100 rounded ${isActive('/about')}`}
+                    className={`py-2 px-4 w-full text-center hover:bg-gray-300 rounded ${isActive('/about')}`}
                     to="/about"
                 >
                     ABOUT
                 </NavLink>
                 <NavLink
                     onClick={() => setVisible(false)}
-                    className={`py-2 px-4 hover:bg-gray-100 rounded ${isActive('/co')}`}
+                    className={`py-2 px-4 w-full text-center hover:bg-gray-300 rounded ${isActive('/co')}`}
                     to="/contact"
                 >
                     CONTACT US

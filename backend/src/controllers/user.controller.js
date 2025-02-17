@@ -516,7 +516,7 @@ const updateAccountDetails = asyncHandler(async(req, res) => {
 // .json(new ApiResponse(200, req.user, "Current user fetched successfully"))
 // })
 
-const checkAuthStatus = async (req, res) => {
+const checkAuthStatus = asyncHandler(async (req, res) => {
     const accessToken = req.cookies?.accessToken || req.header("Authorization")?.replace("Bearer ", "");
     const refreshToken = req.cookies?.refreshToken || req.body?.refreshToken;
 
@@ -609,7 +609,10 @@ const checkAuthStatus = async (req, res) => {
             .json(new ApiResponse(200, {}, "Session expired. Please log in again"))
             }
     }
-};
+});
+
+
+
 
 
 // Send verification email

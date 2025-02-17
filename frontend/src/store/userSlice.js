@@ -83,7 +83,8 @@ export const checkAuthStatus = () => async (dispatch) => {
        dispatch(clearCart())
        dispatch(resetUser());
        dispatch(setAuth(false));
-       toast.error(error.response.data.message)
+      
+      //  toast.error(error.response.data.message) what about the case when user is not logged in or there is no token.
       console.error(error);
 
   }  finally {

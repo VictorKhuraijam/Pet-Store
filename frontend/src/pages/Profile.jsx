@@ -167,7 +167,7 @@ const Profile = () => {
           className={`px-4 py-2 rounded-md transition ${
             activeTab === "security"
               ? "bg-black text-white"
-              : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+              : "bg-gray-200 text-gray-700  hover:bg-gray-300"
           }`}
         >
           Security
@@ -177,7 +177,7 @@ const Profile = () => {
           className={`px-4 py-2 rounded-md transition ${
             activeTab === "orders"
               ? "bg-black text-white"
-              : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+              : "bg-gray-200 text-gray-700  hover:bg-gray-300"
           }`}
         >
           Orders
@@ -285,7 +285,7 @@ const Profile = () => {
                   value={formData.newPassword}
                   type={passwordVisible.newPassword ? "text" : "password"}
                   className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-black focus:border-black"
-                  placeholder="Enter password"
+                  placeholder="Enter new password"
                   required
                 />
                 <button
@@ -317,7 +317,7 @@ const Profile = () => {
                   value={formData.confirmPassword}
                   type={passwordVisible.confirmPassword ? "text" : "password"}
                   className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-black focus:border-black"
-                  placeholder="Enter password"
+                  placeholder="Enter new password again"
                   required
                 />
                 <button
