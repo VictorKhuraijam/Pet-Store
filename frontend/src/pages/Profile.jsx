@@ -151,7 +151,7 @@ const Profile = () => {
   return (
     <div className="max-w-4xl mx-auto p-4 sm:p-6">
       {/* Tab Navigation */}
-      <div className="flex flex-row gap-2 mb-6">
+      <div className="flex flex-row ml-[15%] gap-2 mb-6">
         <button
           onClick={() => setActiveTab("profile")}
           className={`px-4 py-2 rounded-md transition ${
@@ -198,7 +198,7 @@ const Profile = () => {
 
       {/* Profile Tab */}
       {activeTab === "profile" && (
-        <div className="bg-white shadow-md rounded-lg p-4 sm:p-6">
+        <div className="bg-white  max-w-[50vw] m-auto shadow-md rounded-lg p-4 sm:p-6">
           <h2 className="text-2xl font-bold mb-6">Profile Information</h2>
           <form onSubmit={handleUpdateUsername} className="space-y-4">
             <div>
@@ -207,7 +207,7 @@ const Profile = () => {
                 type="email"
                 value={user.email}
                 disabled
-                className="mt-1 block w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-md"
+                className=" mt-1 block w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-md"
               />
             </div>
             <div>
@@ -233,7 +233,7 @@ const Profile = () => {
 
       {/* Security Tab */}
       {activeTab === "security" && (
-        <div className="bg-white shadow-md rounded-lg p-4 sm:p-6">
+        <div className="bg-white max-w-[60vw] shadow-md rounded-lg p-4 sm:p-6">
           <h2 className="text-2xl font-bold mb-6">Security Settings</h2>
           <form onSubmit={handleUpdatePassword} className="space-y-4">
             <div>
@@ -330,7 +330,7 @@ const Profile = () => {
               </div>
 
             </div>
-            <div className="space-y-4">
+            <div className="space-y-4 flex justify-evenly">
               <button
                 type="submit"
                 disabled={isUpdating}
