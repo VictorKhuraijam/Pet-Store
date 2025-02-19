@@ -91,7 +91,7 @@ function Navbar() {
         <div ref={profileRef} className="relative">
             <div
                 onClick={() => isAuthenticated ? setDropdownVisible(!dropdownVisible) : navigate('/login') }
-                className="  ">
+                className=" cursor-pointer ">
                 {isAuthenticated && user?.username ?
                 <div className="bg-gray-200 text-gray-700 w-8 h-8 rounded-full flex items-center justify-center text-sm cursor-pointer">
                     {getInitials(user.username)}
@@ -111,9 +111,9 @@ function Navbar() {
 
 
   return (
-    <div className=' flex items-center justify-between py-5 font-medium  '>
+    <div className='px-4 flex items-center justify-between py-5 font-medium '>
 
-      <Link to='/'><img src={assets.logo} className='w-36' alt="" /></Link>
+      <Link to='/'><img src={assets.logo} className='w-12 rounded mix-blend-multiply' alt="" /></Link>
 
       <ul className='hidden sm:flex gap-5 text-sm text-gray-500'>
 
@@ -178,34 +178,27 @@ function Navbar() {
                     </div>
                 )}
 
-                <img
+                {/* <img
                     ref={menuRef}
                     onClick={() => setVisible(!visible)}
                     src={assets.menu_icon}
                     className='w-5 cursor-pointer sm:hidden'
                     alt="menu_icon"
+                /> */}
+
+                <div ref={menuRef} className="relative">
+                <img
+
+                    onClick={() => setVisible(!visible)}
+                    src={assets.menu_icon}
+                    className='w-5 cursor-pointer sm:hidden'
+                    alt="menu_icon"
                 />
-            </div>
 
-        {/* Sidebar menu for small screens
-        <div className={`absolute top-0 right-0 bottom-0 overflow-hidden bg-white transition-all ${visible ? 'w-full' : 'w-0'}`}>
-                <div className='flex flex-col text-gray-600'>
-                    <div onClick={()=>setVisible(false)} className='flex items-center gap-4 p-3 cursor-pointer'>
-                        <img className='h-4 rotate-180' src={assets.dropdown_icon} alt="" />
-                        <p>Back</p>
-                    </div>
-                    <NavLink onClick={()=>setVisible(false)} className='py-2 pl-6 border' to='/'>HOME</NavLink>
-                    <NavLink onClick={()=>setVisible(false)} className='py-2 pl-6 border' to='/collection'>REX COLLECTION</NavLink>
-                    <NavLink onClick={()=>setVisible(false)} className='py-2 pl-6 border' to='/about'>ABOUT</NavLink>
-                    <NavLink onClick={()=>setVisible(false)} className='py-2 pl-6 border' to='/contact'>CONTACT US</NavLink>
-                </div>
-        </div> */}
-
-        {/* Sidebar menu for small screens */}
             {visible && (
             <div
-
-                className="absolute right-2 top-12 bg-slate-100 shadow-lg rounded-lg w-48">
+                // ref={menuRef}
+                className="absolute right-2 top-10 bg-slate-100 shadow-lg rounded-lg w-48">
                 <div className="flex flex-col items-center text-gray-600 p-3">
                 {/* <p
                     onClick={() => setVisible(false)}
@@ -245,6 +238,26 @@ function Navbar() {
                 </div>
             </div>
             )}
+                </div>
+
+            </div>
+
+        {/* Sidebar menu for small screens
+        <div className={`absolute top-0 right-0 bottom-0 overflow-hidden bg-white transition-all ${visible ? 'w-full' : 'w-0'}`}>
+                <div className='flex flex-col text-gray-600'>
+                    <div onClick={()=>setVisible(false)} className='flex items-center gap-4 p-3 cursor-pointer'>
+                        <img className='h-4 rotate-180' src={assets.dropdown_icon} alt="" />
+                        <p>Back</p>
+                    </div>
+                    <NavLink onClick={()=>setVisible(false)} className='py-2 pl-6 border' to='/'>HOME</NavLink>
+                    <NavLink onClick={()=>setVisible(false)} className='py-2 pl-6 border' to='/collection'>REX COLLECTION</NavLink>
+                    <NavLink onClick={()=>setVisible(false)} className='py-2 pl-6 border' to='/about'>ABOUT</NavLink>
+                    <NavLink onClick={()=>setVisible(false)} className='py-2 pl-6 border' to='/contact'>CONTACT US</NavLink>
+                </div>
+        </div> */}
+
+
+
 
 
     </div>

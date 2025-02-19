@@ -10,6 +10,10 @@ a.active hr{
   display: block;
 }
 
+body {
+  background-color: #ebf3f1;
+}
+
 
 
 .martel-regular {

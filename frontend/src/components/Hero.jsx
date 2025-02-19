@@ -18,13 +18,11 @@ const Hero = () => {
                   </NavLink>
                 </h1>
 
-                <div className='flex items-center gap-2'>
-                    <p className='italianno-regular font-medium text-sm sm:text-lg md:text-2xl lg:text-3xl xl:text-4xl p-2'>Explore our wide range of pet supplies, toys, and treats</p>
-                </div>
+
             </div>
       </div>
       {/* Hero Right Side */}
-      <img className='w-full sm:w-1/2' src={assets.hero_img} alt="" />
+      <img className='w-full sm:w-1/2 mr-5 ml-1' src={assets.hero_img} alt="" />
     </div>
   )
 }

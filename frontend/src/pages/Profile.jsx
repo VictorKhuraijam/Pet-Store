@@ -22,8 +22,6 @@ const Profile = () => {
     newPassword: false,
     confirmPassword: false
   })
-  const [error, setError] = useState("");
-  const [success, setSuccess] = useState("");
 
   const togglePasswordVisible = (field) => {
     setPasswordVisible((prev) => ({
@@ -61,7 +59,6 @@ const Profile = () => {
       [e.target.name]: e.target.value,
     });
     ("");
-    setSuccess("");
   };
 
   const handleUpdateUsername = async (e) => {
@@ -106,11 +103,11 @@ const Profile = () => {
 
     setIsUpdating(true);
     try {
-      await axios.patch(
+      await axios.post(
         `${backendUrl}/users/change-password`,
         {
-          currentPassword: formData.currentPassword,
-          newPassword: formData.newPassword,
+          oldPassword: formData.currentPassword,
+          confirmPassword: formData.newPassword,
         },
         { withCredentials: true }
       );
@@ -123,7 +120,7 @@ const Profile = () => {
       });
     } catch (error) {
       console.error(error)
-      toast.error("Error updating password");
+      toast.error(error.response.data.message);
     } finally {
       setIsUpdating(false);
     }
@@ -142,7 +139,6 @@ const Profile = () => {
       navigate("/login");
     } catch (error) {
       console.error(error)
-      setError("Error deleting account");
     } finally {
       setIsDeleting(false);
     }
@@ -151,7 +147,7 @@ const Profile = () => {
   return (
     <div className="max-w-4xl mx-auto p-4 sm:p-6">
       {/* Tab Navigation */}
-      <div className="flex flex-row ml-[15%] gap-2 mb-6">
+      <div className="flex flex-row lg:ml-[15%] gap-2 mb-6">
         <button
           onClick={() => setActiveTab("profile")}
           className={`px-4 py-2 rounded-md transition ${
@@ -184,21 +180,9 @@ const Profile = () => {
         </button>
       </div>
 
-      {/* Alert Messages */}
-      {error && (
-        <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-md">
-          <p className="text-red-600">{error}</p>
-        </div>
-      )}
-      {success && (
-        <div className="mb-4 p-4 bg-green-50 border border-green-200 rounded-md">
-          <p className="text-green-600">{success}</p>
-        </div>
-      )}
-
       {/* Profile Tab */}
       {activeTab === "profile" && (
-        <div className="bg-white  max-w-[50vw] m-auto shadow-md rounded-lg p-4 sm:p-6">
+        <div className="bg-white md:w-max-[300px]  m-auto shadow-md rounded-lg p-4 sm:p-6">
           <h2 className="text-2xl font-bold mb-6">Profile Information</h2>
           <form onSubmit={handleUpdateUsername} className="space-y-4">
             <div>
@@ -223,7 +207,7 @@ const Profile = () => {
             <button
               type="submit"
               disabled={isUpdating}
-              className="w-[250px]  sm:w-auto px-4 py-2 bg-black text-white rounded-md hover:bg-gray-800 transition disabled:bg-gray-400"
+              className=" sm:w-auto px-4 py-2 bg-black text-white rounded-md hover:bg-gray-800 transition disabled:bg-gray-400"
             >
               {isUpdating ? "Updating..." : "Update Username"}
             </button>
@@ -233,9 +217,9 @@ const Profile = () => {
 
       {/* Security Tab */}
       {activeTab === "security" && (
-        <div className="bg-white max-w-[60vw] shadow-md rounded-lg p-4 sm:p-6">
+        <div className="bg-white  shadow-md rounded-lg p-4 sm:p-6">
           <h2 className="text-2xl font-bold mb-6">Security Settings</h2>
-          <form onSubmit={handleUpdatePassword} className="space-y-4">
+          <form onSubmit={handleUpdatePassword} className="space-y-4 w-full">
             <div>
               <label className="block text-sm font-medium text-gray-700">
                 Current Password
@@ -262,7 +246,7 @@ const Profile = () => {
                   className="absolute right-3 top-1/2 transform -translate-y-1/2"
                   onClick={() => togglePasswordVisible("currentPassword")}
                 >
-                  {passwordVisible ? <EyeOff size={20} /> : <Eye size={20} />}
+                  {passwordVisible.currentPassword ? <EyeOff size={20} /> : <Eye size={20} />}
                 </button>
               </div>
             </div>
@@ -270,13 +254,7 @@ const Profile = () => {
               <label className="block text-sm font-medium text-gray-700">
                 New Password
               </label>
-              {/* <input
-                type="password"
-                name="newPassword"
-                value={formData.newPassword}
-                onChange={handleInputChange}
-                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-black focus:border-black"
-              /> */}
+
 
               <div className="relative m-auto w-full">
                 <input
@@ -291,9 +269,9 @@ const Profile = () => {
                 <button
                   type="button"
                   className="absolute right-3 top-1/2 transform -translate-y-1/2"
-                  onClick={() => togglePasswordVisible("passwordVisible")}
+                  onClick={() => togglePasswordVisible("newPassword")}
                 >
-                  {passwordVisible ? <EyeOff size={20} /> : <Eye size={20} />}
+                  {passwordVisible.newPassword ? <EyeOff size={20} /> : <Eye size={20} />}
                 </button>
               </div>
 
@@ -302,13 +280,7 @@ const Profile = () => {
               <label className="block text-sm font-medium text-gray-700">
                 Confirm New Password
               </label>
-              {/* <input
-                type="password"
-                name="confirmPassword"
-                value={formData.confirmPassword}
-                onChange={handleInputChange}
-                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-black focus:border-black"
-              /> */}
+
 
               <div className="relative m-auto w-full">
                 <input
@@ -317,24 +289,24 @@ const Profile = () => {
                   value={formData.confirmPassword}
                   type={passwordVisible.confirmPassword ? "text" : "password"}
                   className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-black focus:border-black"
-                  placeholder="Enter new password again"
+                  placeholder="Confirm new password"
                   required
                 />
                 <button
                   type="button"
                   className="absolute right-3 top-1/2 transform -translate-y-1/2"
-                  onClick={() => togglePasswordVisible("passwordVisible")}
+                  onClick={() => togglePasswordVisible("confirmPassword")}
                 >
-                  {passwordVisible ? <EyeOff size={20} /> : <Eye size={20} />}
+                  {passwordVisible.confirmPassword ? <EyeOff size={20} /> : <Eye size={20} />}
                 </button>
               </div>
 
             </div>
-            <div className="space-y-4 flex justify-evenly">
+            <div className=" flex justify-evenly gap-1">
               <button
                 type="submit"
                 disabled={isUpdating}
-                className="w-full sm:w-auto px-4 py-2 bg-black text-white rounded-md hover:bg-gray-800 transition disabled:bg-gray-400"
+                className=" sm:w-auto text-sm px-4 py-2 bg-black text-white rounded-md hover:bg-gray-800 transition disabled:bg-gray-400"
               >
                 {isUpdating ? "Updating Password..." : "Update Password"}
               </button>
@@ -342,7 +314,7 @@ const Profile = () => {
                 type="button"
                 onClick={handleDeleteAccount}
                 disabled={isDeleting}
-                className="w-full sm:w-auto px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600 transition disabled:bg-red-400"
+                className=" sm:w-auto text-sm px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600 transition disabled:bg-red-400"
               >
                 {isDeleting ? "Deleting Account..." : "Delete Account"}
               </button>
