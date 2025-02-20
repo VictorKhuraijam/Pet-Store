@@ -134,7 +134,7 @@ const ForgotPassword = () => {
             onChange={handleChange}
             value={formData.email}
             type="email"
-            className="w-full px-3 py-2 border border-gray-800"
+            className="w-full px-3 py-2 border rounded border-gray-800"
             placeholder="Email"
             required
           />

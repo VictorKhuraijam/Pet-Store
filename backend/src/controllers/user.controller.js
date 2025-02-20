@@ -462,17 +462,13 @@ const refreshAccessToken = asyncHandler(async(req, res) => {
 })
 
 const changeCurrentPassword = asyncHandler(async(req, res) => {
-    const {oldPassword, newPassword, confirmPassword} = req.body
+    const {oldPassword,  confirmPassword} = req.body
 
     const user = await User.findById(req.user?._id)
     const isPasswordCorrect = await user.isPasswordCorrect(oldPassword)
 
     if (!isPasswordCorrect) {
       throw new ApiError(400, "Invalid password")
-    }
-
-    if(newPassword !== confirmPassword){
-      throw new ApiError(400, "New password does not match with confirm password")
     }
 
     user.password = confirmPassword

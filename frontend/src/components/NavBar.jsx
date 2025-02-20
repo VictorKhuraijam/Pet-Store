@@ -111,11 +111,11 @@ function Navbar() {
 
 
   return (
-    <div className='px-4 flex items-center justify-between py-5 font-medium '>
+    <div className='px-4 lg:px-6 flex items-center justify-between py-5 font-medium '>
 
       <Link to='/'><img src={assets.logo} className='w-12 rounded mix-blend-multiply' alt="" /></Link>
 
-      <ul className='hidden sm:flex gap-5 text-sm text-gray-500'>
+      <ul className='hidden sm:flex gap-5  text-gray-500'>
 
         <NavLink
             to='/'

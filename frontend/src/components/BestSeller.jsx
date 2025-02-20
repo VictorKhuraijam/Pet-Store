@@ -23,11 +23,12 @@ const BestSeller = () => {
     },[products])
 
   return (
-    <div className='my-10'>
+    <div className='my-10 px-4'>
       <div className='text-center text-3xl py-8'>
         <Title text1={'BEST'} text2={'SELLERS'}/>
         <p className='w-3/4 m-auto text-xs sm:text-sm md:text-base text-gray-600'>
-        Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the.
+        Explore our most loved pet products, chosen by pet owners who want the best for their furry friends. From nutritious treats to toys, these favorites are guaranteed to bring joy to your pets!
+
         </p>
       </div>
 

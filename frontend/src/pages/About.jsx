@@ -3,7 +3,7 @@ import { assets } from '../assets/assets'
 
 const About = () => {
   return (
-    <div>
+    <div className='px-4'>
 
       <div className='text-2xl text-center pt-8 border-t'>
           <Title text1={'ABOUT'} text2={'US'} />
@@ -12,10 +12,13 @@ const About = () => {
       <div className='my-10 flex flex-col md:flex-row gap-16'>
           <img className='w-full md:max-w-[450px] object-cover' src={assets.about_img} alt="" />
           <div className='flex flex-col justify-center gap-6 md:w-2/4 text-gray-600'>
-              <p>Forever was born out of a passion for innovation and a desire to revolutionize the way people shop online. Our journey began with a simple idea: to provide a platform where customers can easily discover, explore, and purchase a wide range of products from the comfort of their homes.</p>
-              <p>Since our inception, we&#39;ve worked tirelessly to curate a diverse selection of high-quality products that cater to every taste and preference. From fashion and beauty to electronics and home essentials, we offer an extensive collection sourced from trusted brands and suppliers.</p>
-              <b className='text-gray-800'>Our Mission</b>
-              <p>Our mission at Forever is to empower customers with choice, convenience, and confidence. We&#39;re dedicated to providing a seamless shopping experience that exceeds expectations, from browsing and ordering to delivery and beyond.</p>
+            <p>Royal Rex was founded with a deep love for animals and a mission to make pet care simple, accessible, and enjoyable. Our journey began with the idea of creating a trusted online destination where pet owners within the <b>Imphal Valley</b> can find everything they need to keep their furry, feathered, and scaly friends happy and healthy.</p>
+
+            <p>Since our inception, we’ve been committed to curating a wide selection of high-quality pet products, from nutritious food and comfortable bedding to fun toys and essential grooming supplies. We partner with trusted brands and suppliers to ensure that every product meets the highest standards of safety and care.</p>
+
+            <b className='text-gray-800'>Our Mission</b>
+
+            <p>At Royal Rex, our mission is to provide pet owners with a convenient and reliable shopping experience while prioritizing the well-being of their beloved companions. We strive to offer excellent service, valuable resources, and top-tier products, making pet parenting a joyful and rewarding journey.</p>
           </div>
       </div>
 
@@ -34,7 +37,7 @@ const About = () => {
           </div>
           <div className='border px-10 md:px-16 py-8 sm:py-20 flex flex-col gap-5'>
             <b>Exceptional Customer Service:</b>
-            <p className=' text-gray-600'>Our team of dedicated professionals is here to assist you the way, ensuring your satisfaction is our top priority.</p>
+            <p className=' text-gray-600'>Our store is dedicated  to assist you the way possible, ensuring your satisfaction is our top priority.</p>
           </div>
       </div>
 

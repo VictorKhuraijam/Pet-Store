@@ -52,7 +52,7 @@ const Orders = () => {
   },[isAuth])
 
   return isAuth ? (
-    <div className='border-t pt-16'>
+    <div className='border-t pt-16 px-4'>
 
         <div className='text-2xl'>
             <Title text1={'MY'} text2={'ORDERS'}/>
