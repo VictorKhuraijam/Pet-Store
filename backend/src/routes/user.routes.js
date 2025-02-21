@@ -11,10 +11,12 @@ import {
     changeCurrentPassword,
     forgotPassword,
     changeForgotPassword,
+    getStoreStatus,
     checkAuthStatus,
     updateAccountDetails,
     deleteUser,
     adminLogin,
+    storeStatus,
     getAdminAuthStatus,
     adminLogout,
 
@@ -31,6 +33,8 @@ router.route("/resend-otp").post(
 
 router.route("/login").post(loginUser)
 router.route("/check-auth").get(checkAuthStatus)
+router.route("/store-status").get(getStoreStatus)
+
 
 //secured routes
 router.route("/logout").post(verifyJWT, logoutUser)
@@ -48,6 +52,7 @@ router.route("/delete-user").get(verifyJWT, deleteUser)
 //admin routes
 router.route('/admin/login').post(adminLogin)
 router.route('/admin/check-auth').get(adminAuth, getAdminAuthStatus)
+router.route('/admin/store-status').post(adminAuth, storeStatus)
 router.route('/admin/logout').post(adminAuth, adminLogout)
 
 

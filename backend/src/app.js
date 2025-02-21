@@ -5,11 +5,24 @@ import cookieParser from 'cookie-parser'
 
 const app = express()
 
+const allowedOrigins = [
+  'http://127.0.0.1:5173',
+  'http://127.0.0.1:5174',
+  'http://localhost:5173',
+  'http://localhost:5174'
+];
 app.use(cors({
-  // origin: process.env.CORS_ORIGIN,
-  origin: 'http://127.0.0.1:5173',
+  origin: (origin, callback) => {
+    console.log('Request Origin:', origin); // Debugging
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
   credentials: true
-}))
+}));
+
 
 app.use(express.json({limit: '16kb'}))   //to accept json data
 app.use(express.urlencoded({extended: true, limit: "16kb"}))

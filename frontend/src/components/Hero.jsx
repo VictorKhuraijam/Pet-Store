@@ -3,13 +3,13 @@ import { assets } from '../assets/assets'
 
 const Hero = () => {
   return (
-    <div className='flex flex-col sm:flex-row border-none lg:mt-10'>
+    <div className='flex flex-col gap-2 sm:flex-row border-none lg:mt-10'>
       {/* Hero Left Side */}
       <div className='w-full sm:w-1/2 flex items-center justify-center py-5 sm:py-0'>
             <div className='text-[#414141]'>
-                <div className='flex items-center '>
+                <div className='flex items-center text-center '>
                     <p className='w-8 md:w-11 h-[2px] '></p>
-                    <p className='italianno-regular font-medium text-sm sm:text-lg md:text-2xl lg:text-3xl xl:text-4xl '>Everything Your Pet Needs, All in One Place!</p>
+                    <p className='italianno-regular font-medium  text-sm sm:text-lg md:text-2xl lg:text-3xl xl:text-4xl '>Everything Your Pet Needs, All in One Place!</p>
                 </div>
 
                 <h1 className=' text-3xl sm:py-3  lg:text-5xl leading-relaxed text-center'>

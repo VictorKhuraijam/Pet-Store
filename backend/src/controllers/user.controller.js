@@ -2,9 +2,9 @@ import validator from "validator";
 import {asyncHandler} from '../utils/asyncHandler.js'
 import {ApiError} from '../utils/ApiError.js'
 import {User} from '../models/user.model.js'
+import {Store} from '../models/store.model.js'
 import {ApiResponse} from '../utils/ApiResponse.js'
 import jwt from 'jsonwebtoken'
-import crypto from 'crypto';
 import nodemailer from 'nodemailer';
 // import twilio from 'twilio';
 
@@ -505,6 +505,22 @@ const updateAccountDetails = asyncHandler(async(req, res) => {
 
 })
 
+const getStoreStatus = asyncHandler(async (req, res) => {
+    let status = await Store.findOne()
+
+    if (!status) {
+        status = await Store.create({ isOpen: false });
+    }
+
+    return res
+        .status(200)
+        .json(new ApiResponse(
+            200,
+            status,
+            "Fetched Store status"
+        ))
+})
+
 
 // const getCurrentUser = asyncHandler(async(req, res) => {
 // return res
@@ -907,7 +923,7 @@ const adminLogin = asyncHandler(async (req, res) => {
         const token = jwt.sign(
             {email },
             process.env.JWT_SECRET,
-            { expiresIn: '24h'}
+            { expiresIn: '4h'}
         );
 
         return res
@@ -918,6 +934,29 @@ const adminLogin = asyncHandler(async (req, res) => {
             token,
             "Admin logged in sccessfully"
         ))
+
+})
+
+const storeStatus = asyncHandler(async (req, res) => {
+    const {isOpen} = req.body
+
+     await Store.findOneAndUpdate(
+        {},
+        { isOpen },
+        { new: true}
+    );
+
+    return res
+        .status(200)
+        .json(
+            new ApiResponse(
+                200,
+                {},
+                "Store Status updated"
+            )
+        )
+
+
 
 })
 
@@ -961,11 +1000,13 @@ export {
     forgotPassword,
     changeForgotPassword,
     updateAccountDetails,
+    getStoreStatus,
     checkAuthStatus,
     verifyOTPAndRegister,
     resendOTP,
     deleteUser,
     adminLogin,
+    storeStatus,
     getAdminAuthStatus,
     adminLogout
  }
