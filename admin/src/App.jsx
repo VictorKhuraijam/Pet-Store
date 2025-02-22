@@ -3,7 +3,7 @@ import AuthContext from './context/AuthContext'
 import Navbar from './components/Navbar'
 import Sidebar from './components/Sidebar'
 import Add from './pages/Add'
-import { Routes, Route, useNavigate} from 'react-router-dom'
+import { Routes, Route, useNavigate, Navigate, Outlet} from 'react-router-dom'
 import List from './pages/List'
 import Orders from './pages/Orders'
 import Login from './components/Login'
@@ -29,36 +29,37 @@ const App = () => {
     checkAuthStatus()
   },[])
 
+  if (loading) {
+    return <div>Loading...</div>
+  }
+
   return (
     <div className='bg-gray-50 min-h-screen mx-auto'>
       <ToastContainer />
-      {!isAuthenticated ? (
-        <>
-        <Routes>
-          <Route path='/login' element={<Login />}/>
-          {/* <Route path='*' element={<Navigate to='/login' replace />} /> */}
-        </Routes>
-        </>
-      )
-        : (
-        <>
-        <Navbar />
-        <hr />
-        <div className='flex w-full'>
-          <Sidebar/>
-          <div className='w-[70%] mx-auto ml-[max(5vw,25px)] my-8 text-gray-600 text-base'>
-            <Routes>
-              <Route path='/add' element={<Add  />} />
-              <Route path='/list' element={<List  />} />
-              <Route path='/orders' element={<Orders  />} />
+      <Routes>
+        <Route path="/login" element={!isAuthenticated ? <Login /> : <Navigate to="/add" replace />} />
 
-              {/* <Route path='*' element={<Navigate to='/add' replace />} /> */}
-            </Routes>
-          </div>
-        </div>
-        </>
-       )
-      }
+        <Route element={isAuthenticated ? (
+          <>
+            <Navbar />
+            <hr />
+            <div className='flex w-full'>
+              <Sidebar />
+              <div className='w-[70%] mx-auto ml-[max(5vw,25px)] my-8 text-gray-600 text-base'>
+                <Outlet />
+              </div>
+            </div>
+          </>
+        ) : <Navigate to="/login" replace />}>
+          <Route path="/add" element={<Add />} />
+          <Route path="/list" element={<List />} />
+          <Route path="/orders" element={<Orders />} />
+          <Route path="/" element={<Navigate to="/add" replace />} />
+        </Route>
+
+        <Route path="*" element={<Navigate to={isAuthenticated ? "/add" : "/login"} replace />} />
+      </Routes>
+
     </div>
   )
 }
