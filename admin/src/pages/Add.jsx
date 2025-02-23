@@ -16,7 +16,7 @@ const Add = () => {
    const [name, setName] = useState("");
    const [description, setDescription] = useState("");
    const [price, setPrice] = useState("");
-   const [category, setCategory] = useState("Dog");
+   const [category, setCategory] = useState("");
    const [type, setType] = useState("Food");
    const [bestseller, setBestseller] = useState(false);
 
@@ -102,13 +102,15 @@ const Add = () => {
 
             <div>
               <p className='mb-2'>Product category</p>
-              <select
+              {/* <select
                 onChange={(e) => setCategory(e.target.value)}
                 value={category}
                 className='w-full px-3 py-2'>
                   <option value="Dog">Dog</option>
                   <option value="Cat">Cat</option>
-              </select>
+              </select> */}
+
+              <input onChange={(e)=>setCategory(e.target.value)} value={category} className='w-full max-w-[500px] px-3 py-2' type="text" placeholder='Type here' required/>
             </div>
 
             <div>

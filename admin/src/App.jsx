@@ -9,6 +9,7 @@ import Orders from './pages/Orders'
 import Login from './components/Login'
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import StoreStatus from './pages/StoreStatus'
 
 
 
@@ -37,7 +38,7 @@ const App = () => {
     <div className='bg-gray-50 min-h-screen mx-auto'>
       <ToastContainer />
       <Routes>
-        <Route path="/login" element={!isAuthenticated ? <Login /> : <Navigate to="/add" replace />} />
+        <Route path="/login" element={!isAuthenticated ? <Login /> : <Navigate to="/status" replace />} />
 
         <Route element={isAuthenticated ? (
           <>
@@ -51,6 +52,8 @@ const App = () => {
             </div>
           </>
         ) : <Navigate to="/login" replace />}>
+
+          <Route path="/status" element={<StoreStatus />} />
           <Route path="/add" element={<Add />} />
           <Route path="/list" element={<List />} />
           <Route path="/orders" element={<Orders />} />

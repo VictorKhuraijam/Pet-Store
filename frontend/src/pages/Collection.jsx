@@ -44,7 +44,7 @@ const Collection = () => {
     let productsCopy = products;
 
     if (search) {
-      productsCopy = productsCopy.filter(item => item.type.toLowerCase().includes(search.toLowerCase()) || item.category.toLowerCase().includes(search.toLowerCase()) )
+      productsCopy = productsCopy.filter(item => item.type.toLowerCase().includes(search.toLowerCase()) || item.category.toLowerCase().includes(search.toLowerCase()) || item.name.toLowerCase().includes(search.toLowerCase()) )
     }
 
     if (category.length > 0) {

@@ -9,6 +9,7 @@ import Title from './Title'
 import ProductItem from "./ProductItem";
 import RelatedProducts from './RelatedProducts'
 import CartTotal from "./CartTotal";
+import StoreStatus from "./StoreStatus";
 
 export {
   NavBar,
@@ -18,7 +19,7 @@ export {
   LatestCollection,
   Hero,
   OurPolicy,
-
+  StoreStatus,
   Title,
   ProductItem,
   RelatedProducts,

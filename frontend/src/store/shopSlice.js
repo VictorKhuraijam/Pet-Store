@@ -9,8 +9,8 @@ const initialState = {
   products: [],
   loading: false,
   error: null,
-  currency: '₹',
-  delivery_fee: 10,
+  // currency: '₹',
+  // delivery_fee: 10,
   search: '',
   showSearch: false,
 };

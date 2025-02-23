@@ -10,7 +10,7 @@ const ProductItem = ({id, image, name, price}) => {
       <div className=' overflow-hidden w-full h-48 bg-gray-100 rounded-lg flex items-center justify-center'>
         <img className='hover:scale-110 transition ease-in-out  w-full h-full object-contain' src={image} alt="" />
       </div>
-      <div className='flex pt-3 pb-1 justify-between items-start'>
+      <div className='flex pt-3 pb-1 justify-evenly items-start'>
         <p className='prata-regular text-sm leading-tight max-w-[70%] break-words'>{name}</p>
         <p className='text-sm font-medium whitespace-nowrap'>
           {currency} {price}</p>
