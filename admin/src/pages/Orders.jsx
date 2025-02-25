@@ -143,12 +143,13 @@ const Orders = () => {
                 </select>
 
                 {/* Update Button */}
-                  <button
+                {(orderUpdates[order._id]?.payment || order.payment === "PAID") && (orderUpdates[order._id]?.status || order.status === 'DELIVERED') ? "" : <button
                     onClick={() => handleUpdate(order._id)}
                     className="bg-blue-500 text-white font-semibold px-4 py-2 rounded hover:bg-blue-600 transition"
                   >
                     Update
-                  </button>
+                  </button> }
+
                 </div>
             </div>
           ))

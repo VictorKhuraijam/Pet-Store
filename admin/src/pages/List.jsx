@@ -81,7 +81,7 @@ const List = () => {
           list.map((item, index) => (
             <div className='h-30 grid grid-cols-[1fr_3fr_1fr] md:grid-cols-[1fr_3fr_1fr_1fr_1fr] items-center gap-2 py-1 px-2 border text-sm' key={index}>
               <img className='w-12 h-15 object-contain' src={item.images[0].url} alt="" />
-              <p>{item.name}</p>
+              <p className='overflow-hidden text-ellipsis whitespace-nowrap'>{item.name}</p>
               <p>{item.category}</p>
               <p>{currency}{item.price}</p>
               <p onClick={()=>removeProduct(item._id)} className='text-right md:text-center cursor-pointer text-lg lg:bg-gray-300 py-2 rounded-xl'>X</p>

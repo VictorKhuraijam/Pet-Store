@@ -19,7 +19,7 @@ const PlaceOrder = () => {
     const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
      // State for Delivery Method
-    const [deliveryType, setDeliveryType] = useState('DELIVERY'); 
+    const [deliveryType, setDeliveryType] = useState('DELIVERY');
 
     const [formData, setFormData] = useState({
         firstName: '',
@@ -64,7 +64,7 @@ const PlaceOrder = () => {
             )
             if(orderResponse.data.success){
                 dispatch(clearCart())
-                navigate('/orders')
+                navigate('/profile')
             }
 
         } catch (error) {
@@ -75,7 +75,7 @@ const PlaceOrder = () => {
 
 
     return (
-        <form onSubmit={onSubmitHandler} className='flex flex-col sm:flex-row justify-between gap-4 pt-5 sm:pt-14 min-h-[80vh] border-t'>
+        <form onSubmit={onSubmitHandler} className='px-4 flex flex-col sm:flex-row justify-between gap-4 pt-5 sm:pt-14 min-h-[80vh] border-t'>
             {/* ------------- Left Side ---------------- */}
             <div className='flex flex-col gap-4 w-full sm:max-w-[480px]'>
 

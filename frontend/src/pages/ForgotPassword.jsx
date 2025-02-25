@@ -142,7 +142,7 @@ const ForgotPassword = () => {
           <button
             type="submit"
             disabled={isLoading}
-            className="bg-gray-400 text-gray-700 rounded-xl font-light px-8 py-2 mt-4 disabled:bg-gray-400"
+            className="bg-gray-400 text-black rounded-xl font-light px-8 py-2 mt-4 disabled:bg-gray-400"
           >
             {isLoading ? "Sending OTP..." : "Send Verification Code"}
           </button>
@@ -205,7 +205,7 @@ const ForgotPassword = () => {
           <button
             type="submit"
             disabled={isLoading}
-            className="bg-gray-400 text-gray-900 rounded-xl font-light px-8 py-2 disabled:bg-gray-400"
+            className="relative w-[250px] m-auto bg-gray-400 text-gray-900 rounded-xl font-light px-8 py-2 disabled:bg-gray-400"
           >
             {isLoading ? "Processing..." : "Change Password"}
           </button>

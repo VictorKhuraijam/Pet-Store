@@ -78,7 +78,7 @@ const Orders = () => {
                     <div className='md:w-1/2 flex justify-between'>
                         <div className='border px-4 py-2 text-sm font-medium rounded-xl'>Status</div>
                         <div className='flex items-center gap-2'>
-                            <p className='min-w-2 h-2 rounded-full bg-green-500'></p>
+                            <p className={`min-w-2 h-2 rounded-full ${item.status === 'DELIVERED' ? `bg-green-500`: `bg-red-700`}`}></p>
                             <p className='text-sm md:text-base'>{item.status}</p>
                         </div>
 
