@@ -15,7 +15,7 @@ const Profile = () => {
   const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
   const [isDeleting, setIsDeleting] = useState(false);
-  const [activeTab, setActiveTab] = useState("profile");
+  const [activeTab, setActiveTab] = useState("orders");
   const [isUpdating, setIsUpdating] = useState(false);
   const [passwordVisible, setPasswordVisible] = useState({
     currentPassword: false,
@@ -46,7 +46,7 @@ const Profile = () => {
         <p>Please log in to view this page.</p>
         <button
           onClick={() => navigate("/login")}
-          className="mt-4 px-4 py-2 bg-black text-white rounded-md hover:bg-blue-600 transition"
+          className="mt-4 px-4 py-2 bg-black text-white rounded-md hover:bg-gray-700-600 transition"
         >
           Login
         </button>
