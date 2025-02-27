@@ -16,7 +16,6 @@ const Collection = () => {
   const [filterProducts,setFilterProducts] = useState([]);
   const [category,setCategory] = useState([]);
   const [type,setType] = useState([]);
-  // const [sortType,setSortType] = useState('relavent')
 
   const toggleCategory = (e) => {
 
@@ -29,6 +28,7 @@ const Collection = () => {
 
   }
 
+
   const toggleType = (e) => {
 
     if (type.includes(e.target.value)) {
@@ -38,6 +38,7 @@ const Collection = () => {
       setType(prev => [...prev,e.target.value])
     }
   }
+
 
   const applyFilter = () => {
 
