@@ -17,7 +17,8 @@ const startServer = async () => {
       });
 
       app.get('/', (req, res) => {
-          res.send("Connection established");
+        res.json({ success: true, message: "Products fetched successfully!" });
+
       });
 
       const PORT = process.env.PORT || 8000;
