@@ -21,6 +21,11 @@ const startServer = async () => {
 
       });
 
+      app.get('/test-cors', (req, res) => {
+        console.log('Full request headers:', req.headers);
+        res.json({ message: 'CORS test successful' });
+      });
+
       const PORT = process.env.PORT || 8000;
       app.listen(PORT, () => {
           console.log(`Server is running at port: ${PORT}`);

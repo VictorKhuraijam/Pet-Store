@@ -7,16 +7,31 @@ const app = express()
 
 const allowedOrigins = process.env.CORS_ORIGIN ? process.env.CORS_ORIGIN.split(',') : [];
 
+console.log('Allowed origins:', allowedOrigins); // Log to verify env variable is properly loaded
+
+
 app.use(cors({
   origin: (origin, callback) => {
-    // console.log('Request Origin:', origin); // Debugging
-    if (!origin || allowedOrigins.includes(origin)) {
-      callback(null, true);
-    } else {
-      callback(new Error('Not allowed by CORS'));
+    console.log('Request Origin:', origin); // Debugging
+    // Allow requests with no origin (like mobile apps or curl requests)
+    if (!origin) {
+      return callback(null, true);
     }
+
+    if (allowedOrigins.indexOf(origin) !== -1) {
+      return callback(null, true);
+    }
+
+    // For development purposes, you can add this condition
+    // if (process.env.NODE_ENV === 'development') {
+    //   return callback(null, true);
+    // }
+
+    callback(new Error(`Not allowed by CORS: ${origin} is not allowed`));
   },
-  credentials: true
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
 }));
 
 
