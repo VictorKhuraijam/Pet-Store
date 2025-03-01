@@ -10,6 +10,13 @@ import {
 
 const router = Router()
 
+console.log("✅ Product Routes Loaded");
+
+router.get("/", (req, res) => {
+  console.log("✅ GET /api/v1/products hit");
+  res.json({ success: true, message: "Products fetched successfully!" });
+});
+
 
 router.route('/add').post(
   adminAuth,

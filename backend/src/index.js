@@ -17,7 +17,7 @@ const startServer = async () => {
       });
 
       app.get('/', (req, res) => {
-        res.json({ success: true, message: "Products fetched successfully!" });
+        res.json({ success: true, message: "Connection establised! " });
 
       });
 
