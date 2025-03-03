@@ -1,7 +1,7 @@
 import {useEffect, useState } from 'react'
 import { assets } from '../assets/assets';
 import {ProductItem, SearchBar, Title} from '../components/index';
-import { fetchProducts, setSearch } from '../store/shopSlice';
+import { fetchProducts} from '../store/shopSlice';
 import { useSelector, useDispatch } from 'react-redux';
 
 
@@ -9,13 +9,13 @@ const Collection = () => {
 
   const dispatch = useDispatch()
   const products = useSelector((state) => state.shop.products)
-  const search =  useSelector((state) => state.shop.search)
-  const showSearch = useSelector((state) => state.shop.showSearch)
 
+  const [search, setSearch] = useState('');
   const [showFilter,setShowFilter] = useState(false);
   const [filterProducts,setFilterProducts] = useState([]);
   const [category,setCategory] = useState([]);
   const [type,setType] = useState([]);
+
 
   const toggleCategory = (e) => {
 
@@ -25,7 +25,6 @@ const Collection = () => {
     else{
       setCategory(prev => [...prev,e.target.value])
     }
-
   }
 
 
@@ -81,7 +80,7 @@ const Collection = () => {
   // }
 
   const handleSearchChange = (e) => {
-    dispatch(setSearch(e.target.value));
+    setSearch(e.target.value);
   };
 
   useEffect(()=>{
@@ -92,17 +91,19 @@ const Collection = () => {
 
   useEffect(() => {
     applyFilter();
-  }, [category, type, products, search, showSearch]);
+  }, [category, type, products, search]);
 
   // useEffect(()=>{
   //   sortProduct();
   // },[sortType])
 
+  // Clear filters function
+
+
   return (
     <>
     <SearchBar
-       search={search}
-       onSearchChange={handleSearchChange}
+        onFilteredProductsChange={handleSearchChange}
     />
 
     <div className='px-4 flex flex-col sm:flex-row gap-1 sm:gap-10  '>
