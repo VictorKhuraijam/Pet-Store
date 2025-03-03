@@ -10,7 +10,7 @@ const Collection = () => {
   const dispatch = useDispatch()
   const products = useSelector((state) => state.shop.products)
 
-  const [search, setSearch] = useState('');
+  // const [search, setSearch] = useState('');
   const [showFilter,setShowFilter] = useState(false);
   const [filterProducts,setFilterProducts] = useState([]);
   const [category,setCategory] = useState([]);
@@ -43,9 +43,9 @@ const Collection = () => {
 
     let productsCopy = products;
 
-    if (search) {
-      productsCopy = productsCopy.filter(item => item.type.toLowerCase().includes(search.toLowerCase()) || item.category.toLowerCase().includes(search.toLowerCase()) || item.name.toLowerCase().includes(search.toLowerCase()) )
-    }
+    // if (search) {
+    //   productsCopy = productsCopy.filter(item => item.type.toLowerCase().includes(search.toLowerCase()) || item.category.toLowerCase().includes(search.toLowerCase()) || item.name.toLowerCase().includes(search.toLowerCase()) )
+    // }
 
     if (category.length > 0) {
       productsCopy = productsCopy.filter(item => category.includes(item.category));
@@ -79,8 +79,8 @@ const Collection = () => {
 
   // }
 
-  const handleSearchChange = (e) => {
-    setSearch(e.target.value);
+  const handleSearchResults = (filteredResults) => {
+    setFilterProducts(filteredResults);
   };
 
   useEffect(()=>{
@@ -91,7 +91,7 @@ const Collection = () => {
 
   useEffect(() => {
     applyFilter();
-  }, [category, type, products, search]);
+  }, [category, type, products]);
 
   // useEffect(()=>{
   //   sortProduct();
@@ -103,7 +103,7 @@ const Collection = () => {
   return (
     <>
     <SearchBar
-        onFilteredProductsChange={handleSearchChange}
+         onSearchResults={handleSearchResults}
     />
 
     <div className='px-4 flex flex-col sm:flex-row gap-1 sm:gap-10  '>

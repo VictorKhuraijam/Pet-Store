@@ -2,25 +2,27 @@ import { useState, useEffect } from 'react'
 import { useSelector } from 'react-redux'
 import {assets} from '../assets/assets.js'
 
-function SearchBar({ onFilteredProductsChange }) {
+function SearchBar({ onSearchResults }) {
 
   const [search, setSearch] = useState('')
   const products = useSelector((state) => state.shop.products)
 
   useEffect(() => {
     // Filter products whenever search term changes
-    const filteredProducts = products.filter((product) => {
-      const searchTerm = search.toLowerCase();
-      return (
-        product.name.toLowerCase().includes(searchTerm) ||
-        product.category.toLowerCase().includes(searchTerm) ||
-        product.description.toLowerCase().includes(searchTerm)
-      );
-    });
+    if (products && products.length > 0) {
+      const filteredProducts = products.filter((product) => {
+        const searchTerm = search.toLowerCase();
+        return (
+          product.name.toLowerCase().includes(searchTerm) ||
+          product.category.toLowerCase().includes(searchTerm) ||
+          product.type.toLowerCase().includes(searchTerm)
+        );
+      });
 
-    // Pass filtered products up to parent component
-    onFilteredProductsChange(filteredProducts);
-  },[search, products, onFilteredProductsChange])
+      // Pass filtered products up to parent component
+      onSearchResults(filteredProducts);
+    }
+  },[search, products, onSearchResults])
 
   const handleSearchChange = (e) => {
     setSearch(e.target.value);
