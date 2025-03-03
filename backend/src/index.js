@@ -37,3 +37,7 @@ const startServer = async () => {
 };
 
 startServer();
+
+
+
+// "build": "npm install"
