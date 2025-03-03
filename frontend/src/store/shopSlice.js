@@ -11,8 +11,8 @@ const initialState = {
   error: null,
   // currency: '₹',
   // delivery_fee: 10,
-  search: '',
-  showSearch: false,
+  // search: '',
+  // showSearch: false,
 };
 
 const shopSlice = createSlice({
@@ -40,12 +40,6 @@ const shopSlice = createSlice({
       state.loading = false;
       state.error = action.payload.error;
     },
-    setSearch: (state, action) => {
-      state.search = action.payload;
-    },
-    setShowSearch: (state, action) => {
-      state.showSearch = action.payload;
-    },
   },
 });
 
@@ -53,8 +47,6 @@ export const {
   fetchProductsStart,
   fetchProductsSuccess,
   fetchProductsFailure,
-  setSearch,
-  setShowSearch,
 } = shopSlice.actions;
 
 export const fetchProducts = () => async (dispatch) => {
