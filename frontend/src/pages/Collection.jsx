@@ -129,19 +129,7 @@ const Collection = () => {
             <p className='flex gap-2'>
               <input className='w-3' type="checkbox" value={'Cat'} onChange={toggleCategory}/> Cat
             </p>
-            {
-      [...new Set(products.map(item => item.category))].map((categoryName, index) => (
-        <p key={index} className='flex gap-2'>
-          <input
-            className='w-3'
-            type="checkbox"
-            value={categoryName}
-            onChange={toggleCategory}
-          />
-          {categoryName}
-        </p>
-      ))
-    }
+            
 
           </div>
         </div>
