@@ -1,7 +1,4 @@
-
-
-
-import {useEffect, useState } from 'react'
+import {useCallback, useEffect, useState } from 'react'
 import { assets } from '../assets/assets';
 import {ProductItem, SearchBar, Title} from '../components/index';
 import { fetchProducts} from '../store/shopSlice';
@@ -13,54 +10,53 @@ const Collection = () => {
   const dispatch = useDispatch()
   const products = useSelector((state) => state.shop.products)
 
-  // const [search, setSearch] = useState('');
+  const [search, setSearch] = useState([]);
   const [showFilter,setShowFilter] = useState(false);
   const [filterProducts,setFilterProducts] = useState([]);
   const [category,setCategory] = useState([]);
   const [type,setType] = useState([]);
 
 
-  const toggleCategory = (e) => {
-
-    if (category.includes(e.target.value)) {
-        setCategory(prev=> prev.filter(item => item !== e.target.value))
-    }
-    else{
-      setCategory(prev => [...prev,e.target.value])
-    }
-  }
-
+  const toggleCategory = (e) =>{
+    setCategory(prev => prev.includes(e) ? prev.filter(c => c !== e) : [...prev, e])
+}
 
   const toggleType = (e) => {
-
-    if (type.includes(e.target.value)) {
-      setType(prev=> prev.filter(item => item !== e.target.value))
-    }
-    else{
-      setType(prev => [...prev,e.target.value])
-    }
-  }
+    setType(prev => prev.includes(e) ? prev.filter(t => t !== e) : [...prev, e])}
 
 
-  const applyFilter = () => {
+    const categories = products.reduce((acc, item) =>
+      acc.includes(item.category) ? acc : [...acc, item.category], []
+    );
 
-    let productsCopy = products;
 
-    // if (search) {
-    //   productsCopy = productsCopy.filter(item => item.type.toLowerCase().includes(search.toLowerCase()) || item.category.toLowerCase().includes(search.toLowerCase()) || item.name.toLowerCase().includes(search.toLowerCase()) )
-    // }
+  // const applyFilter = () => {
 
-    if (category.length > 0) {
-      productsCopy = productsCopy.filter(item => category.includes(item.category));
-    }
+  //   let productsCopy = [...products];
 
-    if (type.length > 0 ) {
-      productsCopy = productsCopy.filter(item => type.includes(item.type))
-    }
+  //   // if (search) {
+  //   //   productsCopy = productsCopy.filter(item => item.type.toLowerCase().includes(search.toLowerCase()) || item.category.toLowerCase().includes(search.toLowerCase()) || item.name.toLowerCase().includes(search.toLowerCase()) )
+  //   // }
 
-    setFilterProducts(productsCopy)
+  //   if (category.length > 0) {
+  //     productsCopy = productsCopy.filter(item => category.includes(item.category));
+  //   }
 
-  }
+  //   if (type.length > 0 ) {
+  //     productsCopy = productsCopy.filter(item => type.includes(item.type))
+  //   }
+
+  //   setFilterProducts((prevFilteredProducts) => {
+  //     if (
+  //       prevFilteredProducts.length === productsCopy.length &&
+  //       prevFilteredProducts.every((item, index) => item._id === productsCopy[index]._id)
+  //     ) {
+  //       return prevFilteredProducts;
+  //     }
+  //     return productsCopy;
+  //   });
+
+  // }
 
   // const sortProduct = () => {
 
@@ -82,9 +78,9 @@ const Collection = () => {
 
   // }
 
-  const handleSearchResults = (filteredResults) => {
+  const handleSearchResults = useCallback((filteredResults) => {
     setFilterProducts(filteredResults);
-  };
+  },[]);
 
   useEffect(()=>{
     if (products.length === 0) {
@@ -92,15 +88,26 @@ const Collection = () => {
     }
   },[dispatch, products.length])
 
+  // useEffect(() => {
+
+  //   applyFilter();
+  // }, [category, type, products]);
+
   useEffect(() => {
-    applyFilter();
-  }, [category, type, products]);
+    let productsCopy = search.length > 0 ? search : [...products];
 
-  // useEffect(()=>{
-  //   sortProduct();
-  // },[sortType])
+    if (category.length > 0) {
+      productsCopy = productsCopy.filter((item) => category.includes(item.category));
+    }
 
-  // Clear filters function
+    if (type.length > 0) {
+      productsCopy = productsCopy.filter((item) => type.includes(item.type));
+    }
+
+    setFilterProducts(productsCopy);
+  }, [category, type, products, search]);
+
+
 
 
   return (
@@ -123,30 +130,50 @@ const Collection = () => {
           <img className={`h-3 sm:hidden ${showFilter ? 'rotate-90' : ''}`} src={assets.dropdown_icon} alt="" />
         </p>
         {/* Category Filter */}
-        <div className={`border border-gray-300 pl-5 py-3 mt-6 ${showFilter ? '' :'hidden'} sm:block`}>
+        {/* <div className={`border border-gray-300 pl-5 py-3 mt-6 ${showFilter ? '' :'hidden'} sm:block`}>
           <p className='mb-3 text-sm font-medium'>CATEGORIES</p>
           <div className='flex flex-col gap-2 text-sm font-light text-gray-700'>
             <p className='flex gap-2'>
-              <input className='w-3' type="checkbox" value={'Dog'} onChange={toggleCategory}/> Dog
+              <input className='w-3' type="checkbox" value={'Dog'} onChange={(e) => toggleCategory(e.target.value)}/> Dog
             </p>
             <p className='flex gap-2'>
-              <input className='w-3' type="checkbox" value={'Cat'} onChange={toggleCategory}/> Cat
+              <input className='w-3' type="checkbox" value={'Cat'} onChange={(e) => toggleCategory(e.target.value)}/> Cat
             </p>
 
           </div>
-        </div>
+        </div> */}
+
+        {categories.length > 0 && (
+            <div className={`border border-gray-300 pl-5 py-3 mt-6 ${showFilter ? '' : 'hidden'} sm:block`}>
+              <p className='mb-3 text-sm font-medium'>CATEGORIES</p>
+              <div className='flex flex-col gap-2 text-sm font-light text-gray-700'>
+                {categories.map((item) => (
+                  <p key={item} className='flex gap-2'>
+                    <input
+                      className='w-3'
+                      type='checkbox'
+                      value={item}
+                      onChange={(e) => toggleCategory(e.target.value)}
+                    />{' '}
+                    {item}
+                  </p>
+                ))}
+                </div>
+            </div>
+          )}
+
         {/* SubCategory Filter */}
         <div className={`border border-gray-300 pl-5 py-3 my-5 ${showFilter ? '' :'hidden'} sm:block`}>
           <p className='mb-3 text-sm font-medium'>TYPE</p>
           <div className='flex flex-col gap-2 text-sm font-light text-gray-700'>
             <p className='flex gap-2'>
-              <input className='w-3' type="checkbox" value={'Food'} onChange={toggleType}/> Food
+              <input className='w-3' type="checkbox" value={'Food'} onChange={(e) => toggleType(e.target.value)}/> Food
             </p>
             <p className='flex gap-2'>
-              <input className='w-3' type="checkbox" value={'Toy'} onChange={toggleType}/> Toys
+              <input className='w-3' type="checkbox" value={'Toy'} onChange={(e) => toggleType(e.target.value)}/> Toys
             </p>
             <p className='flex gap-2'>
-              <input className='w-3' type="checkbox" value={'Accessories'} onChange={toggleType}/> Accessories
+              <input className='w-3' type="checkbox" value={'Accessories'} onChange={(e) => toggleType(e.target.value)}/> Accessories
             </p>
           </div>
         </div>
