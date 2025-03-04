@@ -1,3 +1,6 @@
+
+
+
 import {useEffect, useState } from 'react'
 import { assets } from '../assets/assets';
 import {ProductItem, SearchBar, Title} from '../components/index';
@@ -129,7 +132,6 @@ const Collection = () => {
             <p className='flex gap-2'>
               <input className='w-3' type="checkbox" value={'Cat'} onChange={toggleCategory}/> Cat
             </p>
-            
 
           </div>
         </div>
