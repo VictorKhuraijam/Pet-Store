@@ -17,15 +17,13 @@ const Collection = () => {
   const [type,setType] = useState([]);
 
 
-  const toggleCategory = (e) => {
-
-    if (category.includes(e.target.value)) {
-        setCategory(prev=> prev.filter(item => item !== e.target.value))
-    }
-    else{
-      setCategory(prev => [...prev,e.target.value])
-    }
-  }
+  const toggleCategory =(categoryName) => {
+    setCategory(prev =>
+      prev.includes(categoryName)
+        ? prev.filter(item => item !== categoryName)
+        : [...prev, categoryName]
+    );
+  };
 
 
   const toggleType = (e) => {
