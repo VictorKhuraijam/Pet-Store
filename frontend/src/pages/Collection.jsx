@@ -123,12 +123,25 @@ const Collection = () => {
         <div className={`border border-gray-300 pl-5 py-3 mt-6 ${showFilter ? '' :'hidden'} sm:block`}>
           <p className='mb-3 text-sm font-medium'>CATEGORIES</p>
           <div className='flex flex-col gap-2 text-sm font-light text-gray-700'>
-            <p className='flex gap-2'>
+            {/* <p className='flex gap-2'>
               <input className='w-3' type="checkbox" value={'Dog'} onChange={toggleCategory}/> Dog
             </p>
             <p className='flex gap-2'>
               <input className='w-3' type="checkbox" value={'Cat'} onChange={toggleCategory}/> Cat
-            </p>
+            </p> */}
+            {
+              [...new Set(products.map(item => item.category))].map((categoryName, index) => (
+                <p key={index} className='flex gap-2'>
+                  <input
+                    className='w-3'
+                    type="checkbox"
+                    value={categoryName}
+                    onChange={toggleCategory}
+                  />
+                  {categoryName}
+                </p>
+              ))
+            }
 
           </div>
         </div>
