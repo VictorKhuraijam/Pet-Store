@@ -129,14 +129,16 @@ const Collection = () => {
             <p className='flex gap-2'>
               <input className='w-3' type="checkbox" value={'Cat'} onChange={toggleCategory}/> Cat
             </p> */}
-            {
-              [...new Set(products.map(item => item.category))].map((categoryName, index) => (
+            {products
+              .map(item => item.category) // Extract categories
+              .filter((value, index, self) => self.indexOf(value) === index) // Ensure uniqueness
+              .map((categoryName, index) => (
                 <p key={index} className='flex gap-2'>
                   <input
                     className='w-3'
                     type="checkbox"
-                    value={categoryName}
-                    onChange={toggleCategory}
+                    checked={category.includes(categoryName)} // Ensure checked state updates
+                    onChange={() => toggleCategory(categoryName)} // Pass category directly
                   />
                   {categoryName}
                 </p>
