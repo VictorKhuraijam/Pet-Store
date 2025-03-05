@@ -101,7 +101,7 @@ const Orders = () => {
 
                   ))}
                 </div>
-                <p className='mt-3 mb-2 font-medium'>{order.address.firstName + " " + order.address.lastName}</p>
+                <p className='mt-3 mb-2 font-medium overflow-ellipsis'>{order.address.firstName + " " + order.address.lastName}</p>
                 <div>
                   <p>{order.address.street + ","}</p>
 
