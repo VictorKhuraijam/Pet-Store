@@ -1,7 +1,7 @@
 import { ToastContainer } from "react-toastify"
 import {Footer, NavBar, StoreStatus} from './components/index.js'
 import { Routes, Route } from "react-router-dom"
-import {About, Cart, Collection, Contact, ForgotPassword, Home, Login, Orders, PlaceOrder, Product, Profile} from './pages/index.js'
+import {About, Cart, Collection, Contact, Delivery, ForgotPassword, Home, Login, Orders, PlaceOrder, Product, Profile} from './pages/index.js'
 import Signup from "./pages/Signup.jsx"
 import { useEffect } from "react"
 import { useDispatch, useSelector } from "react-redux"
@@ -53,6 +53,7 @@ export const App = () => {
         <Route path="/orders" element={<Orders />} />
         <Route path="/profile" element={<Profile />} />
         <Route path="/place-order" element={<PlaceOrder />} />
+        <Route path="/delivery" element={<Delivery />} />
 
       </Routes>
       <Footer />

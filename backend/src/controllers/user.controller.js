@@ -552,7 +552,7 @@ const checkAuthStatus = asyncHandler(async (req, res) => {
     if (decodedToken) {
         // Access token is valid, Fetch user
         user = await User.findById(decodedToken._id).select("-password");
-        console.log("User through access token:", user)
+        // console.log("User through access token:", user)
 
         if (!user) {
             throw new ApiError(401, "Invalid access token");

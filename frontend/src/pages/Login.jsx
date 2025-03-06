@@ -10,7 +10,7 @@ const Login = () => {
   const navigate = useNavigate()
   const dispatch = useDispatch()
 
-  const [password,setPasword] = useState('')
+  const [password,setPassword] = useState('')
   const [passwordVisible, setPasswordVisible] = useState(false)
   const [email,setEmail] = useState('')
 
@@ -18,7 +18,7 @@ const Login = () => {
       event.preventDefault();
       try {
 
-            const success =await dispatch(loginUser(email, password));
+            const success = await dispatch(loginUser(email, password));
 
             if(success){
               toast.success("Login successful")
@@ -37,7 +37,7 @@ const Login = () => {
         console.log(error)
         toast.error("Login failed")
         setEmail("")
-        setPasword("")
+        setPassword("")
       }
   }
 
@@ -69,7 +69,7 @@ const Login = () => {
           <div className="relative m-auto w-full">
             <input
               name="password"
-              onChange={(e)=>setPasword(e.target.value)}
+              onChange={(e)=>setPassword(e.target.value)}
               value={password}
               type={passwordVisible ? "text" : "password"}
               className="w-full rounded-lg px-3 py-2 border border-gray-800 pr-10"

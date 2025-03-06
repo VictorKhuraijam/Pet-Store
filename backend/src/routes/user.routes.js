@@ -47,7 +47,7 @@ router.route("/change-forgot-password").post( changeForgotPassword)
 router.route("/change-password").post(verifyJWT, changeCurrentPassword)
 router.route("/change-username").post(verifyJWT, updateAccountDetails)
 
-router.route("/delete-user").get(verifyJWT, deleteUser)
+router.route("/delete-user").delete(verifyJWT, deleteUser)
 
 //admin routes
 router.route('/admin/login').post(adminLogin)

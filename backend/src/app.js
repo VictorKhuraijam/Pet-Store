@@ -68,6 +68,14 @@ app.use("/api/v1/cart", cartRouter)
 app.use((err, req, res, next) => {
   console.error("Error caught:", err);
 
+   // Handle Mongoose validation errors as in password length less tha 8
+   if (err.name === "ValidationError") {
+    return res.status(400).json({
+      success: false,
+      message: Object.values(err.errors).map((e) => e.message).join(", "),
+    });
+  }
+
   if (err instanceof ApiError) {
       return res
         .status(err.statusCode)

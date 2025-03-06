@@ -9,6 +9,7 @@ import PlaceOrder from "./PlaceOrder";
 import Product from "./Product";
 import Profile from './Profile'
 import ForgotPassword from './ForgotPassword';
+import Delivery from './Dilivery'
 
 
 export {
@@ -22,5 +23,6 @@ export {
   PlaceOrder,
   Product,
   Profile,
-  ForgotPassword
+  ForgotPassword,
+  Delivery
 }

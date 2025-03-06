@@ -5,6 +5,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import { backendUrl } from '../store/consts'
 import { useDispatch } from 'react-redux'
 import {setUser, setAuth} from '../store/userSlice'
+import { Eye, EyeOff } from 'lucide-react'
 
 const Signup = () => {
   const navigate = useNavigate()
@@ -16,6 +17,8 @@ const Signup = () => {
     password: '',
     otp: ''
   })
+
+  const [passwordVisible, setPasswordVisible] = useState(false)
 
   const [isOtpSent, setIsOtpSent] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
@@ -96,8 +99,8 @@ const Signup = () => {
       )
 
       if (response.data.success) {
-        dispatch(setUser(response.data.data));
-        dispatch(setAuth(true));
+         dispatch(setUser(response.data.data.user));
+         dispatch(setAuth(true));
         toast.success("Registration successful!")
         navigate("/")
       }
@@ -163,7 +166,26 @@ const Signup = () => {
             required
           />
 
-          <input
+          <div className="relative m-auto w-full">
+            <input
+              name="password"
+              onChange={handleChange}
+              value={formData.password}
+              type={passwordVisible ? "text" : "password"}
+              className="w-full rounded-lg px-3 py-2 border border-gray-800 pr-10"
+              placeholder="Enter password"
+              required
+            />
+            <button
+              type="button"
+              className="absolute right-3 top-1/2 transform -translate-y-1/2"
+              onClick={() => setPasswordVisible(!passwordVisible)}
+            >
+              {passwordVisible ? <EyeOff size={20} /> : <Eye size={20} />}
+            </button>
+          </div>
+
+          {/* <input
             name="password"
             onChange={handleChange}
             value={formData.password}
@@ -171,7 +193,7 @@ const Signup = () => {
             className="w-full px-3 py-2 border border-gray-800"
             placeholder="Password"
             required
-          />
+          /> */}
 
           <div className="w-full flex justify-end text-sm mt-[-8px]">
             <Link to="/login" className="cursor-pointer">
