@@ -7,20 +7,24 @@ import Orders from "./Orders";
 import { resetUser, setUser } from "../store/userSlice";
 import { clearCart } from "../store/cartSlice";
 import { Eye, EyeOff} from 'lucide-react'
+import {backendUrl} from '../store/consts'
 
 const Profile = () => {
   const { user, isAuthenticated, loading } = useSelector((state) => state.user);
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const backendUrl = import.meta.env.VITE_BACKEND_URL;
+  // const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
   const [isDeleting, setIsDeleting] = useState(false);
   const [activeTab, setActiveTab] = useState("orders");
   const [isUpdating, setIsUpdating] = useState(false);
+  const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
+  const [deletePassword, setDeletePassword] = useState("");
   const [passwordVisible, setPasswordVisible] = useState({
     currentPassword: false,
     newPassword: false,
-    confirmPassword: false
+    confirmPassword: false,
+    deletePassword: false
   })
 
   const togglePasswordVisible = (field) => {
@@ -126,21 +130,33 @@ const Profile = () => {
     }
   };
 
+  const handleDeleteConfirmationToggle = () => {
+    setShowDeleteConfirmation(!showDeleteConfirmation)
+    setDeletePassword("")
+  };
+
   const handleDeleteAccount = async () => {
-    if (!window.confirm("Are you sure you want to delete your account? This action cannot be undone.")) {
+    if (!deletePassword) {
+      toast.error("Please enter your password to confirm account deletion")
       return;
     }
 
     setIsDeleting(true);
     try {
-      await axios.delete(`${backendUrl}/users/delete-account`, { withCredentials: true });
+      await axios.delete(
+        `${backendUrl}/users/delete-account`,
+        {password: deletePassword},
+        { withCredentials: true });
       dispatch(clearCart());
       dispatch(resetUser());
+      toast.success("Your account has been deleted")
       navigate("/login");
     } catch (error) {
       console.error(error)
+      toast.error(error.response?.data?.message || "Error deleting account")
     } finally {
       setIsDeleting(false);
+      setShowDeleteConfirmation(false)
     }
   };
 
@@ -312,14 +328,62 @@ const Profile = () => {
               </button>
               <button
                 type="button"
-                onClick={handleDeleteAccount}
-                disabled={isDeleting}
+                onClick={handleDeleteConfirmationToggle}
+                // disabled={isDeleting}
                 className=" sm:w-auto text-sm px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600 transition disabled:bg-red-400"
               >
-                {isDeleting ? "Deleting Account..." : "Delete Account"}
+                {/* {isDeleting ? "Deleting Account..." : "Delete Account"} */}
+                Delete Account
               </button>
             </div>
           </form>
+
+           {/* Delete Account Confirmation Modal */}
+           {showDeleteConfirmation && (
+            <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+              <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
+                <h3 className="text-xl font-bold text-red-600 mb-4">Delete Account</h3>
+                <p className="mb-4">This action cannot be undone. Your account will be permanently deleted.</p>
+                <div className="mb-4">
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Enter your password to confirm
+                  </label>
+                  <div className="relative">
+                    <input
+                      type={passwordVisible.deletePassword ? "text" : "password"}
+                      value={deletePassword}
+                      onChange={(e) => setDeletePassword(e.target.value)}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-red-500 focus:border-red-500"
+                      placeholder="Password"
+                      required
+                    />
+                    <button
+                      type="button"
+                      className="absolute right-3 top-1/2 transform -translate-y-1/2"
+                      onClick={() => togglePasswordVisible("deletePassword")}
+                    >
+                      {passwordVisible.deletePassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                    </button>
+                  </div>
+                </div>
+                <div className="flex justify-end gap-3">
+                  <button
+                    onClick={handleDeleteConfirmationToggle}
+                    className="px-4 py-2 text-gray-700 border border-gray-300 rounded-md hover:bg-gray-100 transition"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={handleDeleteAccount}
+                    disabled={isDeleting}
+                    className="px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600 transition disabled:bg-red-400"
+                  >
+                    {isDeleting ? "Deleting..." : "Delete Permanently"}
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       )}
 
