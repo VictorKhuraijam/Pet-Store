@@ -86,7 +86,7 @@ const sendOTPEmail = async (user, otp, type = 'registration') => {
                     <div style="margin: 30px 0;">
                         <h2 style="color: #007bff; font-size: 32px; letter-spacing: 5px;">${otp}</h2>
                     </div>
-                    <p>This code will expire in 10 minutes.</p>
+                    <p>This OTP code will expire in 10 minutes.</p>
                     <p style="color: #666; margin-top: 20px;">
                         If you didn't request this code, please ignore this email.
                     </p>
@@ -253,9 +253,10 @@ const resendOTP = asyncHandler(async (req, res) => {
     if (!user) {
         throw new ApiError(404, "No pending registration found for this email");
       }
-    } else {
+     else {
         throw new ApiError(400, "Invalid OTP")
     }
+}
 
     // Generate new OTP
     const otp = generateOTP();
@@ -268,7 +269,7 @@ const resendOTP = asyncHandler(async (req, res) => {
     return res.status(200).json(
         new ApiResponse(
             200,
-            {otp, type},
+            { type},
             "New OTP sent successfully"
         )
     );
@@ -865,6 +866,7 @@ const checkAuthStatus = asyncHandler(async (req, res) => {
 
 const deleteUser = asyncHandler(async (req, res) => {
     const userId = req.user?._id;
+    const { password } = req.body;
 
     if (!userId) {
         throw new ApiError(401, "Unauthorized request");
@@ -877,9 +879,7 @@ const deleteUser = asyncHandler(async (req, res) => {
         throw new ApiError(404, "User not found");
     }
 
-    // Optional: Add additional security check if needed
-    // For example, requiring password confirmation
-    const { password } = req.body;
+
     if (password) {
         const isPasswordValid = await user.isPasswordCorrect(password);
         if (!isPasswordValid) {

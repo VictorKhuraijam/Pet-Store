@@ -143,8 +143,9 @@ const Profile = () => {
 
     setIsDeleting(true);
     try {
-      await axios.delete(
+      await axios.post(
         `${backendUrl}/users/delete-account`,
+        // {headers: { Authorization: `Bearer ${accessToken}` }},
         {password: deletePassword},
         { withCredentials: true });
       dispatch(clearCart());

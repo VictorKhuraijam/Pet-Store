@@ -106,7 +106,7 @@ const Signup = () => {
       }
     } catch (error) {
       console.error(error)
-      toast.error( " OTP is incorrect. Please try again")
+      toast.error( error.response?.data?.message || "OTP is incorrect. Please try again")
     } finally {
       setIsLoading(false)
     }
@@ -117,7 +117,10 @@ const Signup = () => {
     try {
       const response = await axios.post(
         `${backendUrl}/users/resend-otp`,
-        { email: formData.email },
+        {
+          email: formData.email,
+          type: "registration"
+        },
         { withCredentials: true }
       )
 
@@ -213,7 +216,8 @@ const Signup = () => {
         <div className="w-full flex flex-col gap-4">
           <p className="text-center text-sm">
             We&apos;ve sent a verification code to <br/>
-            <span className="font-medium">{formData.email}</span>
+            <span className="font-medium">{formData.email}</span><br/>
+            with a validity for 10 minutes
           </p>
 
           <input
@@ -227,13 +231,13 @@ const Signup = () => {
           />
 
           <div className="text-center text-sm font-medium">
-            {timeLeft === 0 ? "" : `(Time remaining: ${formatTime(timeLeft)})`}
+            {timeLeft === 0 ? "" : `(Resend OTP in: ${formatTime(timeLeft)})`}
           </div>
 
           <button
             type="submit"
             disabled={isLoading}
-            className="bg-black rounded-xl text-white font-light px-8 py-2 disabled:bg-gray-400"
+            className="w-[250px] m-auto bg-black rounded-xl text-white font-light px-8 py-2 disabled:bg-gray-400"
           >
             {isLoading ? "Verifying..." : "Verify & Register"}
           </button>
