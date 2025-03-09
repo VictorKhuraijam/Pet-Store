@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import axios from 'axios'
 import { toast } from 'react-toastify'
 import { useNavigate } from 'react-router-dom'
@@ -20,7 +20,31 @@ const ForgotPassword = () => {
   const [passwordVisible, setPasswordVisible] = useState(false)
   const [confirmPasswordVisible, setConfirmPasswordVisible] = useState(false)
 
+  const [timeLeft, setTimeLeft] = useState(120)
+   const [showResend, setShowResend] = useState(false)
 
+   useEffect(() => {
+     if (!isOtpSent || timeLeft <= 0) return
+
+     const timer = setInterval(() => {
+       setTimeLeft((prevTime) => {
+         if (prevTime <= 1) {
+           clearInterval(timer)
+           setShowResend(true)
+           return 0
+         }
+         return prevTime - 1
+       })
+     }, 1000)
+
+     return () => clearInterval(timer)
+   }, [isOtpSent, timeLeft])
+
+  const formatTime = (seconds) => {
+    const minutes = Math.floor(seconds / 60)
+    const remainingSeconds = seconds % 60
+    return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`
+  }
 
   const handleChange = (e) => {
     setFormData({
@@ -84,7 +108,7 @@ const ForgotPassword = () => {
       }
     } catch (error) {
       console.error(error)
-      toast.error( " OTP is incorrect. Please try again")
+      toast.error( error.response?.data?.message ||" OTP is incorrect. Please try again")
     } finally {
       setIsLoading(false)
     }
@@ -107,7 +131,7 @@ const ForgotPassword = () => {
       }
     } catch (error) {
       console.error(error)
-      toast.error("Failed to resend OTP")
+      toast.error(error.response?.data?.message ||"Failed to resend OTP")
     } finally {
       setIsLoading(false)
     }
@@ -202,6 +226,10 @@ const ForgotPassword = () => {
             </button>
           </div>
 
+          <div className="text-center text-sm font-medium">
+            {timeLeft === 0 ? "" : `(Resend OTP in: ${formatTime(timeLeft)})`}
+          </div>
+
           <button
             type="submit"
             disabled={isLoading}
@@ -210,7 +238,8 @@ const ForgotPassword = () => {
             {isLoading ? "Processing..." : "Change Password"}
           </button>
 
-          <button
+          { showResend && (
+            <button
             type="button"
             onClick={resendOTP}
             disabled={isLoading}
@@ -218,6 +247,16 @@ const ForgotPassword = () => {
           >
             Didn&apos;t receive the code? Resend
           </button>
+          )}
+
+          {/* <button
+            type="button"
+            onClick={resendOTP}
+            disabled={isLoading}
+            className="text-sm text-gray-600 underline"
+          >
+            Didn&apos;t receive the code? Resend
+          </button> */}
         </div>
       )}
     </form>

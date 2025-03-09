@@ -253,15 +253,15 @@ const resendOTP = asyncHandler(async (req, res) => {
     if (!user) {
         throw new ApiError(404, "No pending registration found for this email");
       }
-     else {
-        throw new ApiError(400, "Invalid OTP")
-    }
+    //  else {
+    //     throw new ApiError(400, "Invalid OTP")
+    // }
 }
 
     // Generate new OTP
     const otp = generateOTP();
     user.otp = otp;
-    user.otpExpires = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
+    user.otpExpires = new Date(Date.now() + 10 * 60 * 1000).toLocaleString(); // 10 minutes
     await user.save();
 
     await sendOTPEmail(user, otp, type);
@@ -302,7 +302,7 @@ const forgotPassword = asyncHandler(async (req, res) => {
     .json(
         new ApiResponse(
             200,
-            user,
+            {},
             "OTP sent to the email to change password"
         )
     )
@@ -335,7 +335,7 @@ const changeForgotPassword = asyncHandler(async (req, res) => {
     .json(
         new ApiResponse(
             200,
-            user,
+            {},
             "Password changed successfully"
         )
     )
