@@ -44,18 +44,7 @@ const Profile = () => {
 
   if (loading) return <div className="text-center text-xl">Loading...</div>;
 
-  if (!isAuthenticated)
-    return (
-      <div className="text-center text-xl mt-10">
-        <p>Please log in to view this page.</p>
-        <button
-          onClick={() => navigate("/login")}
-          className="mt-4 px-4 py-2 bg-black text-white rounded-md hover:bg-gray-700-600 transition"
-        >
-          Login
-        </button>
-      </div>
-    );
+
 
   const handleInputChange = (e) => {
     setFormData({
@@ -160,6 +149,27 @@ const Profile = () => {
       setShowDeleteConfirmation(false)
     }
   };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <p className="text-xl text-gray-600">Loading...</p>
+      </div>
+    );
+  }
+
+  if (!isAuthenticated)
+    return (
+      <div className="text-center text-xl mt-10">
+        <p>Please log in to view this page.</p>
+        <button
+          onClick={() => navigate("/login")}
+          className="mt-4 px-4 py-2 bg-black text-white rounded-md hover:bg-gray-700-600 transition"
+        >
+          Login
+        </button>
+      </div>
+    );
 
   return (
     <div className="max-w-4xl mx-auto p-4 sm:p-6">
