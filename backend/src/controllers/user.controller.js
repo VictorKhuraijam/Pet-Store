@@ -376,7 +376,7 @@ const loginUser = asyncHandler(async (req, res) => {
     }
 
     const isRefreshTokenValid = verifyRefreshToken(user.refreshToken);
-
+    console.log("refresh token", isRefreshTokenValid)
     if (isRefreshTokenValid) {
         throw new ApiError(401, "User is already logged in or logged in on another device");
     } else {
@@ -424,7 +424,7 @@ const logoutUser = asyncHandler(async (req, res) => {
     .status(200)
     .clearCookie("accessToken", options)
     .clearCookie("refreshToken", options)
-    .json(new ApiResponse(200, {}, "User logged Out"))
+    .json(new ApiResponse(200, {}, "You are logged out logged Out"))
 })
 
 const refreshAccessToken = asyncHandler(async(req, res) => {
