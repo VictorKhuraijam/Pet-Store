@@ -84,16 +84,16 @@ const Orders = () => {
 
                     </div>
                 </div>
-              ))) : null
-          //     <div className="flex flex-col items-center justify-center py-20">
-          // <p className="text-xl text-gray-600 mb-6">Your cart is empty</p>
-          // <button
-          //   onClick={() => navigate('/collection')}
-          //   className="bg-black text-white px-6 py-2 hover:bg-gray-800 transition-colors"
-          // >
-          //   SHOP NOW
-          // </button>
-        // </div>
+              ))) :
+              <div className="flex flex-col items-center justify-center py-20">
+          <p className="text-xl text-gray-600 mb-6 text-center">Your orders are currently empty</p>
+          <button
+            onClick={() => navigate('/collection')}
+            className="bg-black text-white px-6 py-2 hover:bg-gray-800 transition-colors rounded"
+          >
+            SHOP NOW
+          </button>
+        </div>
             }
         </div>
     </div>

@@ -75,7 +75,7 @@ export const fetchProductById = (productId) => async (dispatch) => {
     )
     if(response.data.success){
       const product = response.data.data;
-      console.log(product)
+      // console.log(product)
       dispatch(fetchProductsSuccess({products: [product]}))
     }
   } catch (error) {

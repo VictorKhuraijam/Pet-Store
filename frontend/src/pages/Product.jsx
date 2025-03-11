@@ -88,7 +88,7 @@ const Product = () => {
           <p className='mt-5 text-3xl font-medium'>{currency} {}  {productData.price}</p>
           <p className='mt-5 text-gray-500 md:w-4/5'>{productData.description}</p>
 
-          <button onClick={isAuth ? handleAddToCart : ()=>(toast("please log in")) } className='bg-black text-white px-8 py-3 text-sm mt-5 active:bg-gray-700'>ADD TO CART</button>
+          <button onClick={isAuth ? handleAddToCart : ()=>(toast("please log in")) } className='bg-black text-white px-8 py-3 text-sm mt-5 active:bg-gray-700 rounded'>ADD TO CART</button>
           <hr className='mt-8 sm:w-4/5' />
           <div className='text-sm text-gray-500 mt-5 flex flex-col gap-1'>
               <p>100% Original product.</p>

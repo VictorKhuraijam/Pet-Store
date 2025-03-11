@@ -31,13 +31,21 @@ const generateOTP = () => {
     return Math.floor(100000 + Math.random() * 900000).toString();
 };
 
+const verifyRefreshToken = (token) => {
+    try {
+        jwt.verify(token, process.env.REFRESH_TOKEN_SECRET);
+        return true;
+    } catch (error) {
+        return false;
+    }
+};
 
 const options = {
     httpOnly: true,// Prevents JavaScript access to the cookie, reducing XSS risks
     secure: true,//Ensures the cookie is sent only over HTTPS connections.
     sameSite: "None", // Prevents the cookie from being sent with cross-site requests (mitigates CSRF(Cross Site Request Forgery ) attacks)
     path: '/',
-  }
+}
 
 const generateAccessTokenAndRefreshToken = async (userId) => {
 try {
@@ -363,15 +371,19 @@ const loginUser = asyncHandler(async (req, res) => {
     if (!user.isEmailVerified) {
         await sendVerificationEmail(user);
 
-        throw new ApiError(
-            401,
-            "Please verify your email before logging in. A new verification email has been sent to your email address."
+        throw new ApiError(401,"Please verify your email before logging in. A new verification email has been sent to your email address."
         );
     }
 
-    // if(user.refreshToken){
-    //     throw new ApiError(401," User is already logged in")
-    // }
+    const isRefreshTokenValid = verifyRefreshToken(user.refreshToken);
+
+    if (isRefreshTokenValid) {
+        throw new ApiError(401, "User is already logged in or logged in on another device");
+    } else {
+        // If the refresh token is expired, remove it and allow login
+        user.refreshToken = null;
+        await user.save({ validateBeforeSave: false });
+    }
 
     const isPasswordCorrect = await user.isPasswordCorrect(password)
 

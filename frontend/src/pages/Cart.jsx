@@ -34,6 +34,7 @@ const Cart = () => {
       setCartData(tempData);
     }
 
+
   }, [cartItems, products, dispatch])
 
   const handleQuantityChange = (itemId, value) => {
@@ -52,6 +53,8 @@ const Cart = () => {
 
     console.log ('Removing item:', itemId);
     dispatch(updateQuantity( itemId,  0 ))
+
+    setCartData(prevData => prevData.filter(item => item._id !== itemId));
   }
 
   if (products.length === 0) return <p>Loading...</p>;
@@ -130,7 +133,7 @@ const Cart = () => {
           <div className='w-full sm:w-[450px]'>
             <CartTotal />
             <div className=' w-full text-end'>
-            <button onClick={() => navigate('/place-order')} className='bg-black text-white text-sm my-8 px-8 py-3'>PROCEED TO CHECKOUT</button>
+            <button onClick={() => navigate('/place-order')} className='bg-black text-white text-sm my-8 px-8 py-3 rounded'>PROCEED TO CHECKOUT</button>
           </div>
           </div>
       </div>

@@ -4,10 +4,10 @@ import {Title} from './index';
 
 const CartTotal = ({deliveryMethod}) => {
 
-    // const {currency,delivery_fee,getCartAmount} = useContext(ShopContext);
+
     const currency = '₹';
     const cartTotal = useSelector(selectCartAmount)
-    const shippingCost = 40 // Example shipping cost
+    const shippingCost = 40
     const total =  deliveryMethod === 'DELIVERY' ? cartTotal + shippingCost : cartTotal;
 
   return (
@@ -23,15 +23,15 @@ const CartTotal = ({deliveryMethod}) => {
             </div>
             <hr />
              {/* Show shipping fee only if delivery method is 'home-delivery' */}
-        {deliveryMethod === 'DELIVERY' && (
-          <>
-            <div className='flex justify-between'>
-              <p>Shipping Fee</p>
-              <p>{currency} {shippingCost}.00</p>
-            </div>
-            <hr />
-          </>
-        )}
+            {deliveryMethod === 'DELIVERY' && (
+              <>
+                <div className='flex justify-between'>
+                  <p>Shipping Fee</p>
+                  <p>{currency} {shippingCost}.00</p>
+                </div>
+                <hr />
+              </>
+            )}
             <div className='flex justify-between'>
                 <b>Total</b>
                 <b>{currency} {total}.00</b>

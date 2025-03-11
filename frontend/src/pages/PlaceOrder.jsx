@@ -127,7 +127,7 @@ const PlaceOrder = () => {
                     name='phone'
                     value={formData.phone}
                     className='border border-gray-300 rounded py-1.5 px-3.5 w-full'
-                    type="number"
+                    type="tel"
                     placeholder='Phone'
                 />
             </div>
@@ -166,7 +166,7 @@ const PlaceOrder = () => {
                 </div>
 
                 <div className='w-full text-end mt-8'>
-                        <button type='submit' className='bg-black text-white px-16 py-3 text-sm'>PLACE ORDER</button>
+                        <button type='submit' className='bg-black text-white px-16 py-3 text-sm rounded'>PLACE ORDER</button>
                 </div>
             </div>
         </form>
