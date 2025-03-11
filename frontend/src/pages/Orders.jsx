@@ -15,6 +15,7 @@ const Orders = () => {
   const navigate = useNavigate()
 
   const [orderData,setorderData] = useState([])
+  const [loading, setLoading] = useState(true)
 
   const loadOrderData = async () => {
     try {
@@ -44,12 +45,22 @@ const Orders = () => {
 
     } catch (error) {
     console.error(error.message);
+    } finally{
+      setLoading(false)
     }
   }
 
   useEffect(()=>{
     loadOrderData()
   },[isAuth])
+
+  if(loading){
+    return (
+      <div className='flex items-center justify-center h-screen'>
+        <p className='text-xl text-gray-600'>Loading orders...</p>
+      </div>
+    )
+  }
 
   return isAuth ? (
     <div className='border-t pt-16 px-4'>

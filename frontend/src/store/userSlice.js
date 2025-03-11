@@ -15,7 +15,7 @@ export const loginUser = (email, password) => async (dispatch) => {
     const response = await axios.post(
       `${backendUrl}/users/login`,
       { email, password },
-      { withCredentials: true } // Important for receiving cookies
+      { withCredentials: true } 
     );
 
     if (response.data.success) {
