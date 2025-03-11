@@ -38,14 +38,14 @@ const Product = () => {
   }, [products, productId, productData?._id]);
 
   const handleAddToCart = () => {
-    console.log('Adding product to cart:', {
-      productId: productData._id,
-      productName: productData.name,
-      price: productData.price
-    })
+    // console.log('Adding product to cart:', {
+    //   productId: productData._id,
+    //   productName: productData.name,
+    //   price: productData.price
+    // })
     dispatch(addToCart(productData._id))
     toast("Item added to cart" )
-    console.log('Cart action dispatched successfully')
+    // console.log('Cart action dispatched successfully')
   }
 
   return productData ? (

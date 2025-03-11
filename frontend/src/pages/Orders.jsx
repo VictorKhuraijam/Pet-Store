@@ -54,13 +54,7 @@ const Orders = () => {
     loadOrderData()
   },[isAuth])
 
-  if(loading){
-    return (
-      <div className='flex items-center justify-center h-screen'>
-        <p className='text-xl text-gray-600'>Loading orders...</p>
-      </div>
-    )
-  }
+
 
   return isAuth ? (
     <div className='border-t pt-16 px-4'>
@@ -69,9 +63,13 @@ const Orders = () => {
             <Title text1={'MY'} text2={'ORDERS'}/>
         </div>
 
-        <div>
-            {
-             orderData.length > 0 ? (orderData.map((item,index) => (
+
+        {loading ? (
+          <div className="text-center py-10">
+          <p className="text-gray-600 text-lg">Loading your orders...</p>
+        </div>
+        ) : (<div>
+            {orderData.length > 0 ? (orderData.map((item,index) => (
                 <div key={index} className='py-4 border-t border-b text-gray-700 flex flex-col md:flex-row md:items-center md:justify-between gap-4'>
                     <div className='flex items-start gap-6 text-sm'>
                         <img className='w-16 sm:w-20' src={item.productId.images[0].url || null} alt="" />
@@ -97,16 +95,16 @@ const Orders = () => {
                 </div>
               ))) :
               <div className="flex flex-col items-center justify-center py-20">
-          <p className="text-xl text-gray-600 mb-6 text-center">Your orders are currently empty</p>
-          <button
-            onClick={() => navigate('/collection')}
-            className="bg-black text-white px-6 py-2 hover:bg-gray-800 transition-colors rounded"
-          >
-            SHOP NOW
-          </button>
-        </div>
+              <p className="text-xl text-gray-600 mb-6 text-center">Your orders are currently empty</p>
+              <button
+                onClick={() => navigate('/collection')}
+                className="bg-black text-white px-6 py-2 hover:bg-gray-800 transition-colors rounded"
+              >
+                SHOP NOW
+              </button>
+            </div>
             }
-        </div>
+        </div>)}
     </div>
   ):
   (
