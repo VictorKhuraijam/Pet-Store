@@ -11,6 +11,7 @@ const PlaceOrder = () => {
     const navigate = useNavigate();
     const dispatch = useDispatch()
 
+    const isAuth = useSelector((state) => state.user.isAuthenticated)
     const products = useSelector((state) => state.shop.products)
     const cartItems = useSelector((state) => state.cart.items)
     const CartAmount = useSelector(selectCartAmount)
@@ -71,6 +72,20 @@ const PlaceOrder = () => {
             console.log(error)
             toast.error(error.message)
         }
+    }
+
+    if(!isAuth){
+        return (
+            <div className="text-center text-xl mt-10">
+              <p>Please log in </p>
+              <button
+                onClick={() => navigate("/login")}
+                className="mt-4 px-4 py-2 bg-black text-white rounded-md hover:bg-gray-700-600 transition"
+              >
+                Login
+              </button>
+            </div>
+          );
     }
 
 

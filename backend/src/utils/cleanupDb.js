@@ -109,13 +109,13 @@ export const startCronJobs = () => {
       });
 
       // New job to trim user orders (run every Monday at 2 a.m.)
-      const trimOrdersJob = cron.schedule("0 2 * * 1", async () => {
+      const trimOrdersJob = cron.schedule("0 11 * * *", async () => {
         console.log("Running job to trim excess user orders...");
         await trimUserOrders();
       });
 
       // New job to remove orphaned orders (run everyday at 10 a.m.)
-      const orphanedOrdersJob = cron.schedule("0 10 * * *", async () => {
+      const orphanedOrdersJob = cron.schedule("0 11 * * *", async () => {
         console.log("Running job to remove orphaned orders...");
         await removeOrphanedOrders();
       });

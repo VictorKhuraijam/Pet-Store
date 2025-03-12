@@ -12,6 +12,7 @@ const Product = () => {
   const { productId } = useParams();
   const [productData, setProductData] = useState(false);
   const [image, setImage] = useState('')
+  const [loading, setLoading] = useState(true)
 
   const isAuth = useSelector((state) => state.user.isAuthenticated)
 
@@ -33,6 +34,7 @@ const Product = () => {
       if (product && product._id !== productData?._id) {
         setProductData(product);
         setImage(product.images?.[0]?.url || '');
+        setLoading(false)
       }
 
   }, [products, productId, productData?._id]);
@@ -43,12 +45,15 @@ const Product = () => {
     //   productName: productData.name,
     //   price: productData.price
     // })
+    if (!productData || !productData._id) {
+      return;
+    }
     dispatch(addToCart(productData._id))
     toast("Item added to cart" )
     // console.log('Cart action dispatched successfully')
   }
 
-  return productData ? (
+  return !loading ? (
     <div className='border-t-2 px-4 pt-10 transition-opacity ease-in duration-500 opacity-100'>
       {/*----------- Product Data-------------- */}
       <div className='flex gap-12 sm:gap-12 flex-col sm:flex-row'>
@@ -115,7 +120,7 @@ const Product = () => {
       <RelatedProducts category={productData.category} />
 
     </div>
-  ) : <div className=' opacity-0'></div>
+  ) : <div className=' opacity-0'>loading...</div>
 }
 
 export default Product

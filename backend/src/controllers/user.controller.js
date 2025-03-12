@@ -376,7 +376,7 @@ const loginUser = asyncHandler(async (req, res) => {
     }
 
     const isRefreshTokenValid = verifyRefreshToken(user.refreshToken);
-    console.log("refresh token", isRefreshTokenValid)
+    // console.log("refresh token", isRefreshTokenValid)
     if (isRefreshTokenValid) {
         throw new ApiError(401, "User is already logged in or logged in on another device");
     } else {
