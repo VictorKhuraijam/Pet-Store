@@ -118,30 +118,21 @@ const Collection = () => {
 
     <div className='px-4 flex flex-col sm:flex-row gap-1 sm:gap-10  '>
 
-      {/* Filter Options */}
-      <div className='min-w-60'>
-        <p
-          className='my-2 text-xl flex items-center  gap-2'>
-           <span
-            onClick={()=>setShowFilter(!showFilter)}
-            className='cursor-pointer inline-block'
-           > FILTERS
-           </span>
-          <img className={`h-3 sm:hidden ${showFilter ? 'rotate-90' : ''}`} src={assets.dropdown_icon} alt="" />
-        </p>
-        {/* Category Filter */}
-        {/* <div className={`border border-gray-300 pl-5 py-3 mt-6 ${showFilter ? '' :'hidden'} sm:block`}>
-          <p className='mb-3 text-sm font-medium'>CATEGORIES</p>
-          <div className='flex flex-col gap-2 text-sm font-light text-gray-700'>
-            <p className='flex gap-2'>
-              <input className='w-3' type="checkbox" value={'Dog'} onChange={(e) => toggleCategory(e.target.value)}/> Dog
-            </p>
-            <p className='flex gap-2'>
-              <input className='w-3' type="checkbox" value={'Cat'} onChange={(e) => toggleCategory(e.target.value)}/> Cat
-            </p>
+      {/* Filter Button for Small Screens */}
+        <button
+          onClick={() => setShowFilter(!showFilter)}
+          className="sm:hidden bg-gray-400 text-gray-700 px-4 py-2 rounded-md flex items-center gap-2 w-[100px]"
+        >
+          <span>FILTERS</span>
+          <img
+            className={`h-3 transition-transform ${showFilter ? "rotate-90" : ""}`}
+            src={assets.dropdown_icon}
+            alt="Toggle Filters"
+          />
+        </button>
 
-          </div>
-        </div> */}
+        <div className={`min-w-60 ${showFilter ? "block" : "hidden"} sm:block`}>
+        {/* Category Filter */}
 
         {categories.length > 0 && (
             <div className={`border border-gray-300 pl-5 py-3 mt-6 ${showFilter ? '' : 'hidden'} sm:block`}>
