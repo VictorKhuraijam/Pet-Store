@@ -22,12 +22,17 @@ const Collection = () => {
 }
 
   const toggleType = (e) => {
-    setType(prev => prev.includes(e) ? prev.filter(t => t !== e) : [...prev, e])}
+    setType(prev => prev.includes(e) ? prev.filter(t => t !== e) : [...prev, e])
+  }
 
 
-    const categories = products.reduce((acc, item) =>
+  const categories = products.reduce((acc, item) =>
       acc.includes(item.category) ? acc : [...acc, item.category], []
-    );
+  );
+
+  const types = products.reduce((acc, item) =>
+      acc.includes(item.type) ? acc : [...acc, item.type], []
+  );
 
 
   // const applyFilter = () => {
@@ -157,7 +162,7 @@ const Collection = () => {
         <div className={`border border-gray-300 pl-5 py-3 my-5 ${showFilter ? '' :'hidden'} sm:block`}>
           <p className='mb-3 text-sm font-medium'>TYPE</p>
           <div className='flex flex-col gap-2 text-sm font-light text-gray-700'>
-            <p className='flex gap-2'>
+            {/* <p className='flex gap-2'>
               <input className='w-3' type="checkbox" value={'Food'} onChange={(e) => toggleType(e.target.value)}/> Food
             </p>
             <p className='flex gap-2'>
@@ -165,7 +170,19 @@ const Collection = () => {
             </p>
             <p className='flex gap-2'>
               <input className='w-3' type="checkbox" value={'Accessories'} onChange={(e) => toggleType(e.target.value)}/> Accessories
-            </p>
+            </p> */}
+
+              {types.map((type) => (
+                  <p key={type} className='flex gap-2'>
+                    <input
+                      className='w-3'
+                      type='checkbox'
+                      value={type}
+                      onChange={(e) => toggleType(e.target.value)}
+                    />{' '}
+                    {type}
+                  </p>
+                ))}
           </div>
         </div>
       </div>
