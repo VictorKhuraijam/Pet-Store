@@ -32,6 +32,7 @@ export const AuthProvider = ({ children }) => {
         setIsAuthenticated(true);
         toast.success("Login successful!");
       } else {
+        
         throw new Error("Login failed");
       }
     } catch (error) {

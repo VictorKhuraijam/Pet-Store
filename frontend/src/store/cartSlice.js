@@ -35,6 +35,7 @@ export const addToCart = (itemId) => async (dispatch) => {
 
       dispatch(addToCartFulfilled({ itemId, cartData: response.data}));
 
+      dispatch(fetchCart())
   } catch (error) {
     toast.error( error.message);
   }

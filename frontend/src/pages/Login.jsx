@@ -54,17 +54,10 @@ const Login = () => {
             onChange={(e)=>setEmail(e.target.value)}
             value={email}
             type="email"
-            className='w-full px-3 py-2 rounded-lg border border-gray-800' placeholder='Email'
+            className='w-full px-3 py-2 rounded-lg border border-gray-800 focus:outline-none'
+            placeholder='Email'
             required
           />
-
-          {/* <input
-            onChange={(e)=>setPasword(e.target.value)}
-            value={password}
-            type="password" className='w-full px-3 py-2 border border-gray-800'
-            placeholder='Password'
-            required
-          /> */}
 
           <div className="relative m-auto w-full">
             <input
@@ -72,7 +65,7 @@ const Login = () => {
               onChange={(e)=>setPassword(e.target.value)}
               value={password}
               type={passwordVisible ? "text" : "password"}
-              className="w-full rounded-lg px-3 py-2 border border-gray-800 pr-10"
+              className="w-full rounded-lg px-3 py-2 border border-gray-800 pr-10 focus:outline-none"
               placeholder="Enter password"
               required
             />

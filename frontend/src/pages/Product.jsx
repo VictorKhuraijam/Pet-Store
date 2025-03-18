@@ -4,7 +4,7 @@ import { assets } from '../assets/assets';
 import {RelatedProducts} from '../components/index';
 import { useSelector, useDispatch } from 'react-redux';
 import { fetchProductById } from '../store/shopSlice';
-import { addToCart } from '../store/cartSlice';
+import { addToCart, fetchCart } from '../store/cartSlice';
 import { toast } from 'react-toastify';
 
 const Product = () => {
@@ -15,6 +15,9 @@ const Product = () => {
   const [loading, setLoading] = useState(true)
 
   const isAuth = useSelector((state) => state.user.isAuthenticated)
+
+
+  const cartItems = useSelector((state) => state.cart.items);
 
   const dispatch = useDispatch()
   const products = useSelector((state) => state.shop.products)
@@ -48,8 +51,18 @@ const Product = () => {
     if (!productData || !productData._id) {
       return;
     }
-    dispatch(addToCart(productData._id))
-    toast("Item added to cart" )
+
+
+    // If cart isn't initialized, fetch it first
+    if (!cartItems) {
+      dispatch(fetchCart()).then(() => {
+        dispatch(addToCart(productData._id));
+        toast.success("Item added to cart");
+      });
+    } else {
+      dispatch(addToCart(productData._id));
+      toast.success("Item added to cart");
+    }
     // console.log('Cart action dispatched successfully')
   }
 
