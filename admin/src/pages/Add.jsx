@@ -19,9 +19,11 @@ const Add = () => {
    const [category, setCategory] = useState("");
    const [type, setType] = useState("Food");
    const [bestseller, setBestseller] = useState(false);
+   const [isSubmitting, setIsSubmitting] = useState(false)
 
    const onSubmitHandler = async (e) => {
     e.preventDefault();
+    setIsSubmitting(true)
 
     try {
 
@@ -60,6 +62,8 @@ const Add = () => {
     } catch (error) {
       console.log(error);
       toast.error(error.message)
+    } finally{
+      setIsSubmitting(false)
     }
    }
 
@@ -95,7 +99,10 @@ const Add = () => {
 
         <div className='w-full'>
           <p className='mb-2'>Product description</p>
-          <textarea onChange={(e)=>setDescription(e.target.value)} value={description} className='w-full max-w-[500px] px-3 py-2' type="text" placeholder='Write content here' required/>
+          <textarea
+            onChange={(e)=>setDescription(e.target.value)}
+            value={description}
+            className='w-full max-w-[500px] px-3 py-2 h-[200px]' type="text" placeholder='Write content here' required/>
         </div>
 
         <div className='flex flex-col sm:flex-row gap-2 w-full sm:gap-8'>
@@ -139,7 +146,7 @@ const Add = () => {
           <label className='cursor-pointer' htmlFor="bestseller">Add to bestseller</label>
         </div>
 
-        <button type="submit" className='w-28 py-3 mt-4 bg-black text-white'>ADD</button>
+        <button type="submit" className='w-28 py-3 mt-4 bg-black text-white'>{isSubmitting ? "ADDING..." : "ADD"}</button>
 
     </form>
   )

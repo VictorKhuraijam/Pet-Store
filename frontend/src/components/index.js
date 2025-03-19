@@ -10,6 +10,7 @@ import ProductItem from "./ProductItem";
 import RelatedProducts from './RelatedProducts'
 import CartTotal from "./CartTotal";
 import StoreStatus from "./StoreStatus";
+import Pagination from "./Pagination";
 
 export {
   NavBar,
@@ -23,5 +24,6 @@ export {
   Title,
   ProductItem,
   RelatedProducts,
-  CartTotal
+  CartTotal,
+  Pagination
 }

@@ -61,7 +61,7 @@ const Login = () => {
                     />
                     <button
                     type="button"
-                    className="absolute right-3 top-2/3 transform -translate-y-1/2"
+                    className="absolute right-3 top-5/7 transform -translate-y-1/2"
                     onClick={() => setPasswordVisible(!passwordVisible)}
                     >
                     {passwordVisible ? <EyeOff size={20} /> : <Eye size={20} />}

@@ -1,6 +1,6 @@
 import {useCallback, useEffect, useState } from 'react'
 import { assets } from '../assets/assets';
-import {ProductItem, SearchBar, Title} from '../components/index';
+import {Pagination, ProductItem, SearchBar, Title} from '../components/index';
 import { fetchProducts} from '../store/shopSlice';
 import { useSelector, useDispatch } from 'react-redux';
 
@@ -15,6 +15,15 @@ const Collection = () => {
   const [filterProducts,setFilterProducts] = useState([]);
   const [category,setCategory] = useState([]);
   const [type,setType] = useState([]);
+
+
+  const [currentPage, setCurrentPage] = useState(1);
+  const [productsPerPage] = useState(10); // Display 20 products per page
+  const indexOfLastProduct = currentPage * productsPerPage;
+  const indexOfFirstProduct = indexOfLastProduct - productsPerPage;
+  const currentProducts = filterProducts.slice(indexOfFirstProduct, indexOfLastProduct);
+  const totalPages = Math.ceil(filterProducts.length / productsPerPage);
+  const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
 
   const toggleCategory = (e) =>{
@@ -35,56 +44,8 @@ const Collection = () => {
   );
 
 
-  // const applyFilter = () => {
-
-  //   let productsCopy = [...products];
-
-  //   // if (search) {
-  //   //   productsCopy = productsCopy.filter(item => item.type.toLowerCase().includes(search.toLowerCase()) || item.category.toLowerCase().includes(search.toLowerCase()) || item.name.toLowerCase().includes(search.toLowerCase()) )
-  //   // }
-
-  //   if (category.length > 0) {
-  //     productsCopy = productsCopy.filter(item => category.includes(item.category));
-  //   }
-
-  //   if (type.length > 0 ) {
-  //     productsCopy = productsCopy.filter(item => type.includes(item.type))
-  //   }
-
-  //   setFilterProducts((prevFilteredProducts) => {
-  //     if (
-  //       prevFilteredProducts.length === productsCopy.length &&
-  //       prevFilteredProducts.every((item, index) => item._id === productsCopy[index]._id)
-  //     ) {
-  //       return prevFilteredProducts;
-  //     }
-  //     return productsCopy;
-  //   });
-
-  // }
-
-  // const sortProduct = () => {
-
-  //   let fpCopy = filterProducts;
-
-  //   switch (sortType) {
-  //     case 'low-high':
-  //       setFilterProducts(fpCopy.sort((a,b)=>(a.price - b.price)));
-  //       break;
-
-  //     case 'high-low':
-  //       setFilterProducts(fpCopy.sort((a,b)=>(b.price - a.price)));
-  //       break;
-
-  //     default:
-  //       applyFilter();
-  //       break;
-  //   }
-
-  // }
-
   const handleSearchResults = useCallback((filteredResults) => {
-    setFilterProducts(filteredResults);
+    setSearch(filteredResults);
   },[]);
 
   useEffect(()=>{
@@ -93,10 +54,7 @@ const Collection = () => {
     }
   },[dispatch, products.length])
 
-  // useEffect(() => {
 
-  //   applyFilter();
-  // }, [category, type, products]);
 
   useEffect(() => {
     let productsCopy = search.length > 0 ? search : [...products];
@@ -203,7 +161,7 @@ const Collection = () => {
         {/* Map Products */}
         <div className='grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 gap-y-6'>
           {
-             filterProducts.map((item,index)=>(
+             currentProducts.map((item,index)=>(
               <ProductItem
                 key={index}
                 name={item.name}
@@ -211,10 +169,16 @@ const Collection = () => {
                 price={item.price}
                 image={item.images[0].url} />
               ))
-
           }
-
         </div>
+
+          {/* Pagination controls */}
+      <Pagination
+        currentPage={currentPage}
+        totalPages={totalPages}
+        paginate={paginate}
+      />
+
       </div>
 
     </div>
