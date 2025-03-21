@@ -8,6 +8,7 @@ export const AuthProvider = ({ children }) => {
   const [admin, setAdmin] = useState(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [editProduct, setEditProduct] = useState(null); // Add editProduct state
 
   const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
@@ -32,7 +33,7 @@ export const AuthProvider = ({ children }) => {
         setIsAuthenticated(true);
         toast.success("Login successful!");
       } else {
-        
+
         throw new Error("Login failed");
       }
     } catch (error) {
@@ -85,7 +86,7 @@ export const AuthProvider = ({ children }) => {
 
   return (
     <AuthContext.Provider
-      value={{ admin, isAuthenticated, loading, backendUrl, currency, loginAdmin, checkAuthStatus, logoutAdmin }}
+      value={{ admin, isAuthenticated, loading, backendUrl, currency, loginAdmin, checkAuthStatus, logoutAdmin, editProduct, setEditProduct }}
     >
       {children}
     </AuthContext.Provider>
