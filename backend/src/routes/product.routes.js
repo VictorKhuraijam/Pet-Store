@@ -3,6 +3,7 @@ import {upload} from '../middleware/multer.middleware.js'
 import adminAuth from '../middleware/adminAuth.middleware.js'
 import {
   addProduct,
+  updateProduct,
   listProducts,
   removeProduct,
   getSingleProduct
@@ -27,6 +28,17 @@ router.route('/add').post(
     {name:'image4',maxCount:1}
   ]),
   addProduct
+)
+
+router.route("/update/:productId").post(
+  adminAuth,
+   upload.fields([
+    { name: "image1", maxCount: 1 },
+    { name: "image2", maxCount: 1 },
+    { name: "image3", maxCount: 1 },
+    { name: "image4", maxCount: 1 }
+  ]),
+  updateProduct
 )
 
 router.route('/delete/:productId').delete(adminAuth, removeProduct)

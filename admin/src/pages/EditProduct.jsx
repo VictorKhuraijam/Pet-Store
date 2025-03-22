@@ -6,7 +6,7 @@ import AuthContext from '../context/AuthContext'
 import { useNavigate } from 'react-router-dom'
 
 const EditProduct = () => {
-  const { backendUrl } = useContext(AuthContext)
+  const { backendUrl, editProduct, setEditProduct } = useContext(AuthContext)
   const navigate = useNavigate()
 
   const [image1, setImage1] = useState(false)
@@ -26,35 +26,35 @@ const EditProduct = () => {
 
   useEffect(() => {
     // Get stored product data from localStorage
-    const productData = localStorage.getItem('editProduct')
+    // const productData = localStorage.getItem('editProduct')
 
-    if (!productData) {
+    if (!editProduct) {
       toast.error("No product selected for editing")
-      navigate('/admin/list')
+      navigate('/list')
       return
     }
 
     try {
-      const product = JSON.parse(productData)
-      setProductId(product._id)
-      setName(product.name)
-      setDescription(product.description)
-      setPrice(product.price.toString())
-      setCategory(product.category)
-      setType(product.type || "Food")
-      setBestseller(product.bestseller || false)
+      // const product = JSON.parse(productData)
+      setProductId(editProduct._id)
+      setName(editProduct.name)
+      setDescription(editProduct.description)
+      setPrice(editProduct.price.toString())
+      setCategory(editProduct.category)
+      setType(editProduct.type || "Food")
+      setBestseller(editProduct.bestseller || false)
 
       // Store original images
-      if (product.images && product.images.length) {
-        setOriginalImages(product.images)
+      if (editProduct.images && editProduct.images.length) {
+        setOriginalImages(editProduct.images)
       }
 
     } catch (error) {
       console.error("Error parsing product data:", error)
       toast.error("Error loading product data")
-      navigate('/admin/list')
+      navigate('/list')
     }
-  }, [navigate])
+  }, [navigate, editProduct])
 
   const onSubmitHandler = async (e) => {
     e.preventDefault()
@@ -81,7 +81,7 @@ const EditProduct = () => {
         formData.append(`originalImage${index + 1}`, img._id || img.public_id || "")
       })
 
-      const response = await axios.put(
+      const response = await axios.post(
         `${backendUrl}/products/update/${productId}`,
         formData,
         { withCredentials: true }
@@ -90,7 +90,8 @@ const EditProduct = () => {
       if (response.data.success) {
         toast.success(response.data.message)
         // Clear localStorage and navigate back to list
-        localStorage.removeItem('editProduct')
+        // localStorage.removeItem('editProduct')
+        setEditProduct(null)
         navigate('/admin/list')
       } else {
         toast.error(response.data.message)
@@ -105,8 +106,9 @@ const EditProduct = () => {
   }
 
   const cancelEdit = () => {
-    localStorage.removeItem('editProduct')
-    navigate('/admin/list')
+    // localStorage.removeItem('editProduct')
+    setEditProduct(null)
+    navigate('/list')
   }
 
   return (
@@ -223,7 +225,7 @@ const EditProduct = () => {
       <div className='flex gap-4'>
         <button
           type="submit"
-          className='w-28 py-3 mt-4 bg-black text-white disabled:bg-gray-600'
+          className='w-28 py-3 mt-4 bg-black rounded text-white disabled:bg-gray-600'
           disabled={isSubmitting}
         >
           {isSubmitting ? "UPDATING..." : "UPDATE"}
@@ -232,7 +234,7 @@ const EditProduct = () => {
         <button
           type="button"
           onClick={cancelEdit}
-          className='w-28 py-3 mt-4 bg-gray-300 text-black'
+          className='w-28 py-3 mt-4 rounded bg-gray-300 text-black'
         >
           CANCEL
         </button>
