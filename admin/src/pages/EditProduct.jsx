@@ -78,7 +78,7 @@ const EditProduct = () => {
 
       // Add original image IDs to retain them
       originalImages.forEach((img, index) => {
-        formData.append(`originalImage${index + 1}`, img._id || img.public_id || "")
+        formData.append(`originalImage${index + 1}`, img.url || "")
       })
 
       const response = await axios.post(
@@ -122,7 +122,7 @@ const EditProduct = () => {
             <div key={index} className='relative'>
               <img
                 className='w-20 h-20 object-cover'
-                src={img.url}
+                src={img?.url}
                 alt={`Product image ${index + 1}`}
               />
             </div>
@@ -132,19 +132,69 @@ const EditProduct = () => {
         <p className='mt-4 mb-2'>Upload New Images (optional)</p>
         <div className='flex gap-2'>
           <label htmlFor="image1">
-            <img className='w-20 cursor-pointer' src={!image1 ? assets.upload_area : URL.createObjectURL(image1)} alt="" />
+            <div className="relative w-20 h-20">
+                <img
+                  className="w-full h-full object-cover cursor-pointer"
+                  src={image1 ? URL.createObjectURL(image1) : originalImages[0]?.url || assets.upload_area}
+                  alt=""
+                />
+                {image1 || originalImages[0]?.url ? (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (image1) {
+                        setImage1(null);
+                      } else {
+                        setOriginalImages((prevImages) => {
+                          const updatedImages = [...prevImages];
+                          updatedImages[0] = null;
+                          return updatedImages;
+                        });
+                      }
+                    }}
+                    className="absolute top-0 right-0 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center"
+                  >
+                    X
+                  </button>
+                ) : null}
+             </div>
             <input onChange={(e) => setImage1(e.target.files[0])} type="file" id="image1" hidden />
           </label>
           <label htmlFor="image2">
-            <img className='w-20 cursor-pointer' src={!image2 ? assets.upload_area : URL.createObjectURL(image2)} alt="" />
+            <div className="relative w-20 h-20">
+              <img
+                className="w-full h-full object-cover cursor-pointer"
+                src={image2 ? URL.createObjectURL(image2) : originalImages[1]?.url || assets.upload_area}
+                alt=""
+              />
+              {image1 || originalImages[1]?.url ? (
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (image2) {
+                      setImage2(null);
+                    } else {
+                      setOriginalImages((prevImages) => {
+                        const updatedImages = [...prevImages];
+                        updatedImages[0] = null;
+                        return updatedImages;
+                      });
+                    }
+                  }}
+                  className="absolute top-0 right-0 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center"
+                >
+                  X
+                </button>
+              ) : null}
+            </div>
             <input onChange={(e) => setImage2(e.target.files[0])} type="file" id="image2" hidden />
           </label>
           <label htmlFor="image3">
-            <img className='w-20 cursor-pointer' src={!image3 ? assets.upload_area : URL.createObjectURL(image3)} alt="" />
+            <img className='w-20 cursor-pointer' src={!image3 ? originalImages[2]?.url || assets.upload_area : URL.createObjectURL(image3)} alt="" />
             <input onChange={(e) => setImage3(e.target.files[0])} type="file" id="image3" hidden />
           </label>
           <label htmlFor="image4">
-            <img className='w-20 cursor-pointer' src={!image4 ? assets.upload_area : URL.createObjectURL(image4)} alt="" />
+            <img className='w-20 cursor-pointer' src={!image4 ? originalImages[3]?.url || assets.upload_area : URL.createObjectURL(image4)} alt="" />
             <input onChange={(e) => setImage4(e.target.files[0])} type="file" id="image4" hidden />
           </label>
         </div>

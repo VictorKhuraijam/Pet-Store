@@ -70,6 +70,10 @@ const updateProduct = asyncHandler(async (req, res) => {
     const { productId } = req.params
     const { name, description, price, category, type, bestseller } = req.body
 
+    if(!name || !description || !price || !category || !type) {
+        throw new ApiError(400, "All fields are required")
+    }
+
     // Find the product to update
     const product = await Product.findById(productId)
 
@@ -78,11 +82,11 @@ const updateProduct = asyncHandler(async (req, res) => {
     }
 
     // Extract original image IDs if provided in request
-    const originalImageIds = []
+    const originalImageUrls = []
     for (let i = 1; i <= 4; i++) {
-        const imageId = req.body[`originalImage${i}`]
-        if (imageId && imageId.trim() !== "") {
-            originalImageIds.push(imageId)
+        const imageUrl = req.body[`originalImage${i}`]
+        if (imageUrl && imageUrl.trim() !== "") {
+            originalImageUrls.push(imageUrl)
         }
     }
 
@@ -100,28 +104,26 @@ const updateProduct = asyncHandler(async (req, res) => {
         newImagesData = await Promise.all(
             newImages.map(async (item) => {
                 const result = await uploadOnCloudinary(item.path)
-                console.log("Cloudinary upload result for new image:", result)
+                // console.log("Cloudinary upload result for new image:", result)
                 if (!result) {
                     throw new ApiError(500, "Error uploading image to cloudinary")
                 }
                 return {
                     url: result.url,
-                    public_id: result.public_id // Store public_id for future reference
                 }
             })
         )
-        console.log("New images data Array:", newImagesData)
+        // console.log("New images data Array:", newImagesData)
     }
 
     // Determine which images to retain and which to delete
     let updatedImages = []
 
     // Keep original images that were marked to be retained
-    if (originalImageIds.length > 0) {
+    if (originalImageUrls.length > 0) {
         const retainedImages = product.images.filter(image =>
-            originalImageIds.includes(image._id.toString()) ||
-            (image.public_id && originalImageIds.includes(image.public_id))
-        )
+            originalImageUrls.includes(image.url)
+            )
         updatedImages = [...retainedImages]
     }
 
@@ -130,8 +132,7 @@ const updateProduct = asyncHandler(async (req, res) => {
 
     // Delete images that are no longer needed
     const imagesToDelete = product.images.filter(image => {
-        return !originalImageIds.includes(image._id.toString()) &&
-               (!image.public_id || !originalImageIds.includes(image.public_id))
+        return !originalImageUrls.includes(image.url) 
     })
 
     if (imagesToDelete.length > 0) {
