@@ -36,7 +36,7 @@ const addProduct = asyncHandler(async (req, res) => {
            }
         })
     )
-    console.log("Images data Array:", imagesData)
+    // console.log("Images data Array:", imagesData)
 
     const product = await Product.create({
         name,
@@ -78,11 +78,15 @@ const updateProduct = asyncHandler(async (req, res) => {
     const product = await Product.findById(productId)
 
     if (!product) {
-        throw new ApiError(404, "No product found for the given ProductId")
+        throw new ApiError(404, "No product found")
     }
 
-    // Extract original image IDs if provided in request
+
+    // Process original and new images
     const originalImageUrls = []
+    const newImages = []
+
+    // Check for original images to retain
     for (let i = 1; i <= 4; i++) {
         const imageUrl = req.body[`originalImage${i}`]
         if (imageUrl && imageUrl.trim() !== "") {
@@ -90,62 +94,48 @@ const updateProduct = asyncHandler(async (req, res) => {
         }
     }
 
-    // Process new uploaded images
-    const image1 = req.files?.image1?.[0]
-    const image2 = req.files?.image2?.[0]
-    const image3 = req.files?.image3?.[0]
-    const image4 = req.files?.image4?.[0]
-
-    const newImages = [image1, image2, image3, image4].filter((item) => item !== undefined)
+    // Collect new uploaded images
+    const uploadedImages = ['image1', 'image2', 'image3', 'image4']
+        .map(key => req.files?.[key]?.[0])
+        .filter(image => image !== undefined)
 
     // Upload new images to Cloudinary
-    let newImagesData = []
-    if (newImages.length > 0) {
-        newImagesData = await Promise.all(
-            newImages.map(async (item) => {
-                const result = await uploadOnCloudinary(item.path)
-                // console.log("Cloudinary upload result for new image:", result)
+    if (uploadedImages.length > 0) {
+        const newImagesData = await Promise.all(
+            uploadedImages.map(async (image) => {
+                const result = await uploadOnCloudinary(image.path)
                 if (!result) {
-                    throw new ApiError(500, "Error uploading image to cloudinary")
+                    throw new ApiError(500, `Failed to upload image: ${image.originalname}`)
                 }
-                return {
-                    url: result.url,
-                }
+                return { url: result.url }
             })
         )
-        // console.log("New images data Array:", newImagesData)
+        newImages.push(...newImagesData)
     }
 
-    // Determine which images to retain and which to delete
-    let updatedImages = []
+    // Determine images to retain and delete
+    const retainedImages = product.images.filter(image =>
+        originalImageUrls.includes(image.url)
+    )
 
-    // Keep original images that were marked to be retained
-    if (originalImageUrls.length > 0) {
-        const retainedImages = product.images.filter(image =>
-            originalImageUrls.includes(image.url)
-            )
-        updatedImages = [...retainedImages]
-    }
+    const updatedImages = [...retainedImages, ...newImages]
 
-    // Add new images
-    updatedImages = [...updatedImages, ...newImagesData]
-
-    // Delete images that are no longer needed
-    const imagesToDelete = product.images.filter(image => {
-        return !originalImageUrls.includes(image.url) 
-    })
+    // Delete images no longer needed
+    const imagesToDelete = product.images.filter(image =>
+        !originalImageUrls.includes(image.url)
+    )
 
     if (imagesToDelete.length > 0) {
         try {
-            const deletionPromises = imagesToDelete.map(image => deleteFromCloudinary(image.url))
-            await Promise.all(deletionPromises)
+            await Promise.all(
+                imagesToDelete.map(image => deleteFromCloudinary(image.url))
+            )
         } catch (error) {
             console.error("Error deleting old images:", error)
-            // Continue with update even if image deletion fails
         }
     }
 
-    // If no images are left after processing, throw error
+    // Validate image requirements
     if (updatedImages.length === 0) {
         throw new ApiError(400, "Product must have at least one image")
     }
@@ -154,12 +144,12 @@ const updateProduct = asyncHandler(async (req, res) => {
     const updatedProduct = await Product.findByIdAndUpdate(
         productId,
         {
-            name: name || product.name,
-            description: description || product.description,
-            price: price ? Number(price) : product.price,
-            category: category || product.category,
-            type: type || product.type,
-            bestseller: bestseller === "true" || bestseller === true,
+            name,
+            description,
+            price: Number(price),
+            category,
+            type,
+            bestseller: Boolean(bestseller),
             images: updatedImages
         },
         { new: true }

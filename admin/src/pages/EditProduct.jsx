@@ -4,16 +4,13 @@ import axios from 'axios'
 import { toast } from 'react-toastify'
 import AuthContext from '../context/AuthContext'
 import { useNavigate } from 'react-router-dom'
+import { X } from 'lucide-react'
 
 const EditProduct = () => {
   const { backendUrl, editProduct, setEditProduct } = useContext(AuthContext)
   const navigate = useNavigate()
 
-  const [image1, setImage1] = useState(false)
-  const [image2, setImage2] = useState(false)
-  const [image3, setImage3] = useState(false)
-  const [image4, setImage4] = useState(false)
-
+  const [images, setImages] = useState([null, null, null, null])
   const [originalImages, setOriginalImages] = useState([])
   const [productId, setProductId] = useState("")
   const [name, setName] = useState("")
@@ -25,17 +22,13 @@ const EditProduct = () => {
   const [isSubmitting, setIsSubmitting] = useState(false)
 
   useEffect(() => {
-    // Get stored product data from localStorage
-    // const productData = localStorage.getItem('editProduct')
-
     if (!editProduct) {
-      toast.error("No product selected for editing")
+      // toast.error("No product selected for editing")
       navigate('/list')
       return
     }
 
     try {
-      // const product = JSON.parse(productData)
       setProductId(editProduct._id)
       setName(editProduct.name)
       setDescription(editProduct.description)
@@ -44,11 +37,9 @@ const EditProduct = () => {
       setType(editProduct.type || "Food")
       setBestseller(editProduct.bestseller || false)
 
-      // Store original images
       if (editProduct.images && editProduct.images.length) {
         setOriginalImages(editProduct.images)
       }
-
     } catch (error) {
       console.error("Error parsing product data:", error)
       toast.error("Error loading product data")
@@ -70,27 +61,26 @@ const EditProduct = () => {
       formData.append("type", type)
       formData.append("bestseller", bestseller.toString())
 
-      // Append new images if selected
-      image1 && formData.append("image1", image1)
-      image2 && formData.append("image2", image2)
-      image3 && formData.append("image3", image3)
-      image4 && formData.append("image4", image4)
-
-      // Add original image IDs to retain them
-      originalImages.forEach((img, index) => {
-        formData.append(`originalImage${index + 1}`, img.url || "")
+      // Append new images if selected, keeping original if not replaced
+      images.forEach((image, index) => {
+        if (image) {
+          formData.append(`image${index + 1}`, image)
+        } else if (originalImages[index]) {
+          formData.append(`originalImage${index + 1}`, originalImages[index].url)
+        }
       })
 
       const response = await axios.post(
         `${backendUrl}/products/update/${productId}`,
         formData,
-        { withCredentials: true }
+        {
+          headers: { 'Content-Type': 'multipart/form-data' },
+          withCredentials: true
+        }
       )
 
       if (response.data.success) {
         toast.success(response.data.message)
-        // Clear localStorage and navigate back to list
-        // localStorage.removeItem('editProduct')
         setEditProduct(null)
         navigate('/admin/list')
       } else {
@@ -98,15 +88,33 @@ const EditProduct = () => {
       }
 
     } catch (error) {
-      console.log(error)
-      toast.error(error.message)
+      console.error(error)
+      toast.error(error.response?.data?.message || "Update failed")
     } finally {
       setIsSubmitting(false)
     }
   }
 
+  const handleImageChange = (index, file) => {
+    const newImages = [...images]
+    newImages[index] = file
+    setImages(newImages)
+  }
+
+  const handleImageDelete = (index) => {
+    // Remove image from either new images or original images
+    if (images[index]) {
+      const newImages = [...images]
+      newImages[index] = null
+      setImages(newImages)
+    } else if (originalImages[index]) {
+      const newOriginalImages = [...originalImages]
+      newOriginalImages.splice(index, 1)
+      setOriginalImages(newOriginalImages)
+    }
+  }
+
   const cancelEdit = () => {
-    // localStorage.removeItem('editProduct')
     setEditProduct(null)
     navigate('/list')
   }
@@ -118,85 +126,36 @@ const EditProduct = () => {
       <div>
         <p className='mb-2'>Product Images</p>
         <div className='flex gap-2'>
-          {originalImages.map((img, index) => (
+        {[0, 1, 2, 3].map((index) => (
             <div key={index} className='relative'>
-              <img
-                className='w-20 h-20 object-cover'
-                src={img?.url}
-                alt={`Product image ${index + 1}`}
-              />
-            </div>
-          ))}
-        </div>
-
-        <p className='mt-4 mb-2'>Upload New Images (optional)</p>
-        <div className='flex gap-2'>
-          <label htmlFor="image1">
-            <div className="relative w-20 h-20">
+              <label htmlFor={`image${index + 1}`} className='relative'>
                 <img
-                  className="w-full h-full object-cover cursor-pointer"
-                  src={image1 ? URL.createObjectURL(image1) : originalImages[0]?.url || assets.upload_area}
-                  alt=""
+                  className='w-20 h-20 object-cover cursor-pointer'
+                  src={
+                    images[index]
+                      ? URL.createObjectURL(images[index])
+                      : (originalImages[index]?.url || assets.upload_area)
+                  }
+                  alt={`Product image ${index + 1}`}
                 />
-                {image1 || originalImages[0]?.url ? (
-                  <button
-                    type="button"
-                    onClick={() => {
-                      if (image1) {
-                        setImage1(null);
-                      } else {
-                        setOriginalImages((prevImages) => {
-                          const updatedImages = [...prevImages];
-                          updatedImages[0] = null;
-                          return updatedImages;
-                        });
-                      }
-                    }}
-                    className="absolute top-0 right-0 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center"
-                  >
-                    X
-                  </button>
-                ) : null}
-             </div>
-            <input onChange={(e) => setImage1(e.target.files[0])} type="file" id="image1" hidden />
-          </label>
-          <label htmlFor="image2">
-            <div className="relative w-20 h-20">
-              <img
-                className="w-full h-full object-cover cursor-pointer"
-                src={image2 ? URL.createObjectURL(image2) : originalImages[1]?.url || assets.upload_area}
-                alt=""
-              />
-              {image1 || originalImages[1]?.url ? (
+                <input
+                  onChange={(e) => handleImageChange(index, e.target.files[0])}
+                  type="file"
+                  id={`image${index + 1}`}
+                  hidden
+                />
+              </label>
+              {(images[index] || originalImages[index]) && (
                 <button
                   type="button"
-                  onClick={() => {
-                    if (image2) {
-                      setImage2(null);
-                    } else {
-                      setOriginalImages((prevImages) => {
-                        const updatedImages = [...prevImages];
-                        updatedImages[0] = null;
-                        return updatedImages;
-                      });
-                    }
-                  }}
-                  className="absolute top-0 right-0 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center"
+                  onClick={() => handleImageDelete(index)}
+                  className='absolute top-0 right-0 bg-red-500 text-white rounded-full p-1 hover:bg-red-600'
                 >
-                  X
+                  <X size={16} />
                 </button>
-              ) : null}
+              )}
             </div>
-            <input onChange={(e) => setImage2(e.target.files[0])} type="file" id="image2" hidden />
-          </label>
-          <label htmlFor="image3">
-            <img className='w-20 cursor-pointer' src={!image3 ? originalImages[2]?.url || assets.upload_area : URL.createObjectURL(image3)} alt="" />
-            <input onChange={(e) => setImage3(e.target.files[0])} type="file" id="image3" hidden />
-          </label>
-          <label htmlFor="image4">
-            <img className='w-20 cursor-pointer' src={!image4 ? originalImages[3]?.url || assets.upload_area : URL.createObjectURL(image4)} alt="" />
-            <input onChange={(e) => setImage4(e.target.files[0])} type="file" id="image4" hidden />
-          </label>
+          ))}
         </div>
       </div>
 

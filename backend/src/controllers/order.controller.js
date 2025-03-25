@@ -5,6 +5,17 @@ import {User} from "../models/user.model.js";
 import {asyncHandler} from '../utils/asyncHandler.js'
 import {ApiError} from '../utils/ApiError.js'
 import {ApiResponse} from '../utils/ApiResponse.js'
+import nodemailer from 'nodemailer';
+
+
+
+const emailTransporter = nodemailer.createTransport({
+    service: process.env.EMAIL_SERVICE, // e.g., 'gmail'
+    auth: {
+        user: process.env.EMAIL_USERNAME,
+        pass: process.env.EMAIL_PASSWORD
+    }
+});
 
 
 
@@ -64,17 +75,95 @@ const userOrders = asyncHandler(async (req, res) => {
     )
 })
 
+const sendOrderEmail = async (order, user) => {
+    try {
+        // Validate inputs
+        if (!order || !user) {
+            throw new ApiError(400, "Order and user details are required");
+        }
+
+        // Calculate total items and total price
+        const totalItems = order.orderItems.reduce((sum, item) => sum + item.quantity, 0);
+        const totalPrice = order.orderItems.reduce((sum, item) => sum + (item.quantity * item.price), 0);
+
+        const mailOptions = {
+            from: user.email,
+            to: process.env.ADMIN_EMAIL, // Send to admin's email
+            subject: `New Order Placed - Order #${order._id}`,
+            html: `
+                <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+                    <h1 style="color: #333;">New Order Received</h1>
+
+                    <h2>Order Details</h2>
+                    <p><strong>Order ID:</strong> ${order._id}</p>
+                    <p><strong>Customer Name:</strong> ${user.username}</p>
+                    <p><strong>Customer Email:</strong> ${user.email}</p>
+                    <p><strong>Delivery Type:</strong> ${order.deliveryType}</p>
+                    <p><strong>Delivery Address:</strong> ${order.address}</p>
+
+                    <h3>Order Items</h3>
+                    <table style="width: 100%; border-collapse: collapse;">
+                        <thead>
+                            <tr style="background-color: #f2f2f2;">
+                                <th style="border: 1px solid #ddd; padding: 8px;">Product</th>
+                                <th style="border: 1px solid #ddd; padding: 8px;">Quantity</th>
+                                <th style="border: 1px solid #ddd; padding: 8px;">Price</th>
+                                <th style="border: 1px solid #ddd; padding: 8px;">Subtotal</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${order.orderItems.map(item => `
+                                <tr>
+                                    <td style="border: 1px solid #ddd; padding: 8px;">${item.name}</td>
+                                    <td style="border: 1px solid #ddd; padding: 8px; text-align: center;">${item.quantity}</td>
+                                    <td style="border: 1px solid #ddd; padding: 8px; text-align: right;">$${item.price.toFixed(2)}</td>
+                                    <td style="border: 1px solid #ddd; padding: 8px; text-align: right;">$${(item.quantity * item.price).toFixed(2)}</td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+
+                    <h3>Order Summary</h3>
+                    <p><strong>Total Items:</strong> ${totalItems}</p>
+                    <p><strong>Total Amount:</strong> $${totalPrice.toFixed(2)}</p>
+                    <p><strong>Payment Status:</strong> ${order.payment}</p>
+                    <p><strong>Order Status:</strong> ${order.status}</p>
+
+                    <p style="margin-top: 20px; color: #666;">
+                        Please process this order in the admin dashboard.
+                    </p>
+                </div>
+            `
+        };
+
+        // Send email
+        await emailTransporter.sendMail(mailOptions);
+
+        console.log(`Order email sent for Order #${order._id}`);
+    } catch (error) {
+        console.error("Error in sendOrderEmail:", error);
+        throw new ApiError(500, "Failed to send order confirmation email to admin");
+    }
+};
+
+
 // Placing orders
 const placeOrder = asyncHandler(async(req, res) => {
 
     const userId = req.user._id
     const { items, amount, address, deliveryType } = req.body
 
-    console.log("Received Order Data:", req.body);
+    // console.log("Received Order Data:", req.body);
 
     if(!userId){
         throw new ApiError(401, "Unauthorized access")
     }
+
+     // Find the user placing the order
+     const user = await User.findById(userId);
+     if (!user) {
+         throw new ApiError(404, "User not found");
+     }
 
     // Input validation
     if (!items || !amount) {
@@ -93,7 +182,7 @@ const placeOrder = asyncHandler(async(req, res) => {
      // Validate items exist in the database
      const validatedItems = await Promise.all(
         items.map(async (item) => {
-            console.log("Processing item:", item); // Debugging line
+            // console.log("Processing item:", item); // Debugging line
 
             if (!item._id) {
                 throw new ApiError(400, "Each item must have a productId");
@@ -114,7 +203,7 @@ const placeOrder = asyncHandler(async(req, res) => {
                 }
             };
      }));
-     console.log("Validated Items :", validatedItems)
+    //  console.log("Validated Items :", validatedItems)
 
     const order = await Order.create({
         customer: userId,
@@ -127,6 +216,12 @@ const placeOrder = asyncHandler(async(req, res) => {
     })
 
     await User.findByIdAndUpdate(userId, {cartData:{}})
+
+    try {
+        await sendOrderEmail(order, user);
+    } catch (emailError) {
+        console.error("Failed to send order email to admin:", emailError);
+     }
 
     return res
     .status(201)

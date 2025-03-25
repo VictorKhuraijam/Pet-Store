@@ -21,10 +21,7 @@ const emailTransporter = nodemailer.createTransport({
 
 
 
-// Generate verification token
-// const generateVerificationToken = () => {
-//     return crypto.randomBytes(32).toString("hex");
-// };
+
 
 // Generate OTP
 const generateOTP = () => {
