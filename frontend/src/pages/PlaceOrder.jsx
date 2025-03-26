@@ -21,7 +21,7 @@ const PlaceOrder = () => {
 
      // State for Delivery Method
     const [deliveryType, setDeliveryType] = useState('DELIVERY');
-
+    const [loading, setLoading] = useState(false)
     const [formData, setFormData] = useState({
         firstName: '',
         lastName: '',
@@ -37,9 +37,10 @@ const PlaceOrder = () => {
 
     const onSubmitHandler = async (event) => {
         event.preventDefault()
-        console.log("Cart Items:", cartItems);
-        console.log("Cart Items Type:", typeof cartItems);
-        console.log("Cart Items Instance Check:", Array.isArray(cartItems));
+        // console.log("Cart Items:", cartItems);
+        // console.log("Cart Items Type:", typeof cartItems);
+        // console.log("Cart Items Instance Check:", Array.isArray(cartItems));
+        setLoading(true)
 
         try {
 
@@ -63,6 +64,7 @@ const PlaceOrder = () => {
                 orderData,
                 { withCredentials: true }
             )
+            // console.log("Ordered response:", orderResponse)
             if(orderResponse.data.success){
                 dispatch(clearCart())
                 navigate('/profile')
@@ -71,6 +73,8 @@ const PlaceOrder = () => {
         } catch (error) {
             console.log(error)
             toast.error(error.message)
+        }finally{
+            setLoading(false)
         }
     }
 
@@ -170,10 +174,8 @@ const PlaceOrder = () => {
                     Store Pickup
                     </label>
                 </div>
-            </div>
 
-
-            {/* ------------- Right Side ------------------ */}
+                {/* ------------- Right Side ------------------ */}
             <div className='mt-8'>
 
                 <div className='mt-8 min-w-75'>
@@ -181,9 +183,13 @@ const PlaceOrder = () => {
                 </div>
 
                 <div className='w-full text-end mt-8'>
-                        <button type='submit' className='bg-black text-white px-16 py-3 text-sm rounded'>PLACE ORDER</button>
+                        <button type='submit' className='bg-black text-white px-16 py-3 text-sm rounded'>{loading ? "PLACING ORDER..." : "PLACE ORDER"}</button>
+                </div>
                 </div>
             </div>
+
+
+
         </form>
     )
 }

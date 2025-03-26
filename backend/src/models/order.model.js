@@ -14,6 +14,10 @@ const orderItemSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  price: {
+    type: Number,
+    default: 0
+  },
   image:{
     url: {
       type: String, // cloudinary url

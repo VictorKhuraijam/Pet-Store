@@ -9,7 +9,7 @@ const initialState = {
   products: [],
   loading: false,
   error: null,
-  // currency: '₹',
+  currency: '₹',
   // delivery_fee: 10,
   // search: '',
   // showSearch: false,

@@ -84,12 +84,12 @@ const sendOrderEmail = async (order, user) => {
 
         // Calculate total items and total price
         const totalItems = order.orderItems.reduce((sum, item) => sum + item.quantity, 0);
-        const totalPrice = order.orderItems.reduce((sum, item) => sum + (item.quantity * item.price), 0);
+
 
         const mailOptions = {
             from: user.email,
-            to: process.env.ADMIN_EMAIL, // Send to admin's email
-            subject: `New Order Placed - Order #${order._id}`,
+            to: process.env.EMAIL_FROM, // Send to admin's email
+            subject: `New Order Placed - by #${user.username}`,
             html: `
                 <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
                     <h1 style="color: #333;">New Order Received</h1>
@@ -99,7 +99,8 @@ const sendOrderEmail = async (order, user) => {
                     <p><strong>Customer Name:</strong> ${user.username}</p>
                     <p><strong>Customer Email:</strong> ${user.email}</p>
                     <p><strong>Delivery Type:</strong> ${order.deliveryType}</p>
-                    <p><strong>Delivery Address:</strong> ${order.address}</p>
+                    <p><strong>Delivery Address:</strong> ${order.address.street}</p>
+                    <p><strong>Customer Number:</strong> ${order.address.phone}</p>
 
                     <h3>Order Items</h3>
                     <table style="width: 100%; border-collapse: collapse;">
@@ -116,8 +117,8 @@ const sendOrderEmail = async (order, user) => {
                                 <tr>
                                     <td style="border: 1px solid #ddd; padding: 8px;">${item.name}</td>
                                     <td style="border: 1px solid #ddd; padding: 8px; text-align: center;">${item.quantity}</td>
-                                    <td style="border: 1px solid #ddd; padding: 8px; text-align: right;">$${item.price.toFixed(2)}</td>
-                                    <td style="border: 1px solid #ddd; padding: 8px; text-align: right;">$${(item.quantity * item.price).toFixed(2)}</td>
+                                    <td style="border: 1px solid #ddd; padding: 8px; text-align: right;"> ${item.price?.toFixed(2)}</td>
+                                    <td style="border: 1px solid #ddd; padding: 8px; text-align: right;"> ${(item.quantity * item.price)?.toFixed(2)}</td>
                                 </tr>
                             `).join('')}
                         </tbody>
@@ -125,7 +126,7 @@ const sendOrderEmail = async (order, user) => {
 
                     <h3>Order Summary</h3>
                     <p><strong>Total Items:</strong> ${totalItems}</p>
-                    <p><strong>Total Amount:</strong> $${totalPrice.toFixed(2)}</p>
+                    <p><strong>Total Amount:</strong> ₹ ${order.orderPrice}</p>
                     <p><strong>Payment Status:</strong> ${order.payment}</p>
                     <p><strong>Order Status:</strong> ${order.status}</p>
 
@@ -139,7 +140,7 @@ const sendOrderEmail = async (order, user) => {
         // Send email
         await emailTransporter.sendMail(mailOptions);
 
-        console.log(`Order email sent for Order #${order._id}`);
+        console.log(`Order email sent for Order #${user.username}`);
     } catch (error) {
         console.error("Error in sendOrderEmail:", error);
         throw new ApiError(500, "Failed to send order confirmation email to admin");
@@ -198,6 +199,7 @@ const placeOrder = asyncHandler(async(req, res) => {
                 productId: product._id,
                 quantity: item.quantity,
                 name: item.name,
+                price: item.price,
                 image: {
                     url: item.images[0]?.url
                 }
@@ -217,11 +219,9 @@ const placeOrder = asyncHandler(async(req, res) => {
 
     await User.findByIdAndUpdate(userId, {cartData:{}})
 
-    try {
-        await sendOrderEmail(order, user);
-    } catch (emailError) {
-        console.error("Failed to send order email to admin:", emailError);
-     }
+
+    await sendOrderEmail(order, user);
+
 
     return res
     .status(201)

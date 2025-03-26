@@ -1,11 +1,12 @@
 import  { useEffect, useState } from 'react'
-import { useParams } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import { assets } from '../assets/assets';
 import {RelatedProducts} from '../components/index';
 import { useSelector, useDispatch } from 'react-redux';
 import { fetchProductById } from '../store/shopSlice';
 import { addToCart, fetchCart } from '../store/cartSlice';
 import { toast } from 'react-toastify';
+
 
 const Product = () => {
 
@@ -15,7 +16,7 @@ const Product = () => {
   const [loading, setLoading] = useState(true)
 
   const isAuth = useSelector((state) => state.user.isAuthenticated)
-
+  const navigate = useNavigate()
 
   const cartItems = useSelector((state) => state.cart.items);
 
@@ -51,7 +52,6 @@ const Product = () => {
     if (!productData || !productData._id) {
       return;
     }
-
 
     // If cart isn't initialized, fetch it first
     if (!cartItems) {
@@ -106,7 +106,7 @@ const Product = () => {
           <p className='mt-5 text-3xl font-medium'>{currency} {}  {productData.price}</p>
           <p className='mt-5 text-gray-500 md:w-4/5'>{productData.description}</p>
 
-          <button onClick={isAuth ? handleAddToCart : ()=>(toast("please log in")) } className='bg-black text-white px-8 py-3 text-sm mt-5 active:bg-gray-700 rounded'>ADD TO CART</button>
+          <button onClick={isAuth ? handleAddToCart : ()=>(navigate('/login')) } className='bg-black text-white px-8 py-3 text-sm mt-5 active:bg-gray-700 rounded'>ADD TO CART</button>
           <hr className='mt-8 sm:w-4/5' />
           <div className='text-sm text-gray-500 mt-5 flex flex-col gap-1'>
               <p>100% Original product.</p>
