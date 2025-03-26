@@ -58,7 +58,7 @@ const List = () => {
 
   const handleEdit = (product) => {
     setEditProduct(product);
-    navigate('/edit-product')
+    navigate(`/edit-product/${product._id}`)
   }
 
   useEffect(() => {

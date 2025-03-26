@@ -10,7 +10,7 @@ import Login from './components/Login'
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import StoreStatus from './pages/StoreStatus'
-import EditProduct from './pages/EditProduct'
+import EditProduct from './components/EditProduct'
 
 
 
@@ -58,7 +58,7 @@ const App = () => {
           <Route path="/add" element={<Add />} />
           <Route path="/list" element={<List />} />
           <Route path="/orders" element={<Orders />} />
-          <Route path="/edit-product" element={<EditProduct />} />
+          <Route path="/edit-product/:productId" element={<EditProduct />} />
           <Route path="/" element={<Navigate to="/status" replace />} />
         </Route>
 
