@@ -94,12 +94,12 @@ const List = () => {
               key={index}
             >
               <div className="flex items-center">
-                <img className="w-12 h-15 object-contain" src={item.images[0].url} alt="" />
+                <img className="w-12 h-15 object-contain" src={item.images[0]?.url} alt="" />
               </div>
               <div className="overflow-hidden text-ellipsis whitespace-nowrap">{item.name}</div>
               <div>{item.category}</div>
               <div>
-                {currency}
+                {currency}{" "}
                 {item.price}
               </div>
               <div className="flex flex-col mr-3  md:flex-row items-center justify-end gap-1">

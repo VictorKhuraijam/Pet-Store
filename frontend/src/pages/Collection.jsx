@@ -1,4 +1,4 @@
-import {useCallback, useEffect, useState } from 'react'
+import {useCallback, useEffect, useMemo, useState } from 'react'
 import { assets } from '../assets/assets';
 import {Pagination, ProductItem, SearchBar, Title} from '../components/index';
 import { fetchProducts} from '../store/shopSlice';
@@ -12,18 +12,37 @@ const Collection = () => {
 
   const [search, setSearch] = useState([]);
   const [showFilter,setShowFilter] = useState(false);
-  const [filterProducts,setFilterProducts] = useState([]);
   const [category,setCategory] = useState([]);
   const [type,setType] = useState([]);
 
-
   const [currentPage, setCurrentPage] = useState(1);
-  const [productsPerPage] = useState(10); // Display 20 products per page
+  const [productsPerPage] = useState(10); // Display 10 products per page
+
+  const filteredProducts = useMemo(() => {
+    let productsCopy = search.length > 0 ? search : [...products];
+
+    if (category.length > 0) {
+      productsCopy = productsCopy.filter((item) => category.includes(item.category));
+    }
+
+    if (type.length > 0) {
+      productsCopy = productsCopy.filter((item) => type.includes(item.type));
+    }
+
+    return productsCopy
+
+  },[category,type, products, search])
+
   const indexOfLastProduct = currentPage * productsPerPage;
   const indexOfFirstProduct = indexOfLastProduct - productsPerPage;
-  const currentProducts = filterProducts.slice(indexOfFirstProduct, indexOfLastProduct);
-  const totalPages = Math.ceil(filterProducts.length / productsPerPage);
+  const currentProducts = filteredProducts.slice(indexOfFirstProduct, indexOfLastProduct);
+  const totalPages = Math.ceil(filteredProducts.length / productsPerPage);
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
+
+  // Reset to first page when filters change
+  useEffect(() => {
+    setCurrentPage(1)
+  }, [filteredProducts])
 
 
   const toggleCategory = (e) =>{
@@ -56,19 +75,19 @@ const Collection = () => {
 
 
 
-  useEffect(() => {
-    let productsCopy = search.length > 0 ? search : [...products];
+  // useEffect(() => {
+  //   let productsCopy = search.length > 0 ? search : [...products];
 
-    if (category.length > 0) {
-      productsCopy = productsCopy.filter((item) => category.includes(item.category));
-    }
+  //   if (category.length > 0) {
+  //     productsCopy = productsCopy.filter((item) => category.includes(item.category));
+  //   }
 
-    if (type.length > 0) {
-      productsCopy = productsCopy.filter((item) => type.includes(item.type));
-    }
+  //   if (type.length > 0) {
+  //     productsCopy = productsCopy.filter((item) => type.includes(item.type));
+  //   }
 
-    setFilterProducts(productsCopy);
-  }, [category, type, products, search]);
+  //   setFilterProducts(productsCopy);
+  // }, [category, type, products, search]);
 
 
 

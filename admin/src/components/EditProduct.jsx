@@ -176,7 +176,7 @@ const EditProduct = () => {
         <textarea
           onChange={(e) => setDescription(e.target.value)}
           value={description}
-          className='w-full max-w-[500px] px-3 py-2'
+          className='w-full max-w-[500px] px-3 py-2 h-[200px]'
           type="text"
           placeholder='Write content here'
           required
