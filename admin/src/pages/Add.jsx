@@ -3,10 +3,12 @@ import {assets} from '../assets/assets'
 import axios from 'axios'
 import { toast } from 'react-toastify'
 import AuthContext from '../context/AuthContext'
+import { useNavigate } from 'react-router-dom'
 
 const Add = () => {
 
   const {backendUrl} = useContext(AuthContext)
+  const navigate = useNavigate()
 
   const [image1,setImage1] = useState(false)
   const [image2,setImage2] = useState(false)
@@ -55,6 +57,7 @@ const Add = () => {
         setImage3(false)
         setImage4(false)
         setPrice('')
+        navigate('/list')
       } else {
         toast.error(response.data.message)
       }
@@ -64,6 +67,7 @@ const Add = () => {
       toast.error(error.message)
     } finally{
       setIsSubmitting(false)
+
     }
    }
 
@@ -74,7 +78,7 @@ const Add = () => {
 
           <div className='flex gap-2'>
             <label htmlFor="image1">
-              <img className='w-20 cursor-pointer' src={!image1 ? assets.upload_area : URL.createObjectURL(image1)} alt="" />
+              <img className='w-20 cursor-pointer object-contain' src={!image1 ? assets.upload_area : URL.createObjectURL(image1)} alt="" />
               <input onChange={(e)=>setImage1(e.target.files[0])} type="file" id="image1" hidden/>
             </label>
             <label htmlFor="image2">
@@ -146,7 +150,7 @@ const Add = () => {
           <label className='cursor-pointer' htmlFor="bestseller">Add to bestseller</label>
         </div>
 
-        <button type="submit" className='w-28 py-3 mt-4 bg-black text-white'>{isSubmitting ? "ADDING..." : "ADD"}</button>
+        <button type="submit" className='w-28 py-3 mt-4 bg-black text-white rounded'>{isSubmitting ? "ADDING..." : "ADD"}</button>
 
     </form>
   )

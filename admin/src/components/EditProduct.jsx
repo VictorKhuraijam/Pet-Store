@@ -130,7 +130,7 @@ const EditProduct = () => {
             <div key={index} className='relative'>
               <label htmlFor={`image${index + 1}`} className='relative'>
                 <img
-                  className='w-20 h-20 object-cover cursor-pointer'
+                  className='w-20 h-20 object-contain cursor-pointer'
                   src={
                     images[index]
                       ? URL.createObjectURL(images[index])
