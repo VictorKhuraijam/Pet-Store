@@ -56,11 +56,11 @@ export const fetchProducts = () => async (dispatch) => {
     if (response.data.success) {
       console.log("Response from backend for products list: ",response.data)
       const products = response.data.data.products;
-      console.log("the Products send to redux: ", products)
+      // console.log("the Products send to redux: ", products)
       dispatch(fetchProductsSuccess({ products }));
     }
   } catch (error) {
-    console.error(error)
+    // console.error(error)
     toast.error("Server down. Please try again later");
     dispatch(fetchProductsFailure({ error: error.message }));
   }
