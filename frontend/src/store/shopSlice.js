@@ -30,7 +30,7 @@ const shopSlice = createSlice({
       const existingProductIds = state.products.map((product) => product._id);
       const updatedProducts = newProducts.filter(
         (newProduct) => !existingProductIds.includes(newProduct._id)
-      );
+      ); //Filters out products already in the state (deduplication)
 
       if (updatedProducts.length > 0) {
         state.products.push(...updatedProducts);
@@ -54,7 +54,7 @@ export const fetchProducts = () => async (dispatch) => {
   try {
     const response = await axios.get(`${backendUrl}/products/list`);
     if (response.data.success) {
-      console.log("Response from backend for products list: ",response.data)
+      // console.log("Response from backend for products list: ",response.data)
       const products = response.data.data.products;
       // console.log("the Products send to redux: ", products)
       dispatch(fetchProductsSuccess({ products }));
