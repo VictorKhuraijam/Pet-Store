@@ -1,9 +1,10 @@
 import { createSlice } from '@reduxjs/toolkit';
 import axios from 'axios';
 import { toast } from 'react-toastify';
+import {backendUrl} from './consts'
 // import { assets } from '../assets/assets';
 
-const backendUrl = import.meta.env.VITE_BACKEND_URL;
+// const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
 const initialState = {
   products: [],

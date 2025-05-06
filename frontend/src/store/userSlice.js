@@ -2,10 +2,10 @@ import { createSlice } from '@reduxjs/toolkit';
 import { toast } from 'react-toastify';
 import axios from 'axios';
 import { clearCart, fetchCart, fetchCartFulfilled } from './cartSlice';
+import { backendUrl } from './consts';
 
 
-
-const backendUrl = import.meta.env.VITE_BACKEND_URL;
+// const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
 
 // Custom Thunks
@@ -15,7 +15,7 @@ export const loginUser = (email, password) => async (dispatch) => {
     const response = await axios.post(
       `${backendUrl}/users/login`,
       { email, password },
-      { withCredentials: true } 
+      { withCredentials: true }
     );
 
     if (response.data.success) {
