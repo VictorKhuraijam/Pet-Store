@@ -68,7 +68,7 @@ export const checkAuthStatus = () => async (dispatch) => {
       { withCredentials: true }
     );
 
-    console.log("Auth check response:", response)
+    // console.log("Auth check response:", response)
 
     if (response.status === 200) {
 
