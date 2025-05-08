@@ -19,7 +19,7 @@ export const loginUser = (email, password) => async (dispatch) => {
     );
 
     if (response.data.success) {
-      console.log("User login response :",response)
+      // console.log("User login response :",response)
       dispatch(setUser(response.data.data));
       dispatch(setAuth(true));
 

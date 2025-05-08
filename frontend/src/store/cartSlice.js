@@ -1,8 +1,9 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { toast } from "react-toastify";
 import axios from 'axios';
+import {backendUrl} from './consts'
 
-const backendUrl = import.meta.env.VITE_BACKEND_URL;
+// const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
 // Custom Thunks
 export const fetchCart = () => async (dispatch) => {
@@ -11,7 +12,7 @@ export const fetchCart = () => async (dispatch) => {
     const response = await axios.get(`${backendUrl}/cart/get`, {
       withCredentials: true // Important for sending cookies
     });
-      console.log('Fetched cart response:',response.data)
+      // console.log('Fetched cart response:',response.data)
 
      if(response.data.success){
       dispatch(fetchCartFulfilled(response.data.data));
@@ -90,7 +91,7 @@ const cartSlice = createSlice({
     },
     updateQuantityFulfilled: (state, action) => {
       const { itemId, quantity } = action.payload;
-      console.log('Updating quantity in state:', itemId, quantity);
+      // console.log('Updating quantity in state:', itemId, quantity);
       if (quantity > 0) {
         state.items[itemId] = quantity;
       } else {
