@@ -21,7 +21,7 @@ const App = () => {
 
   useEffect(() => {
     if (loading) return;
-    console.log("Is Authenticated:", isAuthenticated)
+    // console.log("Is Authenticated:", isAuthenticated)
     if(!isAuthenticated){
       navigate('/login' )
     }

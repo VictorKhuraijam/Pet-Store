@@ -22,7 +22,7 @@ const startServer = async () => {
       });
 
       app.get('/test-cors', (req, res) => {
-        console.log('Full request headers:', req.headers);
+        // console.log('Full request headers:', req.headers);
         res.json({ message: 'CORS test successful' });
       });
 
@@ -37,7 +37,3 @@ const startServer = async () => {
 };
 
 startServer();
-
-
-
-

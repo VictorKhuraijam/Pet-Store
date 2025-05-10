@@ -29,7 +29,7 @@ const Login = () => {
             await loginAdmin(email, password)
 
         } catch (error) {
-            console.log(error);
+            // console.log(error);
             toast.error(error.message)
         }
     }

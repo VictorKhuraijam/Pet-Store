@@ -40,7 +40,7 @@ const Cart = () => {
   const handleQuantityChange = (itemId, value) => {
 
     const newQuantity = Math.max(1, parseInt(value) || 1);
-    console.log('Dispatching updateQuantity with:', itemId, newQuantity);
+    // console.log('Dispatching updateQuantity with:', itemId, newQuantity);
       dispatch(updateQuantity( itemId, newQuantity ))
 
       setCartData(prevData => prevData.map(item =>
@@ -51,7 +51,7 @@ const Cart = () => {
 
   const handleRemoveItem = (itemId) => {
 
-    console.log ('Removing item:', itemId);
+    // console.log ('Removing item:', itemId);
     dispatch(updateQuantity( itemId,  0 ))
 
     setCartData(prevData => prevData.filter(item => item._id !== itemId));
@@ -76,7 +76,7 @@ const Cart = () => {
                   cartData.map((item) => {
 
                     const productData = products.find((product) => product._id === item._id);
-                    console.log("product data is :", productData)
+                    // console.log("product data is :", productData)
 
                     if (!productData) return null
 

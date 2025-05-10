@@ -13,7 +13,7 @@ const cleanupUnverifiedUsers = async () => {
           createdAt: { $lte: twentyFourHoursAgo },
       });
 
-      console.log(`${result.deletedCount} unverified users deleted.`);
+      // console.log(`${result.deletedCount} unverified users deleted.`);
   } catch (error) {
       console.error("Error during cleanup:", error.message);
   }
@@ -50,14 +50,14 @@ const trimUserOrders = async () => {
           const result = await Order.deleteMany({ _id: { $in: orderIds } });
           totalOrdersDeleted += result.deletedCount;
 
-          console.log(`Deleted ${result.deletedCount} oldest paid orders for user ${user._id}`);
+          // console.log(`Deleted ${result.deletedCount} oldest paid orders for user ${user._id}`);
         } else {
           console.log(`User ${user._id} has more than 15 orders but no paid orders to delete`);
         }
       }
     }
 
-    console.log(`Trimmed orders: ${totalOrdersDeleted} oldest PAID orders removed.`);
+    // console.log(`Trimmed orders: ${totalOrdersDeleted} oldest PAID orders removed.`);
   } catch (error) {
     console.error("Error during order trimming:", error.message);
   }

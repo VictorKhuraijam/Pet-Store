@@ -140,7 +140,7 @@ const sendOrderEmail = async (order, user) => {
         // Send email
         await emailTransporter.sendMail(mailOptions);
 
-        console.log(`Order email sent for Order #${user.username}`);
+        // console.log(`Order email sent for Order #${user.username}`);
     } catch (error) {
         console.error("Error in sendOrderEmail:", error);
         throw new ApiError(500, "Failed to send order confirmation email to admin");

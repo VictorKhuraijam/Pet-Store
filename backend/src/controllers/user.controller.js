@@ -597,8 +597,8 @@ const checkAuthStatus = asyncHandler(async (req, res) => {
             }
 
             if (user.refreshToken !== refreshToken) {
-                console.log("Stored Token:", user.refreshToken);
-                console.log("Received Token:", refreshToken);
+                // console.log("Stored Token:", user.refreshToken);
+                // console.log("Received Token:", refreshToken);
 
                 throw new ApiError(401, "Refresh token mismatch. Possible session hijacking.");
             }
@@ -606,10 +606,10 @@ const checkAuthStatus = asyncHandler(async (req, res) => {
             //  Generate new access & refresh tokens
             const { accessToken: newAccessToken, refreshToken: newRefreshToken } = await generateAccessTokenAndRefreshToken(user._id);
 
-            console.log("New Refresh Token:", newRefreshToken);
+            // console.log("New Refresh Token:", newRefreshToken);
             user = await User.findById(decodedRefreshToken._id).select("-password ");
 
-            console.log("User after refresh token refreshed :", user)
+            // console.log("User after refresh token refreshed :", user)
 
             return res
                 .status(200)

@@ -23,14 +23,14 @@ const List = () => {
       )
       if (response.data.success) {
         setList(response.data.data.products.reverse());
-        console.log("List of products :", list)
+        // console.log("List of products :", list)
       }
       else {
         toast.error(response.data.message)
       }
 
     } catch (error) {
-      console.log(error)
+      // console.log(error)
       toast.error(error.message)
     }
   }
@@ -61,7 +61,7 @@ const List = () => {
       }
 
     } catch (error) {
-      console.log(error)
+      // console.log(error)
       toast.error(error.message)
     } finally{
       setIsDeletingId(null)

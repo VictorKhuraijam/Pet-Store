@@ -26,7 +26,7 @@ const Orders = () => {
       const response = await axios.get(
         `${backendUrl}/orders/userOrders`,
       { withCredentials: true})
-      console.log("order response",response.data)
+      // console.log("order response",response.data)
 
       if (response.data.success) {
         const allOrdersItem = [];
@@ -40,7 +40,7 @@ const Orders = () => {
           });
         });
         setorderData(allOrdersItem.reverse())
-        console.log("Ordered data is:",orderData)
+        // console.log("Ordered data is:",orderData)
       }
 
     } catch (error) {
