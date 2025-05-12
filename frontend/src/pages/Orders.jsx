@@ -3,13 +3,11 @@ import Title from '../components/Title';
 import axios from 'axios';
 import {useSelector} from 'react-redux'
 import { useNavigate } from 'react-router-dom';
+import { backendUrl } from '../store/consts';
 
 
 const Orders = () => {
 
-
-  const backendUrl = import.meta.env.VITE_BACKEND_URL;
-  // const { backendUrl, token , currency} = useContext(ShopContext);
   const isAuth = useSelector((state) => state.user.isAuthenticated)
   const currency = useSelector((state) => state.shop.currency)
   const navigate = useNavigate()
