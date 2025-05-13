@@ -1,17 +1,11 @@
 import  {useEffect, useState } from 'react'
 import {Title, ProductItem} from './index';
-// import { fetchProducts } from '../store/shopSlice';
 import { useSelector} from 'react-redux';
 
 const LatestCollection = () => {
 
-    // const dispatch = useDispatch();
     const products = useSelector((state) => state.shop.products)
     const [latestProducts,setLatestProducts] = useState([]);
-
-    // useEffect(() => {
-    //   dispatch(fetchProducts())
-    // },[dispatch])
 
     useEffect(()=>{
         setLatestProducts(products);
@@ -34,7 +28,7 @@ const LatestCollection = () => {
             <ProductItem
               key={index}
               id={item._id}
-              image={item.images[0].url}
+              image={item.images[0]?.url}
               name={item.name}
               price={item.price}
             />

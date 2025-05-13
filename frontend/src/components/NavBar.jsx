@@ -1,8 +1,8 @@
 import { Link, NavLink } from "react-router-dom";
 import { assets } from "../assets/assets";
 import { useState, useEffect, useRef } from "react";
-import {  logoutUser, resetUser} from '../store/userSlice'
-import {   getCartCount} from '../store/cartSlice'
+import { logoutUser, resetUser} from '../store/userSlice'
+import { getCartCount} from '../store/cartSlice'
 import { useNavigate, useLocation } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 
@@ -14,9 +14,7 @@ function Navbar() {
     const profileRef = useRef(null)
 
     const cartCount = useSelector(getCartCount) || 0;
-    const isAuthenticated = useSelector((state) => state.user.isAuthenticated);
-    const user = useSelector((state) => state.user.user);
-    const loading = useSelector((state) => state.user.loading);
+    const {loading, isAuthenticated, user} = useSelector((state) => state.user);
 
     const [visible, setVisible] = useState(false)
     const [dropdownVisible, setDropdownVisible] = useState(false);
