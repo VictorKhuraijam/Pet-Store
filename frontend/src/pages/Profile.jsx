@@ -13,7 +13,6 @@ const Profile = () => {
   const { user, isAuthenticated, loading } = useSelector((state) => state.user);
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  // const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
   const [isDeleting, setIsDeleting] = useState(false);
   const [activeTab, setActiveTab] = useState("orders");
