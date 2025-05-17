@@ -1,4 +1,4 @@
-import {  useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import Title from '../components/Title';
 import axios from 'axios';
 import {useSelector} from 'react-redux'
@@ -23,7 +23,7 @@ const Orders = () => {
 
       const response = await axios.get(
         `${backendUrl}/orders/userOrders`,
-      { withCredentials: true})
+         { withCredentials: true})
       // console.log("order response",response.data)
 
       if (response.data.success) {
@@ -64,10 +64,10 @@ const Orders = () => {
 
         {loading ? (
           <div className="text-center py-10">
-          <p className="text-gray-600 text-lg">Loading your orders...</p>
-        </div>
-        ) : (<div>
-            {orderData.length > 0 ? (orderData.map((item,index) => (
+            <p className="text-gray-600 text-lg">Loading your orders...</p>
+          </div>
+          ) : (<div>
+              {orderData.length > 0 ? (orderData.map((item,index) => (
                 <div key={index} className='py-4 border-t border-b text-gray-700 flex flex-col md:flex-row md:items-center md:justify-between gap-4'>
                     <div className='flex items-start gap-6 text-sm'>
                         <img className='w-16 sm:w-20' src={item.productId?.images[0]?.url || null} alt="" />

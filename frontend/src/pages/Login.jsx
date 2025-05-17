@@ -1,4 +1,4 @@
-import  {   useState } from 'react'
+import  { useState } from 'react'
 import { toast } from 'react-toastify';
 import { Link, useNavigate } from 'react-router-dom';
 import { loginUser} from '../store/userSlice'
@@ -24,15 +24,7 @@ const Login = () => {
               toast.success("Login successful")
                navigate("/")
             }
-            // const success = await dispatch(loginUser(email, password)); // Await the response
-
-        // if (success) {
-        //   toast.success("Login successful");
-        //   navigate("/");
-        // } else {
-        //   toast.error("Invalid email or password"); // Show error if login fails
-        // }
-
+            
       } catch (error) {
         console.log(error)
         toast.error("Login failed")

@@ -21,7 +21,7 @@ const ForgotPassword = () => {
   const [confirmPasswordVisible, setConfirmPasswordVisible] = useState(false)
 
   const [timeLeft, setTimeLeft] = useState(120)
-   const [showResend, setShowResend] = useState(false)
+  const [showResend, setShowResend] = useState(false)
 
    useEffect(() => {
      if (!isOtpSent || timeLeft <= 0) return
