@@ -12,7 +12,8 @@ Currently, two official plugins are available:
 An AI-enhanced eCommerce platform for pet essentials, built with the **MERN Stack** (MongoDB, Express.js, React.js, Node.js).
 PetPaw makes shopping for your furry friends easy, seamless, and delightful!
 
-![PetPaw Banner](https://via.placeholder.com/1000x300?text=PetPaw+eCommerce+Pet+Store)
+<img src="https://pet-store-d7dr.vercel.app/assets/logo-WbDdCb1l.png" alt="PetPaw Banner" width="200" />
+
 
 ---
 
@@ -48,6 +49,3 @@ PetPaw makes shopping for your furry friends easy, seamless, and delightful!
 ---
 
 ## 📂 Folder Structure
-
-
-
