@@ -7,7 +7,7 @@ Currently, two official plugins are available:
 - [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
 - [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
 
-# 🐾 PetPaw - eCommerce Pet Store 🛒
+# 🐾 RoyaleRex - eCommerce Pet Store 🛒
 
 An AI-enhanced eCommerce platform for pet essentials, built with the **MERN Stack** (MongoDB, Express.js, React.js, Node.js).
 PetPaw makes shopping for your furry friends easy, seamless, and delightful!
