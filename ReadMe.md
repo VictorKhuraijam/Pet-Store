@@ -9,10 +9,10 @@ Currently, two official plugins are available:
 
 # 🐾 RoyaleRex - eCommerce Pet Store 🛒
 
-An AI-enhanced eCommerce platform for pet essentials, built with the **MERN Stack** (MongoDB, Express.js, React.js, Node.js).
-PetPaw makes shopping for your furry friends easy, seamless, and delightful!
+An  eCommerce platform for pet essentials, built with the **MERN Stack** (MongoDB, Express.js, React.js, Node.js).
+RoyaleRex makes shopping for your furry friends easy, seamless, and delightful!
 
-<img src="https://pet-store-d7dr.vercel.app/assets/logo-WbDdCb1l.png" alt="PetPaw Banner" width="200" />
+<img src="https://pet-store-d7dr.vercel.app/assets/logo-WbDdCb1l.png" alt="RoyaleRex Banner" width="200" />
 
 
 ---
