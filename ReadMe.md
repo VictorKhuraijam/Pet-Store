@@ -32,8 +32,8 @@ RoyaleRex makes shopping for your furry friends easy, seamless, and delightful!
 
 | Frontend      | Backend         | Database   | Auth         | Deployment       |
 |---------------|-----------------|------------|--------------|------------------|
-| React.js      | Node.js         | MongoDB    | JWT + bcrypt | Vercel / Netlify |
-| Tailwind CSS  | Express.js      | Mongoose   |              | Render / Railway |
+| React.js      | Node.js         | MongoDB    | JWT + bcrypt | Vercel  |
+| Tailwind CSS  | Express.js      | Mongoose   |              | Render  |
 
 ---
 
