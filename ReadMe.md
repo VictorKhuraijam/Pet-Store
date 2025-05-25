@@ -17,7 +17,7 @@ RoyaleRex makes shopping for your furry friends easy, seamless, and delightful!
 - 🔒 User authentication (register/login/logout)
 - 🧾 Order history and profile management
 - 🧑‍💻 Admin dashboard: manage products, orders, and users
-- 🧠 Optional AI-powered recommendations (future scope)
+
 
 ---
 
