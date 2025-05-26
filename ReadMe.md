@@ -30,6 +30,16 @@ RoyaleRex makes shopping for your furry friends easy, seamless, and delightful!
 
 ---
 
+## Frontend
+- Used Redux for state management
+- Used context for admin state management
+
+---
+
+## Backend
+- Used Cron Job for data cleaning
+- Used JWT and bcrypt for authentication
+
 ## 📸 Screenshots
 
 > _Add your own screenshots or GIFs here_
