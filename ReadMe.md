@@ -39,6 +39,8 @@ RoyaleRex makes shopping for your furry friends easy, seamless, and delightful!
 ## Backend
 - Used Cron Job for data cleaning
 - Used JWT and bcrypt for authentication
+- Used Cloudinary for image storage.
+- Used 
 
 ## 📸 Screenshots
 
