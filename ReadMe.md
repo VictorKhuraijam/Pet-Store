@@ -33,6 +33,7 @@ RoyaleRex makes shopping for your furry friends easy, seamless, and delightful!
 ## Frontend
 - Used Redux for state management
 - Used context for admin state management
+- Used Axios for API connection
 
 ---
 
@@ -40,7 +41,7 @@ RoyaleRex makes shopping for your furry friends easy, seamless, and delightful!
 - Used Cron Job for data cleaning
 - Used JWT and bcrypt for authentication
 - Used Cloudinary for image storage.
-- Used 
+- Used
 
 ## 📸 Screenshots
 
