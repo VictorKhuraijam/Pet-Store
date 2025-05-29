@@ -33,7 +33,7 @@ RoyaleRex makes shopping for your furry friends easy, seamless, and delightful!
 ## Frontend
 - Used Redux for state management
 - Used context for admin state management
-- Used Axios for API connection
+- Used Axios for API connection 
 
 ---
 
