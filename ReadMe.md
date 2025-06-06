@@ -2,8 +2,9 @@
 
 # 🐾 RoyaleRex - eCommerce Pet Store 🛒
 
-An  eCommerce platform for pet essentials, built with the **MERN Stack** (MongoDB, Express.js, React.js, Node.js).
+  An  eCommerce platform for pet essentials, built with the **MERN Stack** (MongoDB, Express.js, React.js, Node.js).
 RoyaleRex makes shopping for your furry friends easy, seamless, and delightful!
+  Front end is deployed on vercel and backend is deployed on render(has one minute delay to start server if there is no activity)
 
 <img src="https://pet-store-d7dr.vercel.app/assets/logo-WbDdCb1l.png" alt="RoyaleRex Banner" width="200" />
 
@@ -13,7 +14,7 @@ RoyaleRex makes shopping for your furry friends easy, seamless, and delightful!
 ## 🚀 Features
 
 - 🐶 Browse & search pet products (food, toys, accessories, etc.)
-- 🛒 Add to cart, wishlist, and checkout flow
+- 🛒 Add to cart
 - 🔒 User authentication (register/login/logout)
 - 🧾 Order history and profile management
 - 🧑‍💻 Admin dashboard: manage products, orders, and users
@@ -33,7 +34,7 @@ RoyaleRex makes shopping for your furry friends easy, seamless, and delightful!
 ## Frontend
 - Used Redux for state management
 - Used context for admin state management
-- Used Axios for API connection 
+- Used Axios for API connection
 
 ---
 
@@ -41,7 +42,7 @@ RoyaleRex makes shopping for your furry friends easy, seamless, and delightful!
 - Used Cron Job for data cleaning
 - Used JWT and bcrypt for authentication
 - Used Cloudinary for image storage.
-- Used
+
 
 ## 📸 Screenshots
 
@@ -54,4 +55,7 @@ RoyaleRex makes shopping for your furry friends easy, seamless, and delightful!
 
 ---
 
-## 📂 Folder Structure
+## 📂 Versions
+
+- Frist version.
+- Second version(Add customer reviews, payment system)
