@@ -4,6 +4,7 @@
 
   An  eCommerce platform for pet essentials, built with the **MERN Stack** (MongoDB, Express.js, React.js, Node.js).
 RoyaleRex makes shopping for your furry friends easy, seamless, and delightful!
+  This web app was built in mind with the purpose to serve for a smaller target audience (2 districts) and maybe will expand afterwards
   Front end is deployed on vercel and backend is deployed on render(has one minute delay to start server if there is no activity)
 
 <img src="https://pet-store-d7dr.vercel.app/assets/logo-WbDdCb1l.png" alt="RoyaleRex Banner" width="200" />
