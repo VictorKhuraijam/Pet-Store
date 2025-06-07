@@ -49,13 +49,26 @@ RoyaleRex makes shopping for your furry friends easy, seamless, and delightful!
 > _Add your own screenshots or GIFs here_
 
 - ✅ Home Page
+
+  ![Home Page](./Screenshots/homepage.PNG)
+
 - ✅ Product Detail
+
+  ![Product Detail](./Screenshots/ProductDetails.PNG)
+
 - ✅ Cart & Checkout
+
+  ![Cart & CheckOUt](./Screenshots/AddToCartAndCheckOUt.PNG)
+
 - ✅ Admin Dashboard
+
+  ![AdminDashboard](./Screenshots/AdminDashboard.PNG)
 
 ---
 
 ## 📂 Versions
 
 - Frist version.
-- Second version(Add customer reviews, payment system)
+  (Current)
+- Second version
+  Will add customer reviews, payment system
