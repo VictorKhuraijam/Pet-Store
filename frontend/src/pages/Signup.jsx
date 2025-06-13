@@ -188,15 +188,7 @@ const Signup = () => {
             </button>
           </div>
 
-          {/* <input
-            name="password"
-            onChange={handleChange}
-            value={formData.password}
-            type="password"
-            className="w-full px-3 py-2 border border-gray-800"
-            placeholder="Password"
-            required
-          /> */}
+          
 
           <div className="w-full flex justify-end text-sm mt-[-8px]">
             <Link to="/login" className="cursor-pointer">
