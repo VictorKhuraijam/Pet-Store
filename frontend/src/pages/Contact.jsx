@@ -14,12 +14,12 @@ const Contact = () => {
         <div className='flex flex-col justify-center items-start gap-6'>
           <p className='font-semibold text-xl text-gray-600'>Our Store</p>
           <p className=' text-gray-500'>Sangaiprou Mamang Leikai, Ghari <br />  Imphal-795140 , Manipur, INDIA</p>
-          <p className=' text-gray-500'>Tel: (123) 456-7890 <br /> Email: admin@petstore.com</p>
+          <p className=' text-gray-500'>Tel: (123) 456-7890 <br /> Email: RoyaleREx@petstore.com</p>
 
         </div>
       </div>
 
-      
+
     </div>
   )
 }
