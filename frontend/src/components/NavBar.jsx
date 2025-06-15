@@ -125,19 +125,16 @@ function Navbar() {
             to='/collection'
             className={`flex flex-col items-center gap-1 ${isActive('/collection')}`}>
             <p>REX COLLECTION</p>
-            {/* <hr className='w-2/4 border-none h-[1.5px] bg-gray-700 hidden' /> */}
         </NavLink>
         <NavLink
             to='/about'
             className={`flex flex-col items-center gap-1 ${isActive('/about')}`}>
             <p>ABOUT</p>
-            {/* <hr className='w-2/4 border-none h-[1.5px] bg-gray-700 hidden' /> */}
         </NavLink>
         <NavLink
             to='/contact'
             className={`flex flex-col items-center gap-1 ${isActive('/contact')}`}>
             <p>CONTACT US</p>
-            {/* <hr className='w-2/4 border-none h-[1.5px] bg-gray-700 hidden' /> */}
         </NavLink>
 
       </ul>
