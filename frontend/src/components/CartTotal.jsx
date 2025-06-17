@@ -7,7 +7,7 @@ const CartTotal = ({deliveryMethod}) => {
 
     const currency = '₹';
     const cartTotal = useSelector(selectCartAmount)
-    const shippingCost = 40
+    const shippingCost = 50
     const total =  deliveryMethod === 'DELIVERY' ? cartTotal + shippingCost : cartTotal;
 
   return (

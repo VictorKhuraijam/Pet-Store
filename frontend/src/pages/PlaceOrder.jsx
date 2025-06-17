@@ -5,6 +5,7 @@ import { toast } from 'react-toastify'
 import { useNavigate } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
 import {selectCartAmount, clearCart} from '../store/cartSlice'
+import {backendUrl} from '../store/consts'
 
 const PlaceOrder = () => {
 
@@ -17,7 +18,6 @@ const PlaceOrder = () => {
     const CartAmount = useSelector(selectCartAmount)
 
     const delivery_fee = 40
-    const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
      // State for Delivery Method
     const [deliveryType, setDeliveryType] = useState('DELIVERY');
