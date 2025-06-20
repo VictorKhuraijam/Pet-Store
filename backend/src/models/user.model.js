@@ -74,7 +74,7 @@ userSchema.methods.generateAccessToken = function(){
      }, //payload
      process.env.ACCESS_TOKEN_SECRET,
      {
-       expiresIn: process.env.ACCESS_TOKEN_EXPIRY || "1m"
+       expiresIn: process.env.ACCESS_TOKEN_EXPIRY || "2h"
      }
    )
  } catch (error) {
@@ -91,7 +91,7 @@ userSchema.methods.generateRefreshToken = function(){
      },
      process.env.REFRESH_TOKEN_SECRET,
      {
-       expiresIn: process.env.REFRESH_TOKEN_EXPIRY || "1h"
+       expiresIn: process.env.REFRESH_TOKEN_EXPIRY || "6h"
      }
    )
  } catch (error) {

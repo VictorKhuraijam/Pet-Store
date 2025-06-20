@@ -104,23 +104,23 @@ export const startCronJobs = () => {
       // "0 11 * * *" --> min hour (day of the month) (month (1 - 12)) (day of the week (0 - 7, where both 0 and 7 represent Sunday))
      // Run the cleanup job every day at 11 a.m.
      const cleanupUsersJob = cron.schedule("0 11 * * *", async () => {
-        console.log("Running cleanup job for unverified users...");
+        // console.log("Running cleanup job for unverified users...");
         await cleanupUnverifiedUsers();
       });
 
       // New job to trim user orders (run every Monday at 2 a.m.)
       const trimOrdersJob = cron.schedule("0 11 * * *", async () => {
-        console.log("Running job to trim excess user orders...");
+        // console.log("Running job to trim excess user orders...");
         await trimUserOrders();
       });
 
       // New job to remove orphaned orders (run everyday at 10 a.m.)
       const orphanedOrdersJob = cron.schedule("0 11 * * *", async () => {
-        console.log("Running job to remove orphaned orders...");
+        // console.log("Running job to remove orphaned orders...");
         await removeOrphanedOrders();
       });
 
-      console.log("All cron jobs initialized!");
+      // console.log("All cron jobs initialized!");
 
       // Graceful shutdown - stop all jobs
       process.on("SIGTERM", () => {
