@@ -5,6 +5,7 @@ import cookieParser from 'cookie-parser'
 
 const app = express()
 
+
 const allowedOrigins = process.env.CORS_ORIGIN ? process.env.CORS_ORIGIN.split(',') : [];
 
 // console.log('Allowed origins:', allowedOrigins); // Log to verify env variable is properly loaded
